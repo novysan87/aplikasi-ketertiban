@@ -25,50 +25,37 @@
     </div>
 
     {{-- Quick Stats --}}
-    @php
-        $today = now()->toDateString();
-        $todayAlpha = \App\Models\Attendance::where('date', $today)->where('status', 'alpha')->count();
-        $todayTotal = \App\Models\Attendance::where('date', $today)->count();
-        $monthTotal = \App\Models\Attendance::whereMonth('date', now()->month)->whereYear('date', now()->year)->count();
-        $monthAlpha = \App\Models\Attendance::whereMonth('date', now()->month)->whereYear('date', now()->year)->where('status', 'alpha')->count();
-        $recentDates = \App\Models\Attendance::select('date')
-            ->distinct()
-            ->orderByDesc('date')
-            ->take(10)
-            ->get();
-    @endphp
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 shadow-sm">
             <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-clipboard-check text-white text-6xl"></i></div>
             <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Presensi Hari Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $todayTotal }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">data tercatat</p>
+                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Dipresensi Hari Ini</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $todayStudents }}</p>
+                <p class="text-[10px] text-white/50 mt-0.5">siswa tercatat</p>
             </div>
         </div>
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-5 shadow-sm">
             <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-xmark text-white text-6xl"></i></div>
             <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Alpha Hari Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $todayAlpha }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">tanpa keterangan</p>
+                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Alpha Hari Ini</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $todayAlphaStudents }}</p>
+                <p class="text-[10px] text-white/50 mt-0.5">siswa tanpa keterangan</p>
             </div>
         </div>
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 shadow-sm">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-calendar text-white text-6xl"></i></div>
+            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-user text-white text-6xl"></i></div>
             <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Bulan Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $monthTotal }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">total presensi</p>
+                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Bulan Ini</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $monthStudents }}</p>
+                <p class="text-[10px] text-white/50 mt-0.5">pernah dipresensi</p>
             </div>
         </div>
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 to-violet-600 p-5 shadow-sm">
             <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-chart-bar text-white text-6xl"></i></div>
             <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Alpha Bulan Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $monthAlpha }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">pelanggaran</p>
+                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Alpha Bulan Ini</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $monthAlphaStudents }}</p>
+                <p class="text-[10px] text-white/50 mt-0.5">pernah alpha</p>
             </div>
         </div>
     </div>

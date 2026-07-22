@@ -21,7 +21,42 @@ class AttendanceController extends Controller
 
     public function index(Request $request): View
     {
-        return view('attendances.index');
+        $today = now()->toDateString();
+        $thisMonth = now()->month;
+        $thisYear = now()->year;
+
+        // Hitung berdasarkan jumlah siswa unik, bukan total record per jam
+        $todayStudents = \App\Models\Attendance::where('date', $today)
+            ->distinct('student_id')
+            ->count('student_id');
+
+        $todayAlphaStudents = \App\Models\Attendance::where('date', $today)
+            ->where('status', 'alpha')
+            ->distinct('student_id')
+            ->count('student_id');
+
+        $monthStudents = \App\Models\Attendance::whereMonth('date', $thisMonth)
+            ->whereYear('date', $thisYear)
+            ->distinct('student_id')
+            ->count('student_id');
+
+        $monthAlphaStudents = \App\Models\Attendance::whereMonth('date', $thisMonth)
+            ->whereYear('date', $thisYear)
+            ->where('status', 'alpha')
+            ->distinct('student_id')
+            ->count('student_id');
+
+        $recentDates = \App\Models\Attendance::select('date')
+            ->distinct()
+            ->orderByDesc('date')
+            ->take(10)
+            ->get();
+
+        return view('attendances.index', compact(
+            'todayStudents', 'todayAlphaStudents',
+            'monthStudents', 'monthAlphaStudents',
+            'recentDates'
+        ));
     }
 
     public function create(Request $request): View
