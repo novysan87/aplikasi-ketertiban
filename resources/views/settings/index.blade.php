@@ -82,5 +82,42 @@
             </button>
         </form>
     </div>
+
+    {{-- Backup Database Card --}}
+    <div class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-database text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900">Backup Database</h3>
+                    <p class="text-xs text-gray-400">Kelola backup dan restore database</p>
+                </div>
+            </div>
+            <a href="{{ route('settings.backup') }}"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition flex-shrink-0">
+                Kelola Backup
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+        </div>
+        <div class="p-5 text-xs text-gray-500 leading-relaxed">
+            <p>Fitur backup database memungkinkan Anda untuk:</p>
+            <ul class="mt-2 space-y-1.5">
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                    Membuat backup database kapan saja
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                    Mendownload file backup untuk penyimpanan eksternal
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                    Merestore database dari backup dengan safety backup otomatis
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 @endsection

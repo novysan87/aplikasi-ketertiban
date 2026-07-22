@@ -162,14 +162,21 @@
                                             </button>
                                         </form>
                                     @endif
-                                    <form action="{{ route('settings.violation-types.destroy', $type->id) }}" method="POST" class="inline"
-                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus jenis pelanggaran ini?'})) $el.submit()">
-                                        @csrf @method('DELETE')
-                                        <button type="submit"
-                                            class="inline-flex items-center justify-center w-8 h-8 text-xs font-medium text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition">
-                                            <i class="fa-solid fa-trash-can text-xs"></i>
-                                        </button>
-                                    </form>
+                                    @if (!$type->is_system)
+                                        <form action="{{ route('settings.violation-types.destroy', $type->id) }}" method="POST" class="inline"
+                                            x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus jenis pelanggaran ini?'})) $el.submit()">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                class="inline-flex items-center justify-center w-8 h-8 text-xs font-medium text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition">
+                                                <i class="fa-solid fa-trash-can text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <i class="fa-solid fa-lock text-[10px]"></i>
+                                            <span class="hidden sm:inline">Sistem</span>
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

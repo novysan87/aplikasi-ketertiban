@@ -29,6 +29,11 @@ Route::middleware('auth')->group(function () {
     // Notifications
     Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::get('/calendar/data', [DashboardController::class, 'getCalendarData'])->name('calendar.data');
+    Route::get('/attendances', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('/attendances/create', [\App\Http\Controllers\AttendanceController::class, 'create'])->name('attendances.create');
+    Route::post('/attendances', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendances.store');
+    Route::get('/attendances/recap', [\App\Http\Controllers\AttendanceController::class, 'recap'])->name('attendances.recap');
+
     Route::get('/notifications/recent', [DashboardController::class, 'getRecentNotifications'])->name('notifications.recent');
     Route::post('/notifications/{id}/read', [DashboardController::class, 'markNotificationRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [DashboardController::class, 'markAllNotificationsRead'])->name('notifications.read-all');
@@ -74,11 +79,18 @@ Route::middleware('auth')->group(function () {
     // Import
     Route::get('/settings/import/template', [ImportController::class, 'downloadTemplate'])->name('settings.import.template');
     Route::get('/settings/export/violation-types', [ImportController::class, 'exportViolationTypes'])->name('settings.export.violation-types');
+    Route::get('/settings/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('settings.backup');
+    Route::post('/settings/backup/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('settings.backup.create');
+    Route::get('/settings/backup/download/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('settings.backup.download');
+    Route::delete('/settings/backup/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('settings.backup.destroy');
+    Route::post('/settings/backup/restore', [\App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('settings.backup.restore');
     Route::get('/export/violations', [\App\Http\Controllers\Admin\ViolationExportController::class, 'export'])->name('violations.export');
     Route::post('/settings/import/violation-types', [ImportController::class, 'importViolationTypes'])->name('settings.import.violation-types');
 
     Route::get('/settings/thresholds', [MasterDataController::class, 'thresholds'])->name('settings.thresholds');
     Route::put('/settings/thresholds', [MasterDataController::class, 'updateThresholds'])->name('settings.thresholds.update');
+    Route::post('/settings/thresholds', [MasterDataController::class, 'storeThreshold'])->name('settings.thresholds.store');
+    Route::delete('/settings/thresholds/{threshold}', [MasterDataController::class, 'destroyThreshold'])->name('settings.thresholds.destroy');
 
     // Sync
     Route::get('/settings/sync', [SyncController::class, 'index'])->name('settings.sync');

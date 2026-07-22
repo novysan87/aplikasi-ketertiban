@@ -11,6 +11,7 @@ $faIcons = [
     'plus-circle' => 'fa-solid fa-circle-plus',
     'exclamation-triangle' => 'fa-solid fa-triangle-exclamation',
     'users' => 'fa-solid fa-users',
+    'clipboard-check' => 'fa-solid fa-clipboard-check',
     'document-text' => 'fa-solid fa-file-lines',
     'tag' => 'fa-solid fa-tag',
     'list' => 'fa-solid fa-list',
@@ -18,6 +19,7 @@ $faIcons = [
     'refresh' => 'fa-solid fa-rotate',
     'cog' => 'fa-solid fa-gear',
     'users-cog' => 'fa-solid fa-user-gear',
+    'database' => 'fa-solid fa-database',
 ];
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 @endphp

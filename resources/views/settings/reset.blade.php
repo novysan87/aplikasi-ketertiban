@@ -159,6 +159,26 @@
                         </div>
                     </label>
 
+                    {{-- Penanganan --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-amber-300 has-[:checked]:bg-amber-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="handlings" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Riwayat Penanganan</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['handlings'] }} catatan penanganan</p>
+                            <p class="text-xs text-gray-400">Status pelanggaran akan dikembalikan ke "Belum Ditangani"</p>
+                        </div>
+                    </label>
+
+                    {{-- Backup Files --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-sky-300 has-[:checked]:bg-sky-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="backups" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-sky-500 focus:ring-sky-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">File Backup</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['backups'] }} file backup database</p>
+                            <p class="text-xs text-red-500 font-medium mt-1">Tidak bisa dikembalikan!</p>
+                        </div>
+                    </label>
+
                     {{-- User Lain --}}
                     <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
                         <input type="checkbox" name="reset_items[]" value="users" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">

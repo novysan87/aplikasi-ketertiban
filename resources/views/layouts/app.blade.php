@@ -48,6 +48,7 @@
                 <x-nav-item href="{{ route('violations.create') }}" icon="plus-circle" :active="request()->routeIs('violations.create')">Input Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('violations.index') }}" icon="exclamation-triangle" :active="request()->routeIs('violations.index')">Data Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('students.index') }}" icon="users" :active="request()->routeIs('students.index*')">Data Siswa</x-nav-item>
+                <x-nav-item href="{{ route('attendances.index') }}" icon="clipboard-check" :active="request()->routeIs('attendances*')">Presensi Siswa</x-nav-item>
                 <x-nav-item href="{{ route('sp-letters.index') }}" icon="document-text" :active="request()->routeIs('sp-letters.*')">Surat Peringatan</x-nav-item>
 
                 <div class="pt-4 mt-4 border-t border-gray-200">
@@ -58,6 +59,7 @@
                 <x-nav-item href="{{ route('settings.thresholds') }}" icon="chart-bar" :active="request()->routeIs('settings.thresholds*')">Ambang SP</x-nav-item>
                 <x-nav-item href="{{ route('settings.sync') }}" icon="refresh" :active="request()->routeIs('settings.sync*')">Sinkronisasi</x-nav-item>
                 <x-nav-item href="{{ route('users.index') }}" icon="users-cog" :active="request()->routeIs('users.*')">Manajemen User</x-nav-item>
+                <x-nav-item href="{{ route('settings.backup') }}" icon="database" :active="request()->routeIs('settings.backup*')">Backup Database</x-nav-item>
                 <x-nav-item href="{{ route('settings.reset') }}" icon="refresh" :active="request()->routeIs('settings.reset*')">Reset Aplikasi</x-nav-item>
                 <x-nav-item href="{{ route('settings.index') }}" icon="cog" :active="request()->routeIs('settings.index')">Pengaturan</x-nav-item>
             </nav>

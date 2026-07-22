@@ -20,6 +20,7 @@ class ResetController extends Controller
         $stats = [
             'violations' => DB::table('violations')->count(),
             'evidences' => DB::table('violation_evidences')->count(),
+            'handlings' => DB::table('violation_handlings')->count(),
             'sp_letters' => DB::table('sp_letters')->count(),
             'notifications' => DB::table('notifications')->count(),
             'students' => DB::table('students')->count(),
@@ -29,6 +30,7 @@ class ResetController extends Controller
             'types' => DB::table('violation_types')->count(),
             'thresholds' => DB::table('sp_thresholds')->count(),
             'users_other' => DB::table('users')->where('role', '!=', 'admin')->count(),
+            'backups' => $this->countBackupFiles(),
         ];
 
         return view('settings.reset', compact('stats'));
@@ -39,7 +41,7 @@ class ResetController extends Controller
         $request->validate([
             'confirm_password' => ['required', 'string'],
             'reset_items' => ['required', 'array', 'min:1'],
-            'reset_items.*' => ['in:violations,evidences,sp_letters,notifications,students,classes,categories,types,thresholds,settings,users'],
+            'reset_items.*' => ['in:violations,evidences,handlings,sp_letters,notifications,students,classes,categories,types,thresholds,settings,users,backups'],
         ]);
 
         if (!Hash::check($request->confirm_password, $request->user()->password)) {
@@ -53,12 +55,28 @@ class ResetController extends Controller
 
         $cleared = [];
 
+        if (in_array('handlings', $items)) {
+            DB::table('handling_participants')->delete();
+            DB::table('violation_handlings')->delete();
+            // Juga reset handling_status di violations
+            if (!in_array('violations', $items)) {
+                DB::table('violations')->update([
+                    'handling_status' => 'unhandled',
+                    'handled_at' => null,
+                    'handled_by' => null,
+                ]);
+            }
+            $cleared[] = 'Riwayat penanganan';
+        }
+
         if (in_array('evidences', $items)) {
             DB::table('violation_evidences')->delete();
             $cleared[] = 'Foto bukti';
         }
 
         if (in_array('violations', $items)) {
+            DB::table('handling_participants')->delete();
+            DB::table('violation_handlings')->delete();
             DB::table('violations')->delete();
             $cleared[] = 'Pelanggaran';
         }
@@ -133,6 +151,18 @@ class ResetController extends Controller
             }
         }
 
+        // Hapus file backup jika backups dipilih
+        if (in_array('backups', $items)) {
+            $backupDir = storage_path('app/backups');
+            if (is_dir($backupDir)) {
+                $files = glob($backupDir . '/*.sql.gz');
+                foreach ($files as $f) {
+                    unlink($f);
+                }
+            }
+            $cleared[] = 'File backup';
+        }
+
         $msg = 'Reset berhasil! Data yang dibersihkan: ' . implode(', ', $cleared) . '.';
 
         if ($admin) {
@@ -142,12 +172,20 @@ class ResetController extends Controller
         return redirect()->route('settings.reset')->with('success', $msg);
     }
 
+    private function countBackupFiles(): int
+    {
+        $backupDir = storage_path('app/backups');
+        if (!is_dir($backupDir)) return 0;
+        $files = glob($backupDir . '/*.sql.gz');
+        return count($files);
+    }
+
     private function seedDefaultCategories(): void
     {
         $categories = [
-            ['name' => 'Ringan', 'description' => 'Pelanggaran ringan (poin 1-15)', 'color' => '#eab308', 'min_points' => 1, 'max_points' => 15, 'is_active' => true, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Sedang', 'description' => 'Pelanggaran sedang (poin 15-50)', 'color' => '#f97316', 'min_points' => 15, 'max_points' => 50, 'is_active' => true, 'sort_order' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Berat', 'description' => 'Pelanggaran berat (poin 50-100)', 'color' => '#ef4444', 'min_points' => 50, 'max_points' => 100, 'is_active' => true, 'sort_order' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Ringan', 'slug' => 'ringan', 'description' => 'Pelanggaran ringan (poin 1-15)', 'color' => '#eab308', 'is_active' => true, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Sedang', 'slug' => 'sedang', 'description' => 'Pelanggaran sedang (poin 15-50)', 'color' => '#f97316', 'is_active' => true, 'sort_order' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Berat', 'slug' => 'berat', 'description' => 'Pelanggaran berat (poin 50-100)', 'color' => '#ef4444', 'is_active' => true, 'sort_order' => 3, 'created_at' => now(), 'updated_at' => now()],
         ];
         DB::table('violation_categories')->insert($categories);
     }
@@ -155,9 +193,9 @@ class ResetController extends Controller
     private function seedDefaultThresholds(): void
     {
         $thresholds = [
-            ['name' => 'SP 1', 'slug' => 'sp-1', 'min_points' => 50, 'max_points' => 99, 'color' => '#eab308', 'is_active' => true, 'description' => 'Surat Peringatan 1 — poin mencapai 50', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'SP 2', 'slug' => 'sp-2', 'min_points' => 100, 'max_points' => 149, 'color' => '#f97316', 'is_active' => true, 'description' => 'Surat Peringatan 2 — poin mencapai 100', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'SP 3', 'slug' => 'sp-3', 'min_points' => 150, 'max_points' => null, 'color' => '#ef4444', 'is_active' => true, 'description' => 'Surat Peringatan 3 — poin mencapai 150', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 1', 'slug' => 'sp-1', 'min_points' => 50, 'max_points' => 99, 'color' => '#eab308', 'is_active' => true, 'default_description' => 'Surat Peringatan 1 — poin mencapai 50', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 2', 'slug' => 'sp-2', 'min_points' => 100, 'max_points' => 149, 'color' => '#f97316', 'is_active' => true, 'default_description' => 'Surat Peringatan 2 — poin mencapai 100', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 3', 'slug' => 'sp-3', 'min_points' => 150, 'max_points' => null, 'color' => '#ef4444', 'is_active' => true, 'default_description' => 'Surat Peringatan 3 — poin mencapai 150', 'created_at' => now(), 'updated_at' => now()],
         ];
         DB::table('sp_thresholds')->insert($thresholds);
     }

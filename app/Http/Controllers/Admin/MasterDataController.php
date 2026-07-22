@@ -117,7 +117,10 @@ class MasterDataController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        // System types: slug tetap, nama bisa diubah tapi slug gak ikut berubah
+        if (!$type->is_system) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
         $validated['is_active'] = $request->boolean('is_active');
 
         $type->update($validated);
@@ -127,6 +130,10 @@ class MasterDataController extends Controller
 
     public function destroyType(ViolationType $type): RedirectResponse
     {
+        if ($type->is_system) {
+            return back()->with('error', 'Jenis pelanggaran sistem tidak bisa dihapus. Nonaktifkan saja jika tidak diperlukan.');
+        }
+
         if ($type->violations()->count() > 0) {
             return back()->with('error', 'Jenis pelanggaran ini sudah tercatat pada pelanggaran siswa. Nonaktifkan saja.');
         }
@@ -154,15 +161,53 @@ class MasterDataController extends Controller
             'thresholds.*.default_description' => ['nullable', 'string', 'max:500'],
         ]);
 
+        $inputs = $request->input('thresholds', []);
+        $idx = 0;
         foreach ($thresholds['thresholds'] as $data) {
-            SpThreshold::where('id', $data['id'])->update([
+            $update = [
                 'name' => $data['name'],
                 'min_points' => $data['min_points'],
                 'max_points' => $data['max_points'],
                 'default_description' => $data['default_description'],
-            ]);
+                'is_active' => isset($inputs[$idx]['is_active']),
+            ];
+
+            SpThreshold::where('id', $data['id'])->update($update);
+            $idx++;
         }
 
         return back()->with('success', 'Ambang batas SP berhasil diperbarui.');
+    }
+
+    public function storeThreshold(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'min_points' => ['required', 'integer', 'min:0'],
+            'max_points' => ['nullable', 'integer', 'min:0'],
+            'default_description' => ['nullable', 'string', 'max:500'],
+            'color' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $slug = str($data['name'])->slug('-');
+        SpThreshold::create([
+            'name' => $data['name'],
+            'slug' => $slug,
+            'min_points' => $data['min_points'],
+            'max_points' => $data['max_points'],
+            'default_description' => $data['default_description'],
+            'color' => $data['color'] ?? '#6b7280',
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('settings.thresholds')->with('success', 'Threshold ' . $data['name'] . ' berhasil ditambahkan.');
+    }
+
+    public function destroyThreshold(SpThreshold $threshold): RedirectResponse
+    {
+        $name = $threshold->name;
+        $threshold->delete();
+
+        return redirect()->route('settings.thresholds')->with('success', 'Threshold ' . $name . ' berhasil dihapus.');
     }
 }
