@@ -2,114 +2,266 @@
 
 @section('title', 'Reset Aplikasi')
 
+@push('styles')
+<style>
+    .reset-card {
+        transition: all 0.2s ease;
+    }
+    .reset-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.06);
+    }
+    .reset-checkbox:checked {
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    }
+    .reset-item.selected {
+        ring: 2px;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div>
     {{-- Header --}}
-    <div class="mb-6">
-        <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
-                <i class="fa-solid fa-rotate-left text-red-600 text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Reset Aplikasi</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Kembalikan aplikasi ke kondisi awal pabrik</p>
-            </div>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Reset Aplikasi</h1>
+            <p class="text-sm text-gray-500 mt-0.5">Kosongkan data aplikasi secara selektif</p>
         </div>
     </div>
 
     {{-- Warning Card --}}
-    <div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-6">
-        <div class="flex items-start space-x-3">
-            <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-5 mb-6">
+        <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
             <div>
-                <h3 class="text-sm font-semibold text-red-800">⚠️ Peringatan Keras!</h3>
-                <p class="text-sm text-red-700 mt-1">Semua data berikut akan <strong>DIHAPUS PERMANEN</strong>:</p>
-                <ul class="mt-2 space-y-1 text-sm text-red-700">
-                    <li>✕ Pelanggaran & foto bukti</li>
-                    <li>✕ Surat Peringatan & notifikasi</li>
-                    <li>✕ Data siswa & kelas (hasil sinkron)</li>
-                    <li>✕ Kategori, jenis pelanggaran & ambang SP</li>
-                    <li>✕ User lain (selain admin utama)</li>
-                    <li>✕ Pengaturan sekolah</li>
-                    <li>✕ File foto yang sudah diupload</li>
-                </ul>
-                <p class="text-sm text-green-700 mt-3 font-medium">Yang <u>tetap</u> tersimpan:</p>
-                <ul class="mt-1 space-y-0.5 text-sm text-green-700">
-                    <li>✓ Akun super admin (username: <strong>admin</strong>)</li>
-                </ul>
+                <h3 class="text-sm font-semibold text-red-800">⚠️ Peringatan</h3>
+                <p class="text-xs text-red-600 mt-1">Data yang dipilih akan dihapus permanen dan tidak bisa dikembalikan. Pastikan Anda telah membackup data penting sebelum melanjutkan.</p>
             </div>
         </div>
     </div>
 
-    {{-- Stats Cards --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-        <div class="px-5 py-4 border-b border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-900">Data yang akan terhapus</h3>
-        </div>
-        <div class="p-5">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-center">
-                    <p class="text-xs text-red-600 font-medium uppercase tracking-wider">Pelanggaran</p>
-                    <p class="text-2xl font-bold text-red-700 mt-1">{{ $stats['violations'] }}</p>
+    <form method="POST" action="{{ route('settings.reset.run') }}" id="reset-form">
+        @csrf
+
+        {{-- Selectable Data Cards --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">Pilih Data yang Akan Dikosongkan</h3>
+                        <p class="text-xs text-gray-400">Centang data yang ingin dihapus, lalu masukkan password admin</p>
+                    </div>
                 </div>
-                <div class="p-4 bg-orange-50 rounded-xl border border-orange-100 text-center">
-                    <p class="text-xs text-orange-600 font-medium uppercase tracking-wider">Foto</p>
-                    <p class="text-2xl font-bold text-orange-700 mt-1">{{ $stats['evidences'] }}</p>
-                </div>
-                <div class="p-4 bg-yellow-50 rounded-xl border border-yellow-100 text-center">
-                    <p class="text-xs text-yellow-600 font-medium uppercase tracking-wider">SP</p>
-                    <p class="text-2xl font-bold text-yellow-700 mt-1">{{ $stats['sp_letters'] }}</p>
-                </div>
-                <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-center">
-                    <p class="text-xs text-red-600 font-medium uppercase tracking-wider">Notifikasi</p>
-                    <p class="text-2xl font-bold text-red-700 mt-1">{{ $stats['notifications'] }}</p>
-                </div>
-                <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 text-center">
-                    <p class="text-xs text-purple-600 font-medium uppercase tracking-wider">Siswa</p>
-                    <p class="text-2xl font-bold text-purple-700 mt-1">{{ $stats['students'] }}</p>
-                </div>
-                <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-center">
-                    <p class="text-xs text-indigo-600 font-medium uppercase tracking-wider">Kelas</p>
-                    <p class="text-2xl font-bold text-indigo-700 mt-1">{{ $stats['classes'] }}</p>
-                </div>
-                <div class="p-4 bg-teal-50 rounded-xl border border-teal-100 text-center">
-                    <p class="text-xs text-teal-600 font-medium uppercase tracking-wider">Settings</p>
-                    <p class="text-2xl font-bold text-teal-700 mt-1">{{ $stats['settings'] }}</p>
-                </div>
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 text-center">
-                    <p class="text-xs text-gray-600 font-medium uppercase tracking-wider">User Lain</p>
-                    <p class="text-2xl font-bold text-gray-700 mt-1">{{ $stats['users_other'] }}</p>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="select-all" class="text-xs text-blue-600 hover:text-blue-800 font-medium transition">Pilih Semua</button>
+                    <span class="text-gray-300">|</span>
+                    <button type="button" id="deselect-all" class="text-xs text-gray-500 hover:text-gray-700 font-medium transition">Hapus Semua</button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    {{-- Confirm Form --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <form action="{{ route('settings.reset.run') }}" method="POST" onsubmit="return confirm('⚠️ YAKIN INGIN RESET? Semua data kecuali akun admin akan hilang permanen!')">
-            @csrf
-            <div class="p-5 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                        <i class="fa-solid fa-lock mr-1.5 text-gray-400"></i>
-                        Masukkan Password Admin untuk Konfirmasi
+            <div class="p-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {{-- Pelanggaran & Evidences --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="violations" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Pelanggaran</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['violations'] }} data</p>
+                        </div>
                     </label>
-                    <input type="password" name="confirm_password" required
-                        placeholder="Password akun admin saat ini"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="evidences" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Foto Bukti</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['evidences'] }} file</p>
+                        </div>
+                    </label>
+
+                    {{-- Surat Peringatan --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="sp_letters" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Surat Peringatan</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['sp_letters'] }} surat</p>
+                        </div>
+                    </label>
+
+                    {{-- Notifikasi --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="notifications" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Notifikasi</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['notifications'] }} notifikasi</p>
+                        </div>
+                    </label>
+
+                    {{-- Data Siswa --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="students" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Siswa</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['students'] }} siswa</p>
+                        </div>
+                    </label>
+
+                    {{-- Kelas --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="classes" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Kelas</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['classes'] }} kelas</p>
+                        </div>
+                    </label>
+
+                    {{-- Kategori Pelanggaran --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-orange-300 has-[:checked]:bg-orange-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="categories" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Kategori Pelanggaran</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['categories'] }} kategori</p>
+                            <p class="text-xs text-green-600 font-medium mt-1">Akan dibuat ulang default</p>
+                        </div>
+                    </label>
+
+                    {{-- Jenis Pelanggaran --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-orange-300 has-[:checked]:bg-orange-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="types" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Jenis Pelanggaran</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['types'] }} jenis</p>
+                        </div>
+                    </label>
+
+                    {{-- Ambang SP --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-orange-300 has-[:checked]:bg-orange-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="thresholds" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Ambang SP</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['thresholds'] }} threshold</p>
+                            <p class="text-xs text-green-600 font-medium mt-1">Akan dibuat ulang default</p>
+                        </div>
+                    </label>
+
+                    {{-- Pengaturan --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-purple-300 has-[:checked]:bg-purple-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="settings" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-500 focus:ring-purple-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Pengaturan</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['settings'] }} setting</p>
+                            <p class="text-xs text-red-500 font-medium mt-1">Nama & logo sekolah ikut hilang</p>
+                        </div>
+                    </label>
+
+                    {{-- User Lain --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="users" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">User Lain</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['users_other'] }} user (non-admin)</p>
+                        </div>
+                    </label>
                 </div>
             </div>
-            <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl flex justify-between items-center">
-                <a href="{{ route('dashboard') }}" class="text-sm text-gray-500 hover:text-gray-700 transition">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
-                </a>
-                <button type="submit"
-                    class="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
-                    <i class="fa-solid fa-bomb mr-2"></i>
-                    Reset Aplikasi
-                </button>
+        </div>
+
+        {{-- Confirm Form --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">Konfirmasi Password</h3>
+                        <p class="text-xs text-gray-400">Masukkan password admin untuk menjalankan reset</p>
+                    </div>
+                </div>
             </div>
-        </form>
-    </div>
+            <div class="p-6">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-xl">
+                    <div class="flex-1">
+                        <input type="password" name="confirm_password" required
+                            placeholder="Password admin saat ini"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    </div>
+                    <button type="submit" id="reset-btn" disabled
+                        class="px-6 py-2.5 text-sm font-semibold text-white bg-gray-300 rounded-xl cursor-not-allowed transition flex items-center justify-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Jalankan Reset
+                    </button>
+                </div>
+                <div id="reset-hint" class="mt-2 text-xs text-red-500 hidden">
+                    Pilih minimal satu data yang akan direset.
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('input[name="reset_items[]"]');
+        const resetBtn = document.getElementById('reset-btn');
+        const resetHint = document.getElementById('reset-hint');
+        const selectAll = document.getElementById('select-all');
+        const deselectAll = document.getElementById('deselect-all');
+        const form = document.getElementById('reset-form');
+
+        function updateButton() {
+            const checked = document.querySelectorAll('input[name="reset_items[]"]:checked');
+            if (checked.length > 0) {
+                resetBtn.disabled = false;
+                resetBtn.className = 'px-6 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2 whitespace-nowrap shadow-sm';
+                resetHint.classList.add('hidden');
+            } else {
+                resetBtn.disabled = true;
+                resetBtn.className = 'px-6 py-2.5 text-sm font-semibold text-white bg-gray-300 rounded-xl cursor-not-allowed transition flex items-center justify-center gap-2 whitespace-nowrap';
+                resetHint.classList.remove('hidden');
+            }
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateButton));
+
+        selectAll.addEventListener('click', function (e) {
+            e.preventDefault();
+            checkboxes.forEach(cb => cb.checked = true);
+            updateButton();
+        });
+
+        deselectAll.addEventListener('click', function (e) {
+            e.preventDefault();
+            checkboxes.forEach(cb => cb.checked = false);
+            updateButton();
+        });
+
+        form.addEventListener('submit', function (e) {
+            const checked = document.querySelectorAll('input[name="reset_items[]"]:checked');
+            if (checked.length === 0) {
+                e.preventDefault();
+                resetHint.classList.remove('hidden');
+                return;
+            }
+            if (!confirm('⚠️ YAKIN INGIN MELANJUTKAN?\n\nData yang dipilih akan dihapus permanen!\nTindakan ini tidak bisa dibatalkan.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+@endpush

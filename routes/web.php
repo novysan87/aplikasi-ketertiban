@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SyncController;
@@ -64,6 +65,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/violation-types', [MasterDataController::class, 'storeType'])->name('settings.violation-types.store');
     Route::put('/settings/violation-types/{type}', [MasterDataController::class, 'updateType'])->name('settings.violation-types.update');
     Route::delete('/settings/violation-types/{type}', [MasterDataController::class, 'destroyType'])->name('settings.violation-types.destroy');
+
+    // Import
+    Route::get('/settings/import/template', [ImportController::class, 'downloadTemplate'])->name('settings.import.template');
+    Route::post('/settings/import/violation-types', [ImportController::class, 'importViolationTypes'])->name('settings.import.violation-types');
 
     Route::get('/settings/thresholds', [MasterDataController::class, 'thresholds'])->name('settings.thresholds');
     Route::put('/settings/thresholds', [MasterDataController::class, 'updateThresholds'])->name('settings.thresholds.update');

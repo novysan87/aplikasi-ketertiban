@@ -3,20 +3,36 @@
 @section('title', 'Jenis Pelanggaran')
 
 @section('content')
-<div x-data="violationTypeManager()">
+<div x-data="violationTypeManager()" x-init="showImport = false">
     {{-- Header --}}
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Jenis Pelanggaran</h1>
             <p class="text-sm text-gray-500 mt-1">Daftar jenis pelanggaran beserta poin dan sanksi default</p>
         </div>
-        <button @click="openCreate()"
-            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Tambah Jenis
-        </button>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('settings.import.template') }}"
+                class="inline-flex items-center px-3.5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download Template
+            </a>
+            <button @click="showImport = true"
+                class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L5 8m4-4v12"/>
+                </svg>
+                Import Excel
+            </button>
+            <button @click="openCreate()"
+                class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Jenis
+            </button>
+        </div>
     </div>
 
     {{-- Filter & Search Bar --}}
@@ -312,11 +328,98 @@
     </div>
 </div>
 
+    {{-- Import Modal --}}
+    <div x-show="showImport"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm" style="display: none;"
+        @click.away="showImport = false"
+        @keydown.escape="showImport = false">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg mx-4 overflow-hidden"
+            @click.stop>
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L5 8m4-4v12"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-900">Import Excel</h3>
+                </div>
+                <button @click="showImport = false" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form action="{{ route('settings.import.violation-types') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                @csrf
+
+                <div class="text-sm text-gray-600 mb-4 leading-relaxed">
+                    <p class="mb-2">Upload file Excel (.xlsx) untuk mengimpor jenis pelanggaran secara massal.</p>
+                    <p class="text-xs text-gray-400">Format kolom: <strong>Kategori</strong> • <strong>Nama Pelanggaran</strong> • <strong>Poin</strong> • <strong>Sanksi Default</strong> • <strong>Deskripsi</strong></p>
+                </div>
+
+                <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition file-drop"
+                    x-data="{ fileName: '' }"
+                    @dragover.prevent="$el.classList.add('border-blue-400', 'bg-blue-50/50')"
+                    @dragleave.prevent="$el.classList.remove('border-blue-400', 'bg-blue-50/50')"
+                    @drop.prevent="$el.classList.remove('border-blue-400', 'bg-blue-50/50'); const f = $event.dataTransfer.files[0]; if(f) { document.getElementById('import-file-input').files = $event.dataTransfer.files; fileName = f.name; }">
+                    <input id="import-file-input" type="file" name="file" accept=".xlsx,.xls" class="hidden"
+                        @change="fileName = $event.target.files[0]?.name || ''">
+
+                    <template x-if="!fileName">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="text-sm text-gray-500">Klik atau drag & drop file di sini</p>
+                            <p class="text-xs text-gray-400 mt-1">.xlsx atau .xls, maks 2 MB</p>
+                        </div>
+                    </template>
+                    <template x-if="fileName">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-sm font-medium text-gray-900" x-text="fileName"></p>
+                            <p class="text-xs text-green-600 mt-1">Siap diupload</p>
+                        </div>
+                    </template>
+                </label>
+
+                <div class="flex items-center justify-between mt-6">
+                    <a href="{{ route('settings.import.template') }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium transition">
+                        Download template →
+                    </a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="showImport = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                            Import
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
 @push('scripts')
 <script>
 function violationTypeManager() {
     return {
         modalOpen: false,
+        showImport: false,
         isEditing: false,
         editId: null,
         formCategory: '',
@@ -358,4 +461,3 @@ function violationTypeManager() {
 }
 </script>
 @endpush
-@endsection
