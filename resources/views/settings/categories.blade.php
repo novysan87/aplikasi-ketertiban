@@ -12,9 +12,7 @@
         </div>
         <button @click="openCreate()"
             class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
+            <i class="fa-solid fa-plus"></i>
             Tambah Kategori
         </button>
     </div>
@@ -98,9 +96,7 @@
                                     <input type="hidden" name="is_active" value="1">
                                     <button type="submit"
                                         class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition">
-                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                        <i class="fa-solid fa-circle-check"></i>
                                         Aktifkan
                                     </button>
                                 </form>
@@ -108,13 +104,11 @@
                         </div>
                         @if($typeCount === 0)
                             <form action="{{ route('settings.categories.destroy', $cat->id) }}" method="POST"
-                                x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus kategori ini?'})) $el.submit()"">
+                                x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus kategori ini?'})) $el.submit()">
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                     class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-red-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
+                                    <i class="fa-solid fa-trash-can"></i>
                                     Hapus
                                 </button>
                             </form>
@@ -141,18 +135,16 @@
     <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Overlay --}}
-            <div x-show="modalOpen" @click="modalOpen = false" class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
+            <div x-show="modalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
 
             {{-- Panel --}}
-            <div x-show="modalOpen" @click.away="modalOpen = false"
+            <div x-show="modalOpen" 
                 class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
                 {{-- Header --}}
                 <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="isEditing ? 'bg-blue-100' : 'bg-blue-100'">
-                            <svg x-show="!isEditing" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
+                            <i class="fa-solid fa-plus"></i>
                             <svg x-show="isEditing" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
@@ -163,9 +155,7 @@
                         </div>
                     </div>
                     <button @click="modalOpen = false" class="text-gray-400 hover:text-gray-600 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 

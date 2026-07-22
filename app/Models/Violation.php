@@ -16,7 +16,7 @@ class Violation extends Model
         'description', 'points', 'sanction', 'location',
         'violation_date', 'violation_time',
         'is_verified', 'verified_by', 'verified_at',
-        'notes',
+        'notes', 'handling_status', 'handled_at', 'handled_by',
     ];
 
     protected function casts(): array
@@ -53,5 +53,30 @@ class Violation extends Model
     public function evidences(): HasMany
     {
         return $this->hasMany(ViolationEvidence::class);
+    }
+
+    public function handlings(): HasMany
+    {
+        return $this->hasMany(ViolationHandling::class);
+    }
+
+    public function handler(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'handled_by');
+    }
+
+    public function isUnhandled(): bool
+    {
+        return $this->handling_status === 'unhandled';
+    }
+
+    public function isInProgress(): bool
+    {
+        return $this->handling_status === 'in_progress';
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->handling_status === 'resolved';
     }
 }

@@ -115,7 +115,7 @@
                                     </button>
                                     @if($user->id !== auth()->id())
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
-                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus user ini?'})) $el.submit()"">
+                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus user ini?'})) $el.submit()">
                                         @csrf @method('DELETE')
                                         <button type="submit"
                                             class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
@@ -151,8 +151,8 @@
     {{-- Modal --}}
     <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div @click="modalOpen = false" class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
-            <div @click.away="modalOpen = false"
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
+            <div 
                 class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center space-x-3">

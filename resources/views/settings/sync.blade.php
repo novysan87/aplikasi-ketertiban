@@ -22,9 +22,7 @@
                 @error('base_url') <p class="mt-1 text-sm text-blue-600">{{ $message }}</p> @enderror
                 @if($baseUrl)
                     <p class="mt-1.5 text-xs text-green-600 flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
+                        <i class="fa-solid fa-check"></i>
                         URL tersimpan: {{ $baseUrl }}
                     </p>
                 @endif
@@ -49,9 +47,7 @@
                 @error('token') <p class="mt-1 text-sm text-blue-600">{{ $message }}</p> @enderror
                 @if($hasToken)
                     <p class="mt-1.5 text-xs text-green-600 flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
+                        <i class="fa-solid fa-check"></i>
                         Token sudah tersimpan. Klik <strong>"Ganti"</strong> untuk memperbarui.
                     </p>
                 @else
@@ -63,9 +59,7 @@
             @if($studentCount > 0)
                 <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                     <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <i class="fa-solid fa-circle-info"></i>
                         <div class="text-sm text-blue-700">
                             <strong>{{ $studentCount }}</strong> siswa sudah tersinkron. Sinkronisasi ulang akan memperbarui data yang sudah ada.
                         </div>
@@ -76,9 +70,7 @@
             {{-- Tombol --}}
             <button type="submit"
                 class="w-full px-4 py-3 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm flex items-center justify-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                </svg>
+                <i class="fa-solid fa-rotate"></i>
                 <span>Jalankan Sinkronisasi</span>
             </button>
         </form>

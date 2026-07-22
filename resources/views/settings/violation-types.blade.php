@@ -3,52 +3,49 @@
 @section('title', 'Jenis Pelanggaran')
 
 @section('content')
-<div x-data="violationTypeManager()" x-init="showImport = false">
+<div x-data="violationTypeManager()">
     {{-- Header --}}
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Jenis Pelanggaran</h1>
             <p class="text-sm text-gray-500 mt-1">Daftar jenis pelanggaran beserta poin dan sanksi default</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('settings.import.template') }}"
-                class="inline-flex items-center px-3.5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-                Download Template
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+                <i class="fa-solid fa-file-import text-xs"></i>
+                <span class="hidden sm:inline">Download Template</span>
             </a>
-            <button @click="showImport = true"
-                class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L5 8m4-4v12"/>
-                </svg>
-                Import Excel
+            <a href="{{ route('settings.export.violation-types') }}"
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+                <i class="fa-solid fa-file-export text-xs"></i>
+                <span class="hidden sm:inline">Export Excel</span>
+            </a>
+            <button onclick="document.getElementById('import-modal').style.display='flex'"
+                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                <i class="fa-solid fa-download text-xs"></i>
+                <span>Import Excel</span>
             </button>
             <button @click="openCreate()"
-                class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Tambah Jenis
+                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Tambah Jenis</span>
             </button>
         </div>
     </div>
 
-    {{-- Filter & Search Bar --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-        <form method="GET" class="p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {{-- Filter & Search --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+        <form method="GET" class="p-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="relative">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari jenis pelanggaran..."
-                        class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
                 <select name="category_id"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" @selected(request('category_id') == $cat->id)>
@@ -56,15 +53,15 @@
                         </option>
                     @endforeach
                 </select>
-                <div class="flex space-x-2">
+                <div class="flex items-center gap-2">
                     <button type="submit"
-                        class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition">
-                        Filter
+                        class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
+                        <i class="fa-solid fa-filter mr-1.5"></i>Filter
                     </button>
                     @if(request()->anyFilled(['search','category_id']))
                         <a href="{{ route('settings.violation-types') }}"
-                            class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition">
-                            Reset
+                            class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            <i class="fa-solid fa-xmark mr-1"></i>Reset
                         </a>
                     @endif
                 </div>
@@ -73,76 +70,68 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-100">
                 <thead>
-                    <tr class="bg-gray-50">
-                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategori</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Pelanggaran</th>
-                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Poin</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Sanksi Default</th>
-                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                    <tr class="bg-gray-50/80">
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Kategori</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Nama Pelanggaran</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Poin</th>
+                        <th class="px-5 py-3.5 text-left hidden lg:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Sanksi Default</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                        <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-50">
                     @forelse($types as $type)
-                        <tr class="hover:bg-gray-50 transition {{ !$type->is_active ? 'opacity-60' : '' }}">
-                            {{-- Kategori --}}
+                        <tr class="hover:bg-gray-50/50 transition {{ !$type->is_active ? 'opacity-50' : '' }}">
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="flex items-center space-x-2.5">
-                                    <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ $type->category?->color ?? '#6b7280' }}"></span>
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: {{ $type->category?->color ?? '#6b7280' }}"></span>
                                     <span class="text-sm font-medium" style="color: {{ $type->category?->color ?? '#6b7280' }}">
                                         {{ $type->category?->name ?? '-' }}
                                     </span>
                                 </div>
                             </td>
-                            {{-- Nama --}}
                             <td class="px-5 py-4">
-                                <div class="text-sm font-medium text-gray-900 {{ !$type->is_active ? 'line-through' : '' }}">
+                                <span class="text-sm font-medium text-gray-900 {{ !$type->is_active ? 'line-through text-gray-400' : '' }}">
                                     {{ $type->name }}
-                                </div>
+                                </span>
                             </td>
-                            {{-- Poin --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-1 text-sm font-bold rounded-lg 
-                                    @if($type->points >= 50) bg-blue-100 text-red-700
-                                    @elseif($type->points >= 15) bg-yellow-100 text-yellow-700
-                                    @else bg-green-100 text-green-700
+                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg
+                                    @if($type->points >= 50) bg-red-50 text-red-700
+                                    @elseif($type->points >= 15) bg-yellow-50 text-yellow-700
+                                    @else bg-green-50 text-green-700
                                     @endif">
                                     +{{ $type->points }}
                                 </span>
                             </td>
-                            {{-- Sanksi --}}
-                            <td class="px-5 py-4">
-                                <span class="text-sm text-gray-600 {{ !$type->is_active ? 'line-through' : '' }}">
-                                    {{ $type->default_sanction ?: '-' }}
+                            <td class="px-5 py-4 hidden lg:table-cell">
+                                <span class="text-sm text-gray-500 {{ !$type->is_active ? 'line-through' : '' }}">
+                                    {{ $type->default_sanction ?: '—' }}
                                 </span>
                             </td>
-                            {{-- Status --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap">
                                 @if($type->is_active)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full">
-                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                                         Aktif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-500 rounded-full">
-                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200 rounded-full">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
                                         Nonaktif
                                     </span>
                                 @endif
                             </td>
-                            {{-- Aksi --}}
                             <td class="px-5 py-4 text-right whitespace-nowrap">
-                                <div class="flex items-center justify-end space-x-2">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <button @click="openEdit({{ $type->id }}, {{ $type->category_id }}, '{{ addslashes($type->name) }}', {{ $type->points }}, '{{ addslashes($type->default_sanction ?? '') }}', {{ $type->is_active ? 'true' : 'false' }})"
-                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Edit
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="hidden sm:inline">Edit</span>
                                     </button>
                                     @if($type->is_active)
                                         <form action="{{ route('settings.violation-types.update', $type->id) }}" method="POST" class="inline">
@@ -153,8 +142,9 @@
                                             <input type="hidden" name="default_sanction" value="{{ $type->default_sanction }}">
                                             <input type="hidden" name="is_active" value="0">
                                             <button type="submit"
-                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-yellow-600 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition">
-                                                Nonaktifkan
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-yellow-600 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition">
+                                                <i class="fa-solid fa-ban"></i>
+                                                <span class="hidden sm:inline">Nonaktifkan</span>
                                             </button>
                                         </form>
                                     @else
@@ -166,19 +156,18 @@
                                             <input type="hidden" name="default_sanction" value="{{ $type->default_sanction }}">
                                             <input type="hidden" name="is_active" value="1">
                                             <button type="submit"
-                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition">
-                                                Aktifkan
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition">
+                                                <i class="fa-solid fa-check"></i>
+                                                <span class="hidden sm:inline">Aktifkan</span>
                                             </button>
                                         </form>
                                     @endif
                                     <form action="{{ route('settings.violation-types.destroy', $type->id) }}" method="POST" class="inline"
-                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus jenis pelanggaran ini?'})) $el.submit()"">
+                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus jenis pelanggaran ini?'})) $el.submit()">
                                         @csrf @method('DELETE')
                                         <button type="submit"
-                                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-red-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
+                                            class="inline-flex items-center justify-center w-8 h-8 text-xs font-medium text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -186,12 +175,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-16 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                                </svg>
-                                <p class="text-sm text-gray-500 mb-1">Tidak ada jenis pelanggaran ditemukan</p>
-                                <p class="text-xs text-gray-400">Coba ubah filter atau tambah jenis pelanggaran baru</p>
+                            <td colspan="6" class="px-5 py-20 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+                                        <i class="fa-solid fa-list text-gray-300 text-xl"></i>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500 mb-1">Tidak ada jenis pelanggaran</p>
+                                    <p class="text-xs text-gray-400">Coba ubah filter atau tambah jenis pelanggaran baru</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -199,47 +190,39 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         @if($types->hasPages())
-            <div class="px-5 py-3 border-t border-gray-100 bg-gray-50">
+            <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50">
                 {{ $types->appends(request()->query())->links() }}
             </div>
         @endif
 
-        {{-- Summary --}}
-        <div class="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs text-gray-500">
+        <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-400">
             <span>Menampilkan {{ $types->firstItem() ?? 0 }}–{{ $types->lastItem() ?? 0 }} dari {{ $types->total() }} jenis</span>
             <span class="font-medium">{{ $types->total() }} total</span>
         </div>
     </div>
 
-    {{-- Modal Tambah / Edit --}}
+    {{-- ===== CRUD MODAL ===== --}}
     <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div x-show="modalOpen" @click="modalOpen = false" class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
+            <div x-show="modalOpen" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
 
-            <div x-show="modalOpen" @click.away="modalOpen = false"
+            <div x-show="modalOpen"
                 class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-xl sm:w-full">
                 {{-- Header --}}
-                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="isEditing ? 'bg-blue-100' : 'bg-blue-100'">
-                            <svg x-show="!isEditing" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            <svg x-show="isEditing" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                            <i x-show="!isEditing" class="fa-solid fa-plus text-blue-600"></i>
+                            <i x-show="isEditing" class="fa-solid fa-pen-to-square text-blue-600"></i>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900" x-text="isEditing ? 'Edit Jenis Pelanggaran' : 'Tambah Jenis Pelanggaran'"></h3>
-                            <p class="text-sm text-gray-500" x-text="isEditing ? 'Ubah detail jenis pelanggaran' : 'Buat jenis pelanggaran baru'"></p>
+                            <h3 class="text-base font-semibold text-gray-900" x-text="isEditing ? 'Edit Jenis Pelanggaran' : 'Tambah Jenis Pelanggaran'"></h3>
+                            <p class="text-xs text-gray-400" x-text="isEditing ? 'Ubah detail jenis pelanggaran' : 'Buat jenis pelanggaran baru'"></p>
                         </div>
                     </div>
-                    <button @click="modalOpen = false" class="text-gray-400 hover:text-gray-600 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+                    <button @click="modalOpen = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
@@ -249,46 +232,50 @@
                     @csrf
                     <input type="hidden" name="_method" :value="isEditing ? 'PUT' : 'POST'">
 
-                    {{-- Kategori --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
-                        <select x-model="formCategory" @change="updateCategoryColor(formCategory)" name="category_id" required
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            <option value="">-- Pilih Kategori --</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Nama --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Pelanggaran <span class="text-red-500">*</span></label>
-                        <input type="text" x-model="formName" name="name" required
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                            placeholder="Contoh: Terlambat datang ke sekolah">
-                    </div>
-
-                    {{-- Poin + Sanksi --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {{-- Kategori --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
+                            <select x-model="formCategory" @change="updateCategoryColor(formCategory)" name="category_id" required
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        {{-- Nama --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Pelanggaran <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="formName" name="name" required
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                placeholder="Contoh: Terlambat datang ke sekolah">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {{-- Poin --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Poin <span class="text-red-500">*</span></label>
                             <input type="number" x-model="formPoints" name="points" required min="0" max="500"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <p class="text-xs text-gray-400 mt-1">Poin pelanggaran (1–500)</p>
                         </div>
+                        {{-- Sanksi --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Sanksi Default</label>
                             <input type="text" x-model="formSanction" name="default_sanction"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                                 placeholder="Contoh: Teguran lisan">
+                            <p class="text-xs text-gray-400 mt-1">Sanksi yang muncul saat input pelanggaran</p>
                         </div>
                     </div>
 
                     {{-- Status toggle (edit only) --}}
                     <div x-show="isEditing" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <div>
-                            <p class="text-sm font-medium text-gray-900">Status Aktif</p>
-                            <p class="text-xs text-gray-500">Nonaktifkan untuk menyembunyikan jenis pelanggaran ini</p>
+                            <p class="text-sm font-semibold text-gray-900">Status Aktif</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Nonaktifkan untuk menyembunyikan dari daftar pemilihan</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" x-model="formActive" name="is_active" value="1" class="sr-only peer">
@@ -298,62 +285,51 @@
 
                     {{-- Preview --}}
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-xs font-medium text-gray-500 mb-2">Pratinjau</p>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pratinjau</p>
                         <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
-                            <div class="flex items-center space-x-2.5">
-                                <span class="w-3 h-3 rounded-full flex-shrink-0"
-                                    :style="{ backgroundColor: categoryColor }"></span>
-                                <span class="text-sm font-medium text-gray-900" x-text="formName || 'Nama Pelanggaran'"></span>
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ backgroundColor: categoryColor }"></span>
+                                <span class="text-sm font-medium text-gray-900 truncate" x-text="formName || 'Nama Pelanggaran'"></span>
                             </div>
-                            <span class="text-sm font-bold text-blue-600" x-text="'+' + (formPoints || 0)"></span>
+                            <span class="text-sm font-bold flex-shrink-0 ml-3" :class="formPoints >= 50 ? 'text-red-600' : formPoints >= 15 ? 'text-yellow-600' : 'text-green-600'" x-text="'+' + (formPoints || 0)"></span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1.5" x-text="formSanction ? 'Sanksi: ' + formSanction : ''"></p>
+                        <p class="text-xs text-gray-400 mt-2" x-text="formSanction ? 'Sanksi: ' + formSanction : ''"></p>
                     </div>
 
                     {{-- Buttons --}}
-                    <div class="flex justify-end space-x-3 pt-2">
+                    <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
                         <button type="button" @click="modalOpen = false"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition">
+                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"
-                            class="px-5 py-2.5 text-sm font-medium text-white rounded-xl transition shadow-sm"
-                            :class="isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'"
-                            x-text="isEditing ? 'Simpan Perubahan' : 'Tambah Jenis'">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
+                            <i class="fa-solid" :class="isEditing ? 'fa-floppy-disk' : 'fa-plus'"></i>
+                            <span x-text="isEditing ? 'Simpan Perubahan' : 'Tambah Jenis'"></span>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-    {{-- Import Modal --}}
-    <div x-show="showImport"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm" style="display: none;"
-        @click.away="showImport = false"
-        @keydown.escape="showImport = false">
-        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg mx-4 overflow-hidden"
-            @click.stop>
+    {{-- ===== IMPORT MODAL ===== --}}
+    <div id="import-modal" style="display: none;"
+        class="fixed inset-0 z-50 flex-col items-center justify-center bg-gray-900/40 backdrop-blur-sm"
+        tabindex="0">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg mx-4 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L5 8m4-4v12"/>
-                        </svg>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="fa-solid fa-download text-blue-600"></i>
                     </div>
-                    <h3 class="text-base font-semibold text-gray-900">Import Excel</h3>
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">Import Excel</h3>
+                        <p class="text-xs text-gray-400">Upload file .xlsx jenis pelanggaran</p>
+                    </div>
                 </div>
-                <button @click="showImport = false" class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                <button onclick="document.getElementById('import-modal').style.display='none'" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
@@ -361,11 +337,11 @@
                 @csrf
 
                 <div class="text-sm text-gray-600 mb-4 leading-relaxed">
-                    <p class="mb-2">Upload file Excel (.xlsx) untuk mengimpor jenis pelanggaran secara massal.</p>
+                    <p class="mb-2">Upload file Excel untuk mengimpor jenis pelanggaran secara massal.</p>
                     <p class="text-xs text-gray-400">Format kolom: <strong>Kategori</strong> • <strong>Nama Pelanggaran</strong> • <strong>Poin</strong> • <strong>Sanksi Default</strong> • <strong>Deskripsi</strong></p>
                 </div>
 
-                <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition file-drop"
+                <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition"
                     x-data="{ fileName: '' }"
                     @dragover.prevent="$el.classList.add('border-blue-400', 'bg-blue-50/50')"
                     @dragleave.prevent="$el.classList.remove('border-blue-400', 'bg-blue-50/50')"
@@ -375,18 +351,14 @@
 
                     <template x-if="!fileName">
                         <div class="text-center">
-                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                            </svg>
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-300 mb-3"></i>
                             <p class="text-sm text-gray-500">Klik atau drag & drop file di sini</p>
                             <p class="text-xs text-gray-400 mt-1">.xlsx atau .xls, maks 2 MB</p>
                         </div>
                     </template>
                     <template x-if="fileName">
                         <div class="text-center">
-                            <svg class="w-8 h-8 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
+                            <i class="fa-solid fa-circle-check text-3xl text-green-500 mb-3"></i>
                             <p class="text-sm font-medium text-gray-900" x-text="fileName"></p>
                             <p class="text-xs text-green-600 mt-1">Siap diupload</p>
                         </div>
@@ -394,16 +366,19 @@
                 </label>
 
                 <div class="flex items-center justify-between mt-6">
-                    <a href="{{ route('settings.import.template') }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium transition">
-                        Download template →
+                    <a href="{{ route('settings.import.template') }}"
+                        class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 transition">
+                        <i class="fa-solid fa-file-import"></i>
+                        Download template
                     </a>
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="showImport = false"
+                        <button type="button" onclick="document.getElementById('import-modal').style.display='none'"
                             class="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"
-                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
                             Import
                         </button>
                     </div>

@@ -6,6 +6,7 @@ use App\Models\AppNotification;
 use App\Models\Student;
 use App\Models\Violation;
 use App\Models\SpLetter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,6 +21,9 @@ class DashboardController extends Controller
             'total_violations' => Violation::count(),
             'total_students' => Student::where('is_active', true)->count(),
             'active_sp' => SpLetter::where('status', 'draft')->count(),
+            'unhandled_violations' => Violation::where('handling_status', 'unhandled')->count(),
+            'in_progress_violations' => Violation::where('handling_status', 'in_progress')->count(),
+            'resolved_violations' => Violation::where('handling_status', 'resolved')->count(),
         ];
 
         $recentViolations = Violation::with(['student', 'violationType.category', 'recorder'])
@@ -49,10 +53,31 @@ class DashboardController extends Controller
 
         $spThresholds = \App\Models\SpThreshold::where('is_active', true)->get();
 
+        // Data untuk calendar: pelanggaran per tanggal di bulan ini
+        $calendarData = Violation::selectRaw('DATE(violation_date) as date, COUNT(*) as count')
+            ->whereMonth('violation_date', now()->month)
+            ->whereYear('violation_date', now()->year)
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
         return view('dashboard.index', compact(
             'stats', 'recentViolations', 'topStudents',
-            'unreadNotifications', 'notificationCount', 'spThresholds'
+            'unreadNotifications', 'notificationCount', 'spThresholds', 'calendarData'
         ));
+    }
+
+    public function getCalendarData(Request $request): JsonResponse
+    {
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+
+        $data = Violation::selectRaw('DATE(violation_date) as date, COUNT(*) as count')
+            ->whereYear('violation_date', $year)
+            ->whereMonth('violation_date', $month)
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        return response()->json($data);
     }
 
     public function markNotificationRead(Request $request, $id)

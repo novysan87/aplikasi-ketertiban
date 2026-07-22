@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     // Notifications
     Route::get('/notifications/unread-count', [DashboardController::class, 'getUnreadCount'])->name('notifications.unread-count');
+    Route::get('/calendar/data', [DashboardController::class, 'getCalendarData'])->name('calendar.data');
     Route::get('/notifications/recent', [DashboardController::class, 'getRecentNotifications'])->name('notifications.recent');
     Route::post('/notifications/{id}/read', [DashboardController::class, 'markNotificationRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [DashboardController::class, 'markAllNotificationsRead'])->name('notifications.read-all');
@@ -40,11 +41,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/violations/{violation}', [ViolationController::class, 'show'])->name('violations.show');
     Route::post('/violations/{violation}/verify', [ViolationController::class, 'verify'])->name('violations.verify');
     Route::delete('/violations/{violation}', [ViolationController::class, 'destroy'])->name('violations.destroy');
+    Route::post('/violations/{violation}/handling', [ViolationController::class, 'storeHandling'])->name('violations.handling.store');
+    Route::post('/violations/{violation}/resolve', [ViolationController::class, 'resolveHandling'])->name('violations.resolve');
+    Route::delete('/violations/{violation}/handling/{handling}', [ViolationController::class, 'destroyHandling'])->name('violations.handling.destroy');
     Route::get('/api/students/search', [ViolationController::class, 'searchStudents'])->name('api.students.search');
 
     // Students
     Route::get('/students', [StudentReportController::class, 'index'])->name('students.index');
     Route::get('/students/{student}', [StudentReportController::class, 'show'])->name('students.show');
+    Route::put('/students/{student}', [StudentReportController::class, 'update'])->name('students.update');
 
     // SP Letters
     Route::get('/sp-letters', [SpLetterController::class, 'index'])->name('sp-letters.index');
@@ -68,6 +73,7 @@ Route::middleware('auth')->group(function () {
 
     // Import
     Route::get('/settings/import/template', [ImportController::class, 'downloadTemplate'])->name('settings.import.template');
+    Route::get('/settings/export/violation-types', [ImportController::class, 'exportViolationTypes'])->name('settings.export.violation-types');
     Route::post('/settings/import/violation-types', [ImportController::class, 'importViolationTypes'])->name('settings.import.violation-types');
 
     Route::get('/settings/thresholds', [MasterDataController::class, 'thresholds'])->name('settings.thresholds');

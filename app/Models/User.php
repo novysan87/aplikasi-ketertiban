@@ -38,4 +38,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AppNotification::class, 'user_id');
     }
+
+    public function handlingParticipants()
+    {
+        return $this->hasMany(HandlingParticipant::class);
+    }
+
+    public function createdHandlings()
+    {
+        return $this->hasMany(ViolationHandling::class, 'created_by');
+    }
 }

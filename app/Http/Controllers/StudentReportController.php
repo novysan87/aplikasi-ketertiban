@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use Illuminate\Http\RedirectResponse;
 use App\Models\SpLetter;
 use App\Models\SpThreshold;
 use App\Models\Violation;
@@ -87,5 +88,29 @@ class StudentReportController extends Controller
             'student', 'totalPoints', 'violationCount', 'lastViolation',
             'spThresholds', 'currentSpLevel', 'nextSpThreshold', 'activeSpLetters'
         ));
+    }
+
+    public function update(Request $request, Student $student): RedirectResponse
+    {
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'nisn' => ['nullable', 'string', 'max:50'],
+            'student_number' => ['nullable', 'string', 'max:50'],
+            'gender' => ['nullable', 'in:L,P'],
+            'place_of_birth' => ['nullable', 'string', 'max:255'],
+            'date_of_birth' => ['nullable', 'date'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'phone_number' => ['nullable', 'string', 'max:30'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
+            'class_name' => ['nullable', 'string', 'max:100'],
+            'class_level' => ['nullable', 'string', 'max:20'],
+            'department_code' => ['nullable', 'string', 'max:20'],
+            'department_name' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $student->update($validated);
+
+        return redirect()->route('students.show', $student->id)
+            ->with('success', 'Data siswa berhasil diperbarui.');
     }
 }

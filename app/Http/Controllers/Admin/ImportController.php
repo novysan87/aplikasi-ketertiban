@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class ImportController extends Controller
 {
@@ -63,6 +64,68 @@ class ImportController extends Controller
         return response()->streamDownload(function () use ($writer) {
             $writer->save('php://output');
         }, 'template-jenis-pelanggaran.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function exportViolationTypes()
+    {
+        $types = ViolationType::with('category')->orderBy('category_id')->orderBy('name')->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Jenis Pelanggaran');
+
+        // Header styling
+        $headerStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '2563EB'],
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'BFDBFE']],
+            ],
+        ];
+
+        // Headers
+        $headers = ['No', 'Kategori', 'Nama Pelanggaran', 'Poin', 'Sanksi Default', 'Deskripsi', 'Status'];
+        foreach (range('A', 'G') as $i => $col) {
+            $sheet->setCellValue($col . '1', $headers[$i]);
+        }
+        $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
+
+        // Data
+        $row = 2;
+        foreach ($types as $i => $type) {
+            $sheet->setCellValue('A' . $row, $i + 1);
+            $sheet->setCellValue('B' . $row, $type->category?->name ?? '-');
+            $sheet->setCellValue('C' . $row, $type->name);
+            $sheet->setCellValue('D' . $row, $type->points);
+            $sheet->setCellValue('E' . $row, $type->default_sanction ?? '');
+            $sheet->setCellValue('F' . $row, $type->description ?? '');
+            $sheet->setCellValue('G' . $row, $type->is_active ? 'Aktif' : 'Nonaktif');
+
+            // Zebra striping
+            if ($i % 2 === 0) {
+                $sheet->getStyle('A' . $row . ':G' . $row)
+                    ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('FFF0F5FF');
+            }
+
+            $row++;
+        }
+
+        // Autofit
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, 'jenis-pelanggaran.xlsx', [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }

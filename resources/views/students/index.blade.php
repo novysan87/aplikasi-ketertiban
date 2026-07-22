@@ -5,15 +5,16 @@
 @section('content')
 <div>
     {{-- Header --}}
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Data Siswa</h1>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Data Siswa</h1>
             <p class="text-sm text-gray-500 mt-1">Daftar siswa aktif — sinkron dari Database Kesiswaan</p>
         </div>
-        <div class="flex items-center space-x-2 text-sm">
-            <span class="text-gray-500">{{ $students->total() }} siswa</span>
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500 font-medium">{{ $students->total() }} siswa</span>
             @if(request()->anyFilled(['search','class_level','class_name','department']))
-                <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-blue-100 text-red-700 rounded-full">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
+                    <i class="fa-solid fa-filter text-xs"></i>
                     {{ $students->total() }} ditemukan
                 </span>
             @endif
@@ -21,28 +22,23 @@
     </div>
 
     {{-- Filter Card --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
         <form method="GET">
             <div class="p-5 space-y-4">
-                {{-- Baris 1: Search --}}
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1.5">Pencarian</label>
-                    <div class="relative">
-                        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari NISN, NIS, atau Nama siswa..."
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                    </div>
+                {{-- Search --}}
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari NISN, NIS, atau Nama siswa..."
+                        class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
 
-                {{-- Baris 2: Dropdown --}}
+                {{-- Dropdowns --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1.5">Tingkat Kelas</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tingkat Kelas</label>
                         <select name="class_level"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Tingkat</option>
                             @foreach($classLevels as $level)
                                 <option value="{{ $level }}" @selected(request('class_level') == $level)>Kelas {{ $level }}</option>
@@ -50,9 +46,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1.5">Kelas</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Kelas</label>
                         <select name="class_name"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Kelas</option>
                             @foreach($classNames as $cn)
                                 <option value="{{ $cn }}" @selected(request('class_name') == $cn)>{{ $cn }}</option>
@@ -60,30 +56,26 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1.5">Jurusan</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Jurusan</label>
                         <select name="department"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Jurusan</option>
                             @foreach($departments as $code => $name)
                                 <option value="{{ $code }}" @selected(request('department') == $code)>{{ $name }} ({{ $code }})</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex items-end space-x-2">
+                    <div class="flex items-end gap-2">
                         <button type="submit"
-                            class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm flex items-center justify-center space-x-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            <span>Cari</span>
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm inline-flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            Cari
                         </button>
                         @if(request()->anyFilled(['search','class_level','class_name','department']))
                             <a href="{{ route('students.index') }}"
-                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center space-x-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                                <span>Reset</span>
+                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-1.5">
+                                <i class="fa-solid fa-xmark"></i>
+                                Reset
                             </a>
                         @endif
                     </div>
@@ -93,64 +85,92 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">NISN</th>
-                        <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama</th>
-                        <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kelas</th>
-                        <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jurusan</th>
-                        <th class="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Pelanggaran</th>
-                        <th class="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Poin</th>
-                        <th class="px-4 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+            <table class="min-w-full divide-y divide-gray-100">
+                <thead>
+                    <tr class="bg-gray-50/80">
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Siswa</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">NISN</th>
+                        <th class="px-5 py-3.5 text-left hidden sm:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Kelas</th>
+                        <th class="px-5 py-3.5 text-left hidden lg:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Jurusan</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Pelanggaran</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Poin</th>
+                        <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-50">
                     @forelse($students as $s)
                         @php $pts = $s->total_points; @endphp
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-3.5 whitespace-nowrap text-sm font-mono text-gray-700">{{ $s->nisn }}</td>
-                            <td class="px-4 py-3.5">
-                                <div class="text-sm font-medium text-gray-900">{{ $s->full_name }}</div>
+                        <tr class="hover:bg-gray-50/50 transition">
+                            {{-- Siswa --}}
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0">
+                                        {{ strtoupper(substr($s->full_name, 0, 1)) }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{{ $s->full_name }}</p>
+                                        <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                                            <span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-gray-100 text-gray-500 rounded-md">{{ $s->nisn ?? '—' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-4 py-3.5 whitespace-nowrap text-sm text-gray-700">{{ $s->class_name ?? '-' }}</td>
-                            <td class="px-4 py-3.5 text-sm text-gray-500">{{ $s->department_code ?? '-' }}</td>
-                            <td class="px-4 py-3.5 text-center text-sm text-gray-700">
-                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                            {{-- NISN --}}
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="text-sm font-mono text-gray-700">{{ $s->nisn ?? '—' }}</span>
+                            </td>
+                            {{-- Kelas --}}
+                            <td class="px-5 py-4 whitespace-nowrap hidden sm:table-cell">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full border border-blue-200">
+                                    <i class="fa-solid fa-building text-[10px]"></i>
+                                    {{ $s->class_name ?? '—' }}
+                                </span>
+                            </td>
+                            {{-- Jurusan --}}
+                            <td class="px-5 py-4 hidden lg:table-cell">
+                                <span class="text-sm text-gray-500">{{ $s->department_code ?? '—' }}</span>
+                            </td>
+                            {{-- Pelanggaran --}}
+                            <td class="px-5 py-4 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full
+                                    {{ ($s->violations_count ?? 0) > 0 ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-gray-50 text-gray-400 border border-gray-200' }}">
+                                    <i class="fa-solid {{ ($s->violations_count ?? 0) > 0 ? 'fa-exclamation' : 'fa-check' }} text-[10px]"></i>
                                     {{ $s->violations_count ?? 0 }}x
                                 </span>
                             </td>
-                            <td class="px-4 py-3.5 text-center">
+                            {{-- Total Poin --}}
+                            <td class="px-5 py-4 text-center whitespace-nowrap">
                                 @if($pts >= 100)
-                                    <span class="inline-flex px-3 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800">{{ $pts }}</span>
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold bg-red-50 text-red-700 rounded-full">{{ $pts }}</span>
                                 @elseif($pts >= 50)
-                                    <span class="inline-flex px-3 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">{{ $pts }}</span>
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold bg-yellow-50 text-yellow-700 rounded-full">{{ $pts }}</span>
                                 @elseif($pts > 0)
-                                    <span class="inline-flex px-3 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-700">{{ $pts }}</span>
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold bg-orange-50 text-orange-600 rounded-full">{{ $pts }}</span>
                                 @else
-                                    <span class="inline-flex px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">0</span>
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 text-xs bg-green-50 text-green-600 rounded-full">0</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3.5 text-right">
+                            {{-- Aksi --}}
+                            <td class="px-5 py-4 text-right whitespace-nowrap">
                                 <a href="{{ route('students.show', $s->id) }}"
-                                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 bg-red-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                                    <i class="fa-solid fa-eye"></i>
                                     Detail
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-16 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zM6 10h.01M18 10h.01"/>
-                                </svg>
-                                <p class="text-sm text-gray-500 mb-1">Tidak ada siswa ditemukan</p>
-                                <p class="text-xs text-gray-400">Coba ubah filter pencarian atau lakukan sinkronisasi data</p>
+                            <td colspan="7" class="px-5 py-20 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+                                        <i class="fa-solid fa-users-slash text-gray-300 text-xl"></i>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500 mb-1">Tidak ada siswa ditemukan</p>
+                                    <p class="text-xs text-gray-400">Coba ubah filter atau lakukan sinkronisasi data</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -158,13 +178,15 @@
             </table>
         </div>
 
+        {{-- Pagination --}}
         @if($students->hasPages())
-            <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+            <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50">
                 {{ $students->appends(request()->query())->links() }}
             </div>
         @endif
 
-        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs text-gray-500">
+        {{-- Summary --}}
+        <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-400">
             <span>Menampilkan {{ $students->firstItem() ?? 0 }}–{{ $students->lastItem() ?? 0 }} dari {{ $students->total() }} siswa</span>
             <span class="font-medium">{{ $students->total() }} total</span>
         </div>

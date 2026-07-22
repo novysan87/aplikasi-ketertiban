@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Violation;
+use App\Models\ViolationHandling;
 use App\Models\ViolationType;
 use App\Models\AppNotification;
+use App\Models\HandlingParticipant;
 use App\Services\ViolationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,6 +52,10 @@ class ViolationController extends Controller
 
         if ($request->filled('date_to')) {
             $query->whereDate('violation_date', '<=', $request->date_to);
+        }
+
+        if ($request->filled('handling_status')) {
+            $query->where('handling_status', $request->handling_status);
         }
 
         $violations = $query->latest()->paginate(20);
@@ -108,9 +114,87 @@ class ViolationController extends Controller
 
     public function show(Violation $violation): View
     {
-        $violation->load(['student', 'violationType.category', 'recorder', 'evidences']);
+        $violation->load([
+            'student', 'violationType.category', 'recorder', 'evidences',
+            'handlings.participants.user', 'handlings.creator',
+        ]);
 
-        return view('violations.show', compact('violation'));
+        $users = \App\Models\User::where('is_active', true)->orderBy('name')->get();
+
+        return view('violations.show', compact('violation', 'users'));
+    }
+
+    public function storeHandling(Request $request, Violation $violation): RedirectResponse
+    {
+        $validated = $request->validate([
+            'handling_type' => ['required', 'string', 'max:50'],
+            'handling_date' => ['required', 'date'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'evidence' => ['nullable', 'file', 'mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx', 'max:10240'],
+            'participants' => ['nullable', 'array', 'max:20'],
+            'participants.*.user_id' => ['required_with:participants', 'exists:users,id'],
+            'participants.*.role' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $evidencePath = null;
+        if ($request->hasFile('evidence')) {
+            $evidencePath = $request->file('evidence')->store('handling-evidence', 'public');
+        }
+
+        $handling = ViolationHandling::create([
+            'violation_id' => $violation->id,
+            'handling_type' => $validated['handling_type'],
+            'handling_date' => $validated['handling_date'],
+            'description' => $validated['description'] ?? null,
+            'location' => $validated['location'] ?? null,
+            'evidence' => $evidencePath,
+            'created_by' => $request->user()->id,
+        ]);
+
+        // Add participants
+        if (!empty($validated['participants'])) {
+            foreach ($validated['participants'] as $p) {
+                HandlingParticipant::create([
+                    'handling_id' => $handling->id,
+                    'user_id' => $p['user_id'],
+                    'role' => $p['role'] ?? null,
+                ]);
+            }
+        }
+
+        // Update violation status
+        if ($violation->isUnhandled()) {
+            $violation->update(['handling_status' => 'in_progress']);
+        }
+
+        return redirect()->route('violations.show', $violation->id)
+            ->with('success', 'Penanganan berhasil ditambahkan.');
+    }
+
+    public function resolveHandling(Request $request, Violation $violation): RedirectResponse
+    {
+        $violation->update([
+            'handling_status' => 'resolved',
+            'handled_at' => now(),
+            'handled_by' => $request->user()->id,
+        ]);
+
+        return redirect()->route('violations.show', $violation->id)
+            ->with('success', 'Pelanggaran ditandai selesai ditangani.');
+    }
+
+    public function destroyHandling(Violation $violation, ViolationHandling $handling): RedirectResponse
+    {
+        $handling->delete();
+
+        // If no more handlings, revert to unhandled
+        if ($violation->handlings()->count() === 0) {
+            $violation->update(['handling_status' => 'unhandled']);
+        }
+
+        return redirect()->route('violations.show', $violation->id)
+            ->with('success', 'Catatan penanganan berhasil dihapus.');
     }
 
     public function verify(Request $request, Violation $violation): RedirectResponse
