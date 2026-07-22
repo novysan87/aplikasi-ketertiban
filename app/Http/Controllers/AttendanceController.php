@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Student;
 use App\Models\ViolationType;
 use App\Services\ViolationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -46,16 +47,33 @@ class AttendanceController extends Controller
             ->distinct('student_id')
             ->count('student_id');
 
-        $recentDates = \App\Models\Attendance::select('date')
-            ->distinct()
-            ->orderByDesc('date')
-            ->take(10)
-            ->get();
+        // Calendar data for initial month
+        $calendarStart = now()->startOfMonth()->toDateString();
+        $calendarEnd = now()->endOfMonth()->toDateString();
+
+        $totalRows = \App\Models\Attendance::selectRaw('date, COUNT(DISTINCT student_id) as total')
+            ->whereBetween('date', [$calendarStart, $calendarEnd])
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $alphaRows = \App\Models\Attendance::selectRaw('date, COUNT(DISTINCT student_id) as alpha')
+            ->whereBetween('date', [$calendarStart, $calendarEnd])
+            ->where('status', 'alpha')
+            ->groupBy('date')
+            ->pluck('alpha', 'date');
+
+        $calendarData = [];
+        foreach ($totalRows as $date => $total) {
+            $calendarData[$date] = [
+                'total' => $total,
+                'alpha' => $alphaRows[$date] ?? 0,
+            ];
+        }
 
         return view('attendances.index', compact(
             'todayStudents', 'todayAlphaStudents',
             'monthStudents', 'monthAlphaStudents',
-            'recentDates'
+            'calendarData'
         ));
     }
 
@@ -237,4 +255,38 @@ class AttendanceController extends Controller
 
         return view('attendances.recap', compact('recap', 'month', 'year', 'className', 'classNames'));
     }
+
+    public function calendarData(Request $request): JsonResponse
+    {
+        $year = (int) $request->input('year', now()->year);
+        $month = (int) $request->input('month', now()->month);
+        $daysInMonth = now()->setDate($year, $month, 1)->daysInMonth;
+
+        $dateFrom = sprintf('%04d-%02d-01', $year, $month);
+        $dateTo = sprintf('%04d-%02d-%02d', $year, $month, $daysInMonth);
+
+        // Total unique students per date
+        $totalRows = Attendance::selectRaw('date, COUNT(DISTINCT student_id) as total')
+            ->whereBetween('date', [$dateFrom, $dateTo])
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        // Alpha unique students per date
+        $alphaRows = Attendance::selectRaw('date, COUNT(DISTINCT student_id) as alpha')
+            ->whereBetween('date', [$dateFrom, $dateTo])
+            ->where('status', 'alpha')
+            ->groupBy('date')
+            ->pluck('alpha', 'date');
+
+        $result = [];
+        foreach ($totalRows as $date => $total) {
+            $result[$date] = [
+                'total' => $total,
+                'alpha' => $alphaRows[$date] ?? 0,
+            ];
+        }
+
+        return response()->json($result);
+    }
+
 }

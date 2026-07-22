@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendances/create', [\App\Http\Controllers\AttendanceController::class, 'create'])->name('attendances.create');
     Route::post('/attendances', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendances.store');
     Route::get('/attendances/recap', [\App\Http\Controllers\AttendanceController::class, 'recap'])->name('attendances.recap');
+    Route::get('/attendances/calendar-data', [\App\Http\Controllers\AttendanceController::class, 'calendarData'])->name('attendances.calendar-data');
 
     Route::get('/notifications/recent', [DashboardController::class, 'getRecentNotifications'])->name('notifications.recent');
     Route::post('/notifications/{id}/read', [DashboardController::class, 'markNotificationRead'])->name('notifications.read');
