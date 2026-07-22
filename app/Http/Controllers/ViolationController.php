@@ -89,7 +89,8 @@ class ViolationController extends Controller
     {
         $validated = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
-            'violation_type_id' => ['required', 'exists:violation_types,id'],
+            'violation_type_ids' => ['required', 'array', 'min:1', 'max:10'],
+            'violation_type_ids.*' => ['required', 'exists:violation_types,id'],
             'description' => ['nullable', 'string', 'max:1000'],
             'location' => ['nullable', 'string', 'max:255'],
             'violation_date' => ['required', 'date'],
@@ -97,19 +98,27 @@ class ViolationController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
             'evidences' => ['nullable', 'array', 'max:5'],
             'evidences.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-            'sanction' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $violationType = ViolationType::findOrFail($validated['violation_type_id']);
-        $validated['points'] = $violationType->points;
-        $validated['sanction'] = $validated['sanction'] ?? $violationType->default_sanction;
+        $evidences = $request->file('evidences') ?? [];
+        $created = 0;
 
-        //$this->violationService->recordViolation($validated, $request->user()->id);
-         $data = $validated;
-  $data['evidences'] = $request->file('evidences') ?? [];
-  $this->violationService->recordViolation($data, $request->user()->id);
+        foreach ($validated['violation_type_ids'] as $typeId) {
+            $type = ViolationType::findOrFail($typeId);
+
+            $data = array_merge($validated, [
+                'violation_type_id' => $typeId,
+                'points' => $type->points,
+                'sanction' => $type->default_sanction,
+                'evidences' => $evidences,
+            ]);
+
+            $this->violationService->recordViolation($data, $request->user()->id);
+            $created++;
+        }
+
         return redirect()->route('violations.index')
-            ->with('success', 'Pelanggaran berhasil dicatat.');
+            ->with('success', "{$created} pelanggaran berhasil dicatat.");
     }
 
     public function show(Violation $violation): View

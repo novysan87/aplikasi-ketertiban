@@ -10,11 +10,18 @@
             <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Data Pelanggaran</h1>
             <p class="text-sm text-gray-500 mt-1">Riwayat pelanggaran siswa</p>
         </div>
-        <a href="{{ route('violations.create') }}"
-            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
-            <i class="fa-solid fa-plus text-xs"></i>
-            Input Pelanggaran
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('violations.create') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
+                <i class="fa-solid fa-plus text-xs"></i>
+                Input Pelanggaran
+            </a>
+            <a href="{{ route('violations.export', request()->only(['date_from', 'date_to'])) }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition shadow-sm">
+                <i class="fa-solid fa-file-excel text-xs"></i>
+                <span class="hidden sm:inline">Export Excel</span>
+            </a>
+        </div>
     </div>
 
     {{-- Filter Card --}}

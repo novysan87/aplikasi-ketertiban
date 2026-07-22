@@ -205,73 +205,128 @@
         </div>
 
         @forelse($student->violations as $v)
+            @php
+                $handleStatusLabels = [
+                    'unhandled' => ['label' => 'Belum Ditangani', 'class' => 'bg-red-50 text-red-600 border-red-200'],
+                    'in_progress' => ['label' => 'Dalam Proses', 'class' => 'bg-yellow-50 text-yellow-600 border-yellow-200'],
+                    'resolved' => ['label' => 'Selesai', 'class' => 'bg-green-50 text-green-600 border-green-200'],
+                ];
+                $hs = $handleStatusLabels[$v->handling_status] ?? ['label' => $v->handling_status, 'class' => 'bg-gray-50 text-gray-600'];
+            @endphp
             <div class="violation-timeline relative pl-[52px] pr-6 py-4 {{ !$loop->last ? 'border-b border-gray-50' : '' }} hover:bg-gray-50/50 transition">
+                {{-- Timeline dot --}}
                 <div class="absolute left-[15px] top-[15px] w-[16px] h-[16px] rounded-full border-[3px] bg-white flex items-center justify-center"
                     style="border-color: {{ $v->violationType?->category?->color ?? '#9ca3af' }}">
                     <span class="w-[6px] h-[6px] rounded-full" style="background-color: {{ $v->violationType?->category?->color ?? '#9ca3af' }}"></span>
                 </div>
 
-                <div class="flex items-start justify-between gap-4">
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-sm font-semibold text-gray-900">{{ $v->violationType->name ?? '—' }}</span>
-                            @if($v->is_verified)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-600 rounded-full border border-emerald-200">
-                                    <span class="w-1 h-1 bg-emerald-500 rounded-full"></span>
-                                    Terverifikasi
+                <div class="space-y-2.5">
+                    {{-- Top row: violation name + badges --}}
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-sm font-bold text-gray-900">{{ $v->violationType->name ?? '—' }}</span>
+                                {{-- Verification badge --}}
+                                @if($v->is_verified)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
+                                        <span class="w-1 h-1 bg-emerald-500 rounded-full"></span>
+                                        Terverifikasi
+                                    </span>
+                                @endif
+                                {{-- Handling badge --}}
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border {{ $hs['class'] }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $v->handling_status === 'resolved' ? 'bg-green-500' : ($v->handling_status === 'in_progress' ? 'bg-yellow-500' : 'bg-red-500') }}"></span>
+                                    {{ $hs['label'] }}
                                 </span>
+                            </div>
+                            @if($v->description)
+                                <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ $v->description }}</p>
                             @endif
-                        </div>
-                        @if($v->description)
-                            <p class="text-sm text-gray-500 mt-0.5 line-clamp-2">{{ $v->description }}</p>
-                        @endif
-                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-gray-400">
-                            <span class="inline-flex items-center gap-1">
-                                <i class="fa-solid fa-calendar text-gray-300"></i>
-                                {{ $v->violation_date->format('d M Y') }}
-                                @if($v->violation_time) {{ \Carbon\Carbon::parse($v->violation_time)->format('H:i') }} @endif
-                            </span>
-                            @if($v->location)
-                                <span class="inline-flex items-center gap-1">
-                                    <i class="fa-solid fa-location-dot text-gray-300"></i>
-                                    {{ $v->location }}
-                                </span>
-                            @endif
-                            <span class="inline-flex items-center gap-1">
-                                <i class="fa-solid fa-user-pen text-gray-300"></i>
-                                {{ $v->recorder->name ?? '—' }}
-                            </span>
                         </div>
 
-                        @if($v->evidences && $v->evidences->count() > 0)
-                            <div class="flex gap-2 mt-2.5">
-                                @foreach($v->evidences->take(3) as $ev)
-                                    <a href="{{ Storage::url($ev->file_path) }}" target="_blank"
-                                        class="w-12 h-12 rounded-lg border border-gray-200 overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all">
-                                        <img src="{{ Storage::url($ev->file_path) }}" class="w-full h-full object-cover" alt="Bukti">
-                                    </a>
-                                @endforeach
-                                @if($v->evidences->count() > 3)
-                                    <div class="w-12 h-12 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-[10px] text-gray-400 font-medium">
-                                        +{{ $v->evidences->count() - 3 }}
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
+                        {{-- Poin --}}
+                        <div class="flex flex-col items-center flex-shrink-0 min-w-[72px]">
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-lg shadow-sm
+                                {{ $v->points >= 50 ? 'bg-red-500 text-white' : ($v->points >= 15 ? 'bg-yellow-500 text-white' : 'bg-blue-500 text-white') }}">
+                                +{{ $v->points }}
+                            </span>
+                            @if($v->sanction)
+                                <span class="text-[10px] text-gray-400 leading-tight text-center line-clamp-2 mt-1 max-w-[72px]">{{ $v->sanction }}</span>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="flex flex-col items-center flex-shrink-0 gap-2.5 min-w-[72px]">
-                        <span class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-lg shadow-sm
-                            {{ $v->points >= 50 ? 'bg-red-500 text-white' : ($v->points >= 15 ? 'bg-yellow-500 text-white' : 'bg-blue-500 text-white') }}">
-                            +{{ $v->points }}
+                    {{-- Metadata row --}}
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-regular fa-calendar text-gray-300"></i>
+                            {{ $v->violation_date->format('d M Y') }}
+                            @if($v->violation_time) {{ \Carbon\Carbon::parse($v->violation_time)->format('H:i') }} @endif
                         </span>
-                        @if($v->sanction)
-                            <span class="text-[10px] text-gray-400 leading-tight text-center line-clamp-2 max-w-[72px]">{{ $v->sanction }}</span>
+                        @if($v->location)
+                            <span class="inline-flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot text-gray-300"></i>
+                                {{ $v->location }}
+                            </span>
                         @endif
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-pen text-gray-300"></i>
+                            {{ $v->recorder->name ?? '—' }}
+                        </span>
+                    </div>
+
+                    {{-- Evidence thumbs --}}
+                    @if($v->evidences && $v->evidences->count() > 0)
+                        <div class="flex gap-2">
+                            @foreach($v->evidences->take(3) as $ev)
+                                <a href="{{ Storage::url($ev->file_path) }}" target="_blank"
+                                    class="w-10 h-10 rounded-lg border border-gray-200 overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all flex-shrink-0">
+                                    <img src="{{ Storage::url($ev->file_path) }}" class="w-full h-full object-cover" alt="Bukti">
+                                </a>
+                            @endforeach
+                            @if($v->evidences->count() > 3)
+                                <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-[10px] text-gray-400 font-medium flex-shrink-0">
+                                    +{{ $v->evidences->count() - 3 }}
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- Handlings --}}
+                    @if($v->handlings && $v->handlings->count() > 0)
+                        <div class="ml-0 space-y-1.5">
+                            @foreach($v->handlings as $h)
+                                <div class="inline-flex items-center gap-1.5 bg-white border border-gray-100 rounded-lg px-2.5 py-1.5 shadow-sm">
+                                    <div class="w-5 h-5 rounded bg-gray-50 flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-hand-holding-heart text-[9px] text-amber-500"></i>
+                                    </div>
+                                    <span class="text-[11px] font-medium text-gray-700">{{ $h->handling_type }}</span>
+                                    <span class="text-[10px] text-gray-400">{{ $h->handling_date->format('d/m') }}</span>
+                                    @if($h->participants->count() > 0)
+                                        <span class="w-px h-3 bg-gray-200"></span>
+                                        @foreach($h->participants as $p)
+                                            <span class="inline-flex items-center gap-1 text-[10px] text-gray-500">
+                                                <span class="w-3.5 h-3.5 rounded-full bg-gray-100 flex items-center justify-center">
+                                                    <span class="text-[6px] font-bold text-gray-500">{{ strtoupper(substr($p->user->name ?? '?', 0, 1)) }}</span>
+                                                </span>
+                                                {{ $p->user->name }}
+                                                @if($p->role)
+                                                    <span class="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100">{{ $p->role }}</span>
+                                                @endif
+                                            </span>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Detail link --}}
+                    <div class="flex justify-end">
                         <a href="{{ route('violations.show', $v->id) }}"
-                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all shadow-sm w-full">
-                            Detail
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition shadow-sm">
+                            Detail Pelanggaran
+                            <i class="fa-solid fa-arrow-right text-[9px]"></i>
                         </a>
                     </div>
                 </div>

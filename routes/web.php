@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
     // Import
     Route::get('/settings/import/template', [ImportController::class, 'downloadTemplate'])->name('settings.import.template');
     Route::get('/settings/export/violation-types', [ImportController::class, 'exportViolationTypes'])->name('settings.export.violation-types');
+    Route::get('/export/violations', [\App\Http\Controllers\Admin\ViolationExportController::class, 'export'])->name('violations.export');
     Route::post('/settings/import/violation-types', [ImportController::class, 'importViolationTypes'])->name('settings.import.violation-types');
 
     Route::get('/settings/thresholds', [MasterDataController::class, 'thresholds'])->name('settings.thresholds');

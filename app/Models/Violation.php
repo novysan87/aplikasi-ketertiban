@@ -26,6 +26,7 @@ class Violation extends Model
             'violation_time' => 'datetime:H:i',
             'is_verified' => 'boolean',
             'verified_at' => 'datetime',
+            'handled_at' => 'datetime',
             'points' => 'integer',
         ];
     }

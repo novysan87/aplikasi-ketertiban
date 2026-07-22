@@ -58,7 +58,7 @@ class StudentReportController extends Controller
     public function show(Student $student): View
     {
         $student->load(['violations' => function ($q) {
-            $q->with(['violationType.category', 'recorder', 'evidences'])
+            $q->with(['violationType.category', 'recorder', 'evidences', 'handlings.participants.user'])
               ->latest()
               ->take(50);
         }, 'spLetters' => function ($q) {

@@ -439,79 +439,114 @@
                     </button>
                 </div>
 
-                <div class="divide-y divide-gray-50">
+                <div class="divide-y divide-gray-100">
                     @forelse($violation->handlings as $h)
-                        <div class="p-4 sm:p-5 space-y-3">
-                            {{-- Header --}}
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-clipboard-list text-amber-500 text-xs"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-semibold text-gray-900">{{ $h->handling_type }}</p>
-                                        <p class="text-xs text-gray-400">{{ $h->handling_date->format('d M Y') }}
-                                            @if($h->location) • {{ $h->location }} @endif
-                                        </p>
-                                    </div>
-                                </div>
-                                <form action="{{ route('violations.handling.destroy', [$violation->id, $h->id]) }}" method="POST"
-                                    x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus catatan penanganan ini?'})) $el.submit()">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                        class="text-gray-300 hover:text-red-500 transition flex-shrink-0">
-                                        <i class="fa-solid fa-trash-can text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
+                        @php
+                            $typeColors = [
+                                'Teguran Lisan' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'icon' => 'fa-comment'],
+                                'Teguran Tertulis' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'icon' => 'fa-file-pen'],
+                                'Pembinaan BK' => ['bg' => 'bg-teal-100', 'text' => 'text-teal-700', 'icon' => 'fa-hand-holding-heart'],
+                                'Panggilan Orang Tua' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-700', 'icon' => 'fa-phone-volume'],
+                                'Home Visit' => ['bg' => 'bg-violet-100', 'text' => 'text-violet-700', 'icon' => 'fa-house-chimney'],
+                                'Skorsing' => ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'icon' => 'fa-ban'],
+                                'Tugas Sosial' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-700', 'icon' => 'fa-handshake-angle'],
+                            ];
+                            $tc = $typeColors[$h->handling_type] ?? ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'icon' => 'fa-clipboard-list'];
+                        @endphp
+                        <div class="relative pl-4 pr-4 sm:pl-5 sm:pr-5 py-4 hover:bg-gray-50/50 transition">
+                            {{-- Left accent bar --}}
+                            <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $tc['bg'] }}"></div>
 
-                            {{-- Description --}}
-                            @if($h->description)
-                                <div class="bg-gray-50 rounded-lg border border-gray-100 p-3">
-                                    <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{{ $h->description }}</p>
-                                </div>
-                            @endif
-
-                            {{-- Participants --}}
-                            @if($h->participants->count() > 0)
-                                <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Peserta</p>
-                                    <div class="space-y-1.5">
-                                        @foreach($h->participants as $p)
+                            <div class="space-y-3">
+                                {{-- Header row --}}
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <div class="w-8 h-8 rounded-xl {{ $tc['bg'] }} flex items-center justify-center flex-shrink-0 shadow-sm">
+                                            <i class="fa-solid {{ $tc['icon'] }} {{ $tc['text'] }} text-xs"></i>
+                                        </div>
+                                        <div class="min-w-0">
                                             <div class="flex items-center gap-2">
-                                                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                                    <span class="text-[9px] font-bold text-gray-500">{{ strtoupper(substr($p->user->name ?? '?', 0, 1)) }}</span>
-                                                </div>
-                                                <span class="text-xs text-gray-700 font-medium">{{ $p->user->name ?? '-' }}</span>
-                                                @if($p->role)
-                                                    <span class="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">{{ $p->role }}</span>
-                                                @endif
+                                                <p class="text-sm font-bold text-gray-900">{{ $h->handling_type }}</p>
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded-md {{ $tc['bg'] }} {{ $tc['text'] }}">
+                                                    <i class="fa-regular fa-clock"></i>
+                                                    {{ $h->handling_date->format('d/m') }}
+                                                </span>
                                             </div>
-                                        @endforeach
+                                            @if($h->location || $h->creator)
+                                                <p class="text-[11px] text-gray-400 mt-0.5">
+                                                    @if($h->location)<i class="fa-solid fa-location-dot mr-1"></i>{{ $h->location }}@endif
+                                                    @if($h->location && $h->creator) <span class="text-gray-300">•</span> @endif
+                                                    @if($h->creator)oleh {{ $h->creator->name }}@endif
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
+                                    <form action="{{ route('violations.handling.destroy', [$violation->id, $h->id]) }}" method="POST"
+                                        x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus catatan penanganan ini?'})) $el.submit()">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0">
+                                            <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                            @endif
 
-                            {{-- Evidence --}}
-                            @if($h->evidence)
-                                <a href="{{ \Storage::url($h->evidence) }}" target="_blank"
-                                    class="inline-flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-100 hover:bg-blue-100 transition">
-                                    <i class="fa-solid fa-paperclip text-[10px]"></i>
-                                    Lihat Bukti
-                                </a>
-                            @endif
+                                {{-- Description --}}
+                                @if($h->description)
+                                    <div class="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl border border-gray-100 p-3.5 ml-[42px]">
+                                        <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{{ $h->description }}</p>
+                                    </div>
+                                @endif
 
-                            {{-- Creator --}}
-                            @if($h->creator)
-                                <p class="text-[10px] text-gray-400">Dicatat oleh {{ $h->creator->name }}</p>
-                            @endif
+                                {{-- Participants --}}
+                                @if($h->participants->count() > 0)
+                                    <div class="ml-[42px]">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Yang Menangani:</span>
+                                            @foreach($h->participants as $p)
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] bg-white border border-gray-200 rounded-full shadow-sm">
+                                                    <span class="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                                        <span class="text-[7px] font-bold text-gray-500">{{ strtoupper(substr($p->user->name ?? '?', 0, 1)) }}</span>
+                                                    </span>
+                                                    <span class="font-medium text-gray-700">{{ $p->user->name ?? '-' }}</span>
+                                                    @if($p->role)
+                                                        <span class="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">{{ $p->role }}</span>
+                                                    @endif
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                {{-- Evidence + Metadata row --}}
+                                <div class="flex items-center justify-between ml-[42px]">
+                                    <div class="flex items-center gap-2">
+                                        @if($h->evidence)
+                                            <a href="{{ \Storage::url($h->evidence) }}" target="_blank"
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 bg-blue-50/80 px-3 py-1.5 rounded-lg border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                                                <i class="fa-solid fa-paperclip text-[10px]"></i>
+                                                Lihat Bukti
+                                                <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-blue-400"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <p class="text-[10px] text-gray-300">
+                                        @if($h->created_at != $h->updated_at)
+                                            Diubah {{ $h->updated_at->diffForHumans() }}
+                                        @else
+                                            {{ $h->created_at->diffForHumans() }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     @empty
-                        <div class="px-5 py-8 text-center">
-                            <div class="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-2">
-                                <i class="fa-solid fa-hand-holding-heart text-gray-300 text-sm"></i>
+                        <div class="px-5 py-10 text-center">
+                            <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-hand-holding-heart text-gray-300 text-lg"></i>
                             </div>
-                            <p class="text-xs text-gray-500">Belum ada penanganan</p>
+                            <p class="text-sm font-medium text-gray-500 mb-0.5">Belum ada penanganan</p>
+                            <p class="text-xs text-gray-400">Tambahkan penanganan pertama untuk pelanggaran ini</p>
                         </div>
                     @endforelse
                 </div>
@@ -612,10 +647,10 @@
                                     {{-- Participants --}}
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
-                                            <label class="block text-sm font-medium text-gray-700">Peserta</label>
+                                            <label class="block text-sm font-medium text-gray-700">Yang Menangani</label>
                                             <button type="button" @click="participants.push({user_id: '', role: ''})"
                                                 class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1">
-                                                <i class="fa-solid fa-plus"></i> Tambah Peserta
+                                                <i class="fa-solid fa-plus"></i> Tambah Penanggungjawab
                                             </button>
                                         </div>
                                         <div class="space-y-2">
