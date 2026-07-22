@@ -6,6 +6,7 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
 window.Pusher = Pusher;
+window.EchoClass = Echo;
 
 // Echo will be initialized when the page has the Reverb config
 // The actual Echo initialization is done conditionally in the layout

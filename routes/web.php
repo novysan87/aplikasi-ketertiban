@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications/recent', [DashboardController::class, 'getRecentNotifications'])->name('notifications.recent');
     Route::post('/notifications/{id}/read', [DashboardController::class, 'markNotificationRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [DashboardController::class, 'markAllNotificationsRead'])->name('notifications.read-all');
+    Route::get('/notifications', [DashboardController::class, 'notificationsIndex'])->name('notifications.index');
 
     // Violations
     Route::get('/violations', [ViolationController::class, 'index'])->name('violations.index');

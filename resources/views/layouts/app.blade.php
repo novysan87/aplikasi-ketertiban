@@ -18,7 +18,7 @@
     @stack('styles')
 </head>
 <body class="h-full antialiased">
-    <div x-data="{ sidebarOpen: false, showNotif: false, showUserMenu: false, notifications: [], notifCount: 0 }" class="min-h-screen flex">
+    <div x-data="notifications()" class="min-h-screen flex">
         {{-- Sidebar --}}
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col">
             <div class="flex items-start justify-between h-auto px-4 pt-4 pb-3 border-b border-gray-200">
@@ -103,7 +103,7 @@
                             </div>
                             <div class="max-h-64 overflow-y-auto">
                                 <template x-for="notif in notifications" :key="notif.id">
-                                    <a :href="notif.action_url || '#'" class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                                    <a :href="notif.action_url || '#'" @click="markAsRead(notif.id)" class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
                                         <div class="flex items-start space-x-3">
                                             <div :class="'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ' + (notif.color ? 'bg-'+notif.color+'-100' : 'bg-blue-100')">
                                                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -118,6 +118,9 @@
                                 <div x-show="notifications.length === 0" class="px-4 py-8 text-center text-sm text-gray-500">
                                     Tidak ada notifikasi
                                 </div>
+                            </div>
+                            <div class="px-4 py-2 border-t border-gray-100 text-center">
+                                <a href="{{ route('notifications.index') }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Tampilkan semua notifikasi</a>
                             </div>
                         </div>
                     </div>
@@ -199,10 +202,25 @@
 
     @stack('scripts')
 
+    {{-- Reverb Config --}}
+    <script>
+        window.__REVERB_CONFIG = {
+            key: @json(config('reverb.apps.apps.0.key') ?: env('REVERB_APP_KEY')),
+            host: window.location.hostname,
+            port: parseInt(window.location.port || '80'),
+        };
+        console.log('Reverb config:', window.__REVERB_CONFIG);
+    </script>
+
     {{-- Reverb + Echo for realtime --}}
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('notifications', () => ({
+                showNotif: false,
+                sidebarOpen: false,
+                showUserMenu: false,
+                notifications: [],
+                notifCount: 0,
                 init() {
                     this.fetchCount();
                     this.fetchNotifications();
@@ -223,30 +241,34 @@
                     this.notifications = [];
                     this.notifCount = 0;
                 },
+                markAsRead(id) {
+                    fetch('/notifications/' + id + '/read', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content } });
+                    this.notifications = this.notifications.filter(n => n.id !== id);
+                    if (this.notifCount > 0) this.notifCount--;
+                },
                 connectReverb() {
-                    if (typeof Echo === 'undefined') {
-                        window.Echo = new Echo({
-                            broadcaster: 'reverb',
-                            key: import.meta.env.VITE_REVERB_APP_KEY || '"' + REVERB_APP_KEY + '",
-                            wsHost: import.meta.env.VITE_REVERB_HOST || '"' + REVERB_HOST + '",
-                            wsPort: import.meta.env.VITE_REVERB_PORT ? parseInt(import.meta.env.VITE_REVERB_PORT) : 8080,
-                            wssPort: 443,
-                            forceTLS: false,
-                            enabledTransports: ['ws', 'wss'],
-                        });
+                    if (typeof window.Echo === 'undefined' || window.Echo === null) {
+                        try {
+                            window.Echo = new window.EchoClass({
+                                broadcaster: 'reverb',
+                                key: window.__REVERB_CONFIG.key,
+                                wsHost: window.__REVERB_CONFIG.host,
+                                wsPort: window.__REVERB_CONFIG.port,
+                                wssPort: 443,
+                                forceTLS: false,
+                                enabledTransports: ['ws', 'wss'],
+                            });
+                            console.log('Echo initialized ✅');
+                        } catch(e) {
+                            console.error('Echo init error:', e);
+                        }
                     }
-                    if (typeof Echo !== 'undefined') {
-                        Echo.channel('violations')
+                    if (typeof window.Echo !== 'undefined') {
+                        window.Echo.channel('violations')
                             .listen('.violation.recorded', (e) => {
-                                this.notifCount++;
-                                this.notifications.unshift({
-                                    id: e.violation?.id || Date.now(),
-                                    title: 'Pelanggaran Baru: ' + (e.data?.student_name || ''),
-                                    body: (e.data?.violation_type || '') + ' (+' + (e.data?.points || 0) + ' poin)',
-                                    action_url: e.data?.url || '#',
-                                    color: (e.data?.category_color || '#ef4444').replace('#', ''),
-                                });
-                                if (this.notifications.length > 20) this.notifications.pop();
+                                // Refresh dari database untuk hindari duplikasi
+                                this.fetchCount();
+                                this.fetchNotifications();
                             });
                     } else {
                         // Fallback: poll every 30s if Echo not loaded

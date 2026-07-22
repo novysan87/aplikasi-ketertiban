@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div x-data="notifications()">
+<div>
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p class="text-sm text-gray-500">Ringkasan pelanggaran siswa</p>

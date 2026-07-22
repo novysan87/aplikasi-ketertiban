@@ -72,6 +72,15 @@ class DashboardController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function notificationsIndex(Request $request): View
+    {
+        $notifications = AppNotification::where('user_id', $request->user()->id)
+            ->latest()
+            ->paginate(20);
+
+        return view('notifications.index', compact('notifications'));
+    }
+
     public function getUnreadCount(Request $request)
     {
         $count = AppNotification::where('user_id', $request->user()->id)

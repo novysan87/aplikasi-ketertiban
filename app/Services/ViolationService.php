@@ -127,7 +127,7 @@ class ViolationService
             }
 
             // Broadcast via Reverb
-            broadcast(new ViolationRecorded($violation))->toOthers();
+            broadcast(new ViolationRecorded($violation));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Notify realtime failed: ' . $e->getMessage());
         }
