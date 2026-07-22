@@ -20,6 +20,8 @@ $faIcons = [
     'cog' => 'fa-solid fa-gear',
     'users-cog' => 'fa-solid fa-user-gear',
     'database' => 'fa-solid fa-database',
+    'arrows-rotate' => 'fa-solid fa-arrows-rotate',
+    'lock' => 'fa-solid fa-lock',
 ];
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 @endphp

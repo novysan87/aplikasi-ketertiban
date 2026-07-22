@@ -28,6 +28,23 @@ class User extends Authenticatable
     public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isBK(): bool { return $this->role === 'bk'; }
     public function isWaliKelas(): bool { return $this->role === 'wali_kelas'; }
+    public function isStaff(): bool { return $this->role === 'staff'; }
+
+    public function canPermission(string $permission): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+        return in_array($permission, \Illuminate\Support\Facades\Cache::remember(
+            'role_permissions:' . $this->role,
+            3600,
+            fn () => \DB::table('role_permissions')
+                ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+                ->where('role_permissions.role', $this->role)
+                ->pluck('permissions.key')
+                ->toArray()
+        ));
+    }
 
     public function recordedViolations()
     {

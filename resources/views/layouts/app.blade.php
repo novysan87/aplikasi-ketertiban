@@ -44,24 +44,55 @@
                 </button>
             </div>
             <nav class="mt-2 px-2 space-y-1">
+                @canPermission('access-dashboard')
                 <x-nav-item href="{{ route('dashboard') }}" icon="home" :active="request()->routeIs('dashboard')">Dashboard</x-nav-item>
+                @endcanPermission
+                @canPermission('input-violations')
                 <x-nav-item href="{{ route('violations.create') }}" icon="plus-circle" :active="request()->routeIs('violations.create')">Input Pelanggaran</x-nav-item>
+                @endcanPermission
+                @canPermission('view-violations')
                 <x-nav-item href="{{ route('violations.index') }}" icon="exclamation-triangle" :active="request()->routeIs('violations.index')">Data Pelanggaran</x-nav-item>
+                @endcanPermission
+                @canPermission('view-students')
                 <x-nav-item href="{{ route('students.index') }}" icon="users" :active="request()->routeIs('students.index*')">Data Siswa</x-nav-item>
+                @endcanPermission
+                @canPermission('manage-attendance')
                 <x-nav-item href="{{ route('attendances.index') }}" icon="clipboard-check" :active="request()->routeIs('attendances*')">Presensi Siswa</x-nav-item>
+                @endcanPermission
+                @canPermission('view-sp-letters')
                 <x-nav-item href="{{ route('sp-letters.index') }}" icon="document-text" :active="request()->routeIs('sp-letters.*')">Surat Peringatan</x-nav-item>
+                @endcanPermission
 
+                @canPermission('categories-manage')
                 <div class="pt-4 mt-4 border-t border-gray-200">
-                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Pengaturan</p>
+                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>
                 </div>
                 <x-nav-item href="{{ route('settings.categories') }}" icon="tag" :active="request()->routeIs('settings.categories*')">Kategori Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('settings.violation-types') }}" icon="list" :active="request()->routeIs('settings.violation-types*')">Jenis Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('settings.thresholds') }}" icon="chart-bar" :active="request()->routeIs('settings.thresholds*')">Ambang SP</x-nav-item>
+                @endcanPermission
+
+                @canPermission('settings-manage')
+                <div class="pt-4 mt-4 border-t border-gray-200">
+                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administrasi</p>
+                </div>
+                @endcanPermission
+                @canPermission('sync-data')
                 <x-nav-item href="{{ route('settings.sync') }}" icon="refresh" :active="request()->routeIs('settings.sync*')">Sinkronisasi</x-nav-item>
+                @endcanPermission
+                @canPermission('users-manage')
                 <x-nav-item href="{{ route('users.index') }}" icon="users-cog" :active="request()->routeIs('users.*')">Manajemen User</x-nav-item>
+                <x-nav-item href="{{ route('settings.permissions') }}" icon="lock" :active="request()->routeIs('settings.permissions*')">Hak Akses Role</x-nav-item>
+                @endcanPermission
+                @canPermission('backup-database')
                 <x-nav-item href="{{ route('settings.backup') }}" icon="database" :active="request()->routeIs('settings.backup*')">Backup Database</x-nav-item>
-                <x-nav-item href="{{ route('settings.reset') }}" icon="refresh" :active="request()->routeIs('settings.reset*')">Reset Aplikasi</x-nav-item>
+                @endcanPermission
+                @canPermission('reset-application')
+                <x-nav-item href="{{ route('settings.reset') }}" icon="arrows-rotate" :active="request()->routeIs('settings.reset*')">Reset Aplikasi</x-nav-item>
+                @endcanPermission
+                @canPermission('settings-manage')
                 <x-nav-item href="{{ route('settings.index') }}" icon="cog" :active="request()->routeIs('settings.index')">Pengaturan</x-nav-item>
+                @endcanPermission
             </nav>
 
             {{-- Footer --}}
