@@ -11,6 +11,24 @@
         $bgPath = App\Models\Setting::getValue('login_background');
     @endphp
     <title>Login - {{ $appName }}</title>
+
+    {{-- Open Graph / Social Preview --}}
+    <meta property="og:title" content="{{ $appName }} - {{ $schoolName }}">
+    <meta property="og:description" content="Aplikasi Ketertiban Siswa {{ $schoolName }} — Manajemen pelanggaran, presensi, dan surat peringatan siswa.">
+    <meta property="og:site_name" content="{{ $appName }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if($logoPath)
+        <meta property="og:image" content="{{ asset('storage/' . $logoPath) }}">
+        <meta property="og:image:width" content="256">
+        <meta property="og:image:height" content="256">
+    @else
+        <meta property="og:image" content="{{ asset('favicon.ico') }}">
+    @endif
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $appName }} - {{ $schoolName }}">
+    <meta name="twitter:description" content="Aplikasi Ketertiban Siswa {{ $schoolName }}.">
+
     @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-screen bg-slate-100 px-3 py-3 sm:px-6 sm:py-6 antialiased">

@@ -364,6 +364,7 @@ class AttendanceController extends Controller
 
         $students = collect();
         $recap = collect();
+        $totals = [];
         if ($className) {
             $students = Student::where('is_active', true)
                 ->where('class_name', $className)
@@ -378,35 +379,74 @@ class AttendanceController extends Controller
             foreach ($weeks as $weekNum => $week) {
                 $weekAtt = $allAttendances->filter(fn($a) =>
                     $a->date >= $week['start'] && $a->date <= $week['end']
-                )->groupBy('student_id');
+                );
+
+                // Ambil tanggal unik dalam minggu ini
+                $datesInWeek = $weekAtt->map(fn($a) => \Illuminate\Support\Carbon::parse($a->date)->toDateString())->unique();
+                $totalDays = $datesInWeek->count();
+
+                $weekByDay = $weekAtt->groupBy(fn($a) => \Illuminate\Support\Carbon::parse($a->date)->toDateString());
 
                 $row = ['label' => $week['label'], 'start' => $week['start'], 'end' => $week['end'], 'students' => []];
                 foreach ($students as $student) {
-                    $studentAtt = $weekAtt->get($student->id, collect());
+                    $hCount = 0; $sCount = 0; $iCount = 0; $aCount = 0; $tCount = 0; $totalDaysForStudent = 0;
 
-                    $hadir = $studentAtt->where('status', 'hadir')->count();
-                    $alpha = $studentAtt->where('status', 'alpha')->count();
-                    $sakit = $studentAtt->where('status', 'sakit')->count();
-                    $izin = $studentAtt->where('status', 'izin')->count();
-                    $terlambat = $studentAtt->where('status', 'terlambat')->count();
+                    foreach ($datesInWeek as $dateStr) {
+                        $dayAtt = $weekByDay->get($dateStr, collect())->where('student_id', $student->id);
+                        if ($dayAtt->isEmpty()) continue;
+                        $totalDaysForStudent++;
+
+                        $hasHadir = $dayAtt->where('status', 'hadir')->isNotEmpty();
+                        $hasSakit = $dayAtt->where('status', 'sakit')->isNotEmpty();
+                        $hasIzin = $dayAtt->where('status', 'izin')->isNotEmpty();
+                        $hasAlpha = $dayAtt->where('status', 'alpha')->isNotEmpty();
+                        $hasTerlambat = $dayAtt->where('status', 'terlambat')->isNotEmpty();
+
+                        if ($hasHadir) $hCount++;
+                        if ($hasSakit) $sCount++;
+                        if ($hasIzin) $iCount++;
+                        if ($hasTerlambat) $tCount++;
+
+                        // Alpha proporsional: jika semua jam di hari itu alpha
+                        $totalJam = $dayAtt->count();
+                        $alphaJam = $dayAtt->where('status', 'alpha')->count();
+                        if ($totalJam > 0) {
+                            $aCount += round($alphaJam / $totalJam, 1);
+                        }
+                    }
 
                     $row['students'][$student->id] = [
                         'name' => $student->full_name,
-                        'hadir' => $hadir,
-                        'alpha' => $alpha,
-                        'sakit' => $sakit,
-                        'izin' => $izin,
-                        'terlambat' => $terlambat,
-                        'total' => $studentAtt->count(),
+                        'hadir' => $hCount,
+                        'alpha' => $aCount,
+                        'sakit' => $sCount,
+                        'izin' => $iCount,
+                        'terlambat' => $tCount,
+                        'total' => $totalDaysForStudent,
                     ];
                 }
                 $recap->push($row);
+            }
+
+            // Hitung total per siswa selama sebulan
+            $totals = [];
+            foreach ($students as $student) {
+                $totals[$student->id] = ['hadir' => 0, 'sakit' => 0, 'izin' => 0, 'alpha' => 0, 'terlambat' => 0];
+            }
+            foreach ($recap as $row) {
+                foreach ($row['students'] as $sid => $s) {
+                    $totals[$sid]['hadir'] += $s['hadir'];
+                    $totals[$sid]['sakit'] += $s['sakit'];
+                    $totals[$sid]['izin'] += $s['izin'];
+                    $totals[$sid]['alpha'] += $s['alpha'];
+                    $totals[$sid]['terlambat'] += $s['terlambat'];
+                }
             }
         }
 
         return view('attendances.recap', compact(
             'type', 'month', 'year', 'className', 'classNames',
-            'students', 'recap', 'weeks'
+            'students', 'recap', 'weeks', 'totals'
         ));
     }
 
@@ -546,6 +586,118 @@ class AttendanceController extends Controller
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
 
         $filename = 'rekap-mingguan' . ($data['className'] ? '-' . $data['className'] : '') . '.xlsx';
+        $filename = str_replace(['/', '\\', ' '], '-', $filename);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function exportMonthly(Request $request)
+    {
+        $classNames = Student::where('is_active', true)
+            ->whereNotNull('class_name')
+            ->distinct()
+            ->orderBy('class_name')
+            ->pluck('class_name');
+
+        $view = $this->recapMonthly($request, $classNames);
+        $data = $view->getData();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Title
+        $title = 'Rekap Presensi Bulanan';
+        if ($data['className']) {
+            $title .= ' - ' . $data['className'];
+        }
+        $title .= ' (' . \Carbon\Carbon::create()->month($data['month'])->format('F') . ' ' . $data['year'] . ')';
+
+        $sheet->setCellValue('A1', $title);
+        $totalCols = 1 + $data['recap']->count() * 4 + 4; // +4 untuk kolom TOTAL
+        $sheet->mergeCells('A1:' . $this->getColLetter($totalCols - 1) . '1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+        // Header row 2: week names + TOTAL
+        $sheet->setCellValue('A2', 'Siswa');
+        $sheet->getStyle('A2')->getFont()->setBold(true);
+        $col = 2;
+        foreach ($data['recap'] as $row) {
+            $cell = $this->getColLetter($col) . '2';
+            $sheet->setCellValue($cell, $row['label'] . ' ' . \Carbon\Carbon::parse($row['start'])->format('d/m') . '-' . \Carbon\Carbon::parse($row['end'])->format('d/m'));
+            $endCell = $this->getColLetter($col + 3) . '2';
+            $sheet->mergeCells($cell . ':' . $endCell);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+            $col += 4;
+        }
+        // Kolom TOTAL
+        $totalCell = $this->getColLetter($col) . '2';
+        $sheet->setCellValue($totalCell, 'TOTAL');
+        $sheet->mergeCells($totalCell . ':' . $this->getColLetter($col + 3) . '2');
+        $sheet->getStyle($totalCell)->getFont()->setBold(true);
+
+        // Header row 3: H, S, I, A per week + TOTAL
+        $sheet->setCellValue('A3', '');
+        $col = 2;
+        foreach ($data['recap'] as $row) {
+            $sheet->setCellValue($this->getColLetter($col) . '3', 'H');
+            $sheet->setCellValue($this->getColLetter($col + 1) . '3', 'S');
+            $sheet->setCellValue($this->getColLetter($col + 2) . '3', 'I');
+            $sheet->setCellValue($this->getColLetter($col + 3) . '3', 'A');
+            foreach (range(0, 3) as $i) {
+                $sheet->getStyle($this->getColLetter($col + $i) . '3')->getFont()->setBold(true);
+            }
+            $col += 4;
+        }
+        // Sub-header TOTAL
+        $sheet->setCellValue($this->getColLetter($col) . '3', 'H');
+        $sheet->setCellValue($this->getColLetter($col + 1) . '3', 'S');
+        $sheet->setCellValue($this->getColLetter($col + 2) . '3', 'I');
+        $sheet->setCellValue($this->getColLetter($col + 3) . '3', 'A');
+        foreach (range(0, 3) as $i) {
+            $sheet->getStyle($this->getColLetter($col + $i) . '3')->getFont()->setBold(true);
+        }
+
+        // Data rows
+        $rowIdx = 4;
+        foreach ($data['students'] as $student) {
+            $sheet->setCellValue('A' . $rowIdx, $student->full_name);
+            $col = 2;
+            foreach ($data['recap'] as $row) {
+                $s = $row['students'][$student->id] ?? null;
+                if ($s) {
+                    $sheet->setCellValue($this->getColLetter($col) . $rowIdx, $s['hadir']);
+                    $sheet->setCellValue($this->getColLetter($col + 1) . $rowIdx, $s['sakit']);
+                    $sheet->setCellValue($this->getColLetter($col + 2) . $rowIdx, $s['izin']);
+                    $sheet->setCellValue($this->getColLetter($col + 3) . $rowIdx, $s['alpha']);
+                } else {
+                    foreach (range(0, 3) as $i) {
+                        $sheet->setCellValue($this->getColLetter($col + $i) . $rowIdx, '-');
+                    }
+                }
+                $col += 4;
+            }
+            // TOTAL per siswa
+            $t = $data['totals'][$student->id] ?? ['hadir' => 0, 'sakit' => 0, 'izin' => 0, 'alpha' => 0];
+            $sheet->setCellValue($this->getColLetter($col) . $rowIdx, $t['hadir']);
+            $sheet->setCellValue($this->getColLetter($col + 1) . $rowIdx, $t['sakit']);
+            $sheet->setCellValue($this->getColLetter($col + 2) . $rowIdx, $t['izin']);
+            $sheet->setCellValue($this->getColLetter($col + 3) . $rowIdx, $t['alpha']);
+
+            $rowIdx++;
+        }
+
+        // Auto width
+        for ($c = 1; $c < $totalCols; $c++) {
+            $sheet->getColumnDimension($this->getColLetter($c))->setAutoSize(true);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        $filename = 'rekap-bulanan' . ($data['className'] ? '-' . $data['className'] : '') . '.xlsx';
         $filename = str_replace(['/', '\\', ' '], '-', $filename);
 
         return response()->streamDownload(function () use ($writer) {

@@ -10,6 +10,24 @@
         $logoPath = App\Models\Setting::getValue('school_logo');
     @endphp
     <title>{{ $schoolName }} - @yield('title', $appName)</title>
+
+    {{-- Open Graph / Social Preview --}}
+    <meta property="og:title" content="@yield('title', $appName) - {{ $schoolName }}">
+    <meta property="og:description" content="Aplikasi Ketertiban Siswa {{ $schoolName }} — Manajemen pelanggaran, presensi, dan surat peringatan siswa.">
+    <meta property="og:site_name" content="{{ $appName }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if($logoPath)
+        <meta property="og:image" content="{{ asset('storage/' . $logoPath) }}">
+        <meta property="og:image:width" content="256">
+        <meta property="og:image:height" content="256">
+    @else
+        <meta property="og:image" content="{{ asset('favicon.ico') }}">
+    @endif
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="@yield('title', $appName) - {{ $schoolName }}">
+    <meta name="twitter:description" content="Aplikasi Ketertiban Siswa {{ $schoolName }}.">
+
     <link rel="icon" type="image/png" href="{{ $logoPath ? asset('storage/' . $logoPath) : asset('favicon.ico') }}">
     <link rel="shortcut icon" type="image/png" href="{{ $logoPath ? asset('storage/' . $logoPath) : asset('favicon.ico') }}">
 

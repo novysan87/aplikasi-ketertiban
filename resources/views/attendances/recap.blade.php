@@ -304,16 +304,23 @@
     @else
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-calendar-alt text-white text-sm"></i>
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-calendar-alt text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">
+                            Rekap Bulanan — {{ \Carbon\Carbon::create()->month($month)->format('F') }} {{ $year }}
+                        </h3>
+                        <p class="text-xs text-gray-400">{{ $students->count() }} siswa @if($className) • Kelas {{ $className }} @endif</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900">
-                        Rekap Bulanan — {{ \Carbon\Carbon::create()->month($month)->format('F') }} {{ $year }}
-                    </h3>
-                    <p class="text-xs text-gray-400">{{ $students->count() }} siswa @if($className) • Kelas {{ $className }} @endif</p>
-                </div>
+                <a href="{{ route('attendances.export-monthly', ['class_name' => $className, 'month' => $month, 'year' => $year]) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                    <i class="fa-solid fa-download text-xs"></i>
+                    Export
+                </a>
             </div>
         </div>
 
@@ -322,58 +329,78 @@
                 <table class="min-w-full divide-y divide-gray-100">
                     <thead>
                         <tr class="bg-gray-50/80">
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50/80 z-10">Siswa</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50/80 border-r-2 border-gray-300 z-10" rowspan="2">Siswa</th>
                             @foreach($recap as $row)
-                                <th class="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                @php
+                                    $sep = !$loop->last ? 'border-r-2 border-gray-300' : '';
+                                @endphp
+                                <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 {{ $sep }}">
                                     {{ $row['label'] }}<br>
                                     <span class="text-[10px] text-gray-400 font-normal">{{ \Carbon\Carbon::parse($row['start'])->format('d/m') }}-{{ \Carbon\Carbon::parse($row['end'])->format('d/m') }}</span>
                                 </th>
                             @endforeach
+                            <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-b border-gray-200 border-l-2 border-gray-400 bg-gray-100/80">
+                                TOTAL<br>
+                                <span class="text-[10px] text-gray-500 font-normal">Hari</span>
+                            </th>
+                        </tr>
+                        <tr class="bg-gray-50/80">
+                            @foreach($recap as $row)
+                                @php
+                                    $sep = !$loop->last ? 'border-r-2 border-gray-300' : '';
+                                @endphp
+                                <th class="px-2 py-1.5 text-center text-[10px] font-bold text-emerald-600 uppercase tracking-wider">H</th>
+                                <th class="px-2 py-1.5 text-center text-[10px] font-bold text-purple-600 uppercase tracking-wider">S</th>
+                                <th class="px-2 py-1.5 text-center text-[10px] font-bold text-blue-600 uppercase tracking-wider">I</th>
+                                <th class="px-2 py-1.5 text-center text-[10px] font-bold text-red-600 uppercase tracking-wider {{ $sep }}">A</th>
+                            @endforeach
+                            <th class="px-2 py-1.5 text-center text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-gray-100/80 border-l-2 border-gray-400">H</th>
+                            <th class="px-2 py-1.5 text-center text-[10px] font-bold text-purple-700 uppercase tracking-wider bg-gray-100/80">S</th>
+                            <th class="px-2 py-1.5 text-center text-[10px] font-bold text-blue-700 uppercase tracking-wider bg-gray-100/80">I</th>
+                            <th class="px-2 py-1.5 text-center text-[10px] font-bold text-red-700 uppercase tracking-wider bg-gray-100/80">A</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @foreach($students as $student)
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white z-10">
+                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white border-r-2 border-gray-200 z-10">
                                     <p class="text-sm font-semibold text-gray-900">{{ $student->full_name }}</p>
                                 </td>
                                 @foreach($recap as $row)
                                     @php
                                         $s = $row['students'][$student->id] ?? null;
+                                        $sep = !$loop->last ? 'border-r-2 border-gray-200' : '';
                                     @endphp
-                                    <td class="px-3 py-2.5 text-center">
-                                        @if($s)
-                                            <div class="flex flex-col items-center gap-0.5 text-xs">
-                                                <div class="flex items-center gap-1.5">
-                                                    <span class="text-emerald-600 font-bold">{{ $s['hadir'] }}</span>
-                                                    @if($s['alpha'] > 0)
-                                                        <span class="text-red-600 font-bold">A{{ $s['alpha'] }}</span>
-                                                    @endif
-                                                </div>
-                                                @if($s['sakit'] > 0 || $s['izin'] > 0 || $s['terlambat'] > 0)
-                                                    <div class="flex items-center gap-1.5 text-[10px]">
-                                                        @if($s['sakit'] > 0)<span class="text-purple-500">S{{ $s['sakit'] }}</span>@endif
-                                                        @if($s['izin'] > 0)<span class="text-blue-500">I{{ $s['izin'] }}</span>@endif
-                                                        @if($s['terlambat'] > 0)<span class="text-yellow-500">T{{ $s['terlambat'] }}</span>@endif
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <span class="text-gray-300 text-xs">—</span>
-                                        @endif
-                                    </td>
+                                    @if($s)
+                                        <td class="px-2 py-2.5 text-center text-xs font-bold text-emerald-600">{{ $s['hadir'] }}</td>
+                                        <td class="px-2 py-2.5 text-center text-xs font-bold text-purple-600">{{ $s['sakit'] }}</td>
+                                        <td class="px-2 py-2.5 text-center text-xs font-bold text-blue-600">{{ $s['izin'] }}</td>
+                                        <td class="px-2 py-2.5 text-center text-xs font-bold {{ $s['alpha'] > 0 ? 'text-red-600' : 'text-gray-400' }} {{ $sep }}">{{ $s['alpha'] }}</td>
+                                    @else
+                                        <td class="px-2 py-2.5 text-center text-xs text-gray-300">—</td>
+                                        <td class="px-2 py-2.5 text-center text-xs text-gray-300">—</td>
+                                        <td class="px-2 py-2.5 text-center text-xs text-gray-300">—</td>
+                                        <td class="px-2 py-2.5 text-center text-xs text-gray-300 {{ $sep }}">—</td>
+                                    @endif
                                 @endforeach
+                                {{-- TOTAL --}}
+                                @php
+                                    $t = $totals[$student->id] ?? ['hadir' => 0, 'sakit' => 0, 'izin' => 0, 'alpha' => 0];
+                                @endphp
+                                <td class="px-2 py-2.5 text-center text-xs font-bold text-emerald-700 bg-gray-50 border-l-2 border-gray-300">{{ $t['hadir'] }}</td>
+                                <td class="px-2 py-2.5 text-center text-xs font-bold text-purple-700 bg-gray-50">{{ $t['sakit'] }}</td>
+                                <td class="px-2 py-2.5 text-center text-xs font-bold text-blue-700 bg-gray-50">{{ $t['izin'] }}</td>
+                                <td class="px-2 py-2.5 text-center text-xs font-bold {{ $t['alpha'] > 0 ? 'text-red-700' : 'text-gray-400' }} bg-gray-50">{{ $t['alpha'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
             <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50 text-xs text-gray-400 text-center flex items-center justify-center gap-4">
-                <span class="text-emerald-600">H Hadir</span>
-                <span class="text-red-600">A Alpha</span>
-                <span class="text-purple-500">S Sakit</span>
-                <span class="text-blue-500">I Izin</span>
-                <span class="text-yellow-500">T Terlambat</span>
+                <span class="text-emerald-600 font-bold">H</span> Hadir
+                <span class="text-purple-600 font-bold">S</span> Sakit
+                <span class="text-blue-600 font-bold">I</span> Izin
+                <span class="text-red-600 font-bold">A</span> Alpha
             </div>
         @else
             <div class="px-5 py-12 text-center">
