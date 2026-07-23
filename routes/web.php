@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/attendances', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendances.store');
         Route::get('/attendances/recap', [\App\Http\Controllers\AttendanceController::class, 'recap'])->name('attendances.recap');
         Route::get('/attendances/calendar-data', [\App\Http\Controllers\AttendanceController::class, 'calendarData'])->name('attendances.calendar-data');
+        Route::get('/attendances/export-weekly', [\App\Http\Controllers\AttendanceController::class, 'exportWeekly'])->name('attendances.export-weekly');
     });
 
     Route::middleware('permission:view-sp-letters')->group(function () {
