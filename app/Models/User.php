@@ -30,7 +30,6 @@ class User extends Authenticatable
     public function isWaliKelas(): bool { return $this->role === 'wali_kelas'; }
     public function isStaff(): bool { return $this->role === 'staff'; }
     public function isOther(): bool { return $this->role === 'other'; }
-    public function isStaff(): bool { return $this->role === 'staff'; }
 
     public function canPermission(string $permission): bool
     {
