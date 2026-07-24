@@ -156,37 +156,77 @@ class AttendanceController extends Controller
             }
         }
 
-        // Auto-generate violation untuk alpha & terlambat
-        if ($request->boolean('auto_violation') && (!empty($alphaIds) || !empty($terlambatIds))) {
+        // Auto-generate / update / hapus violation (anti-duplikat)
+        if ($request->boolean('auto_violation')) {
             $alphaType = ViolationType::where('slug', 'alpha')->first();
             $terlambatType = ViolationType::where('slug', 'terlambat')->first();
+            $userId = $request->user()->id;
 
-            foreach ($alphaIds as $studentId => $count) {
-                if ($alphaType) {
-                    $this->violationService->recordViolation([
-                        'student_id' => $studentId,
-                        'violation_type_id' => $alphaType->id,
-                        'violation_date' => $date,
-                        'points' => max(1, (int) round(($alphaType->points / 10) * $count)),
-                        'description' => "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)",
-                        'notes' => 'Dibuat otomatis dari presensi.',
-                        'evidences' => [],
-                    ], $request->user()->id);
-                    $autoViolations++;
+            // Kumpulkan semua student yang ada di form
+            $allStudentsInForm = array_keys($request->input('attendances', []));
+
+            // Proses alpha
+            if ($alphaType) {
+                foreach ($allStudentsInForm as $studentId) {
+                    $count = $alphaIds[$studentId] ?? 0;
+                    $existing = \App\Models\Violation::where('student_id', $studentId)
+                        ->where('violation_type_id', $alphaType->id)
+                        ->where('violation_date', $date)
+                        ->where('recorded_by', $userId)
+                        ->first();
+
+                    if ($count > 0) {
+                        $points = max(1, (int) round(($alphaType->points / 10) * $count));
+                        $desc = "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)";
+
+                        if ($existing) {
+                            $existing->update(['points' => $points, 'description' => $desc, 'notes' => 'Diperbarui otomatis dari presensi.']);
+                        } else {
+                            $this->violationService->recordViolation([
+                                'student_id' => $studentId,
+                                'violation_type_id' => $alphaType->id,
+                                'violation_date' => $date,
+                                'points' => $points,
+                                'description' => $desc,
+                                'notes' => 'Dibuat otomatis dari presensi.',
+                                'evidences' => [],
+                            ], $userId);
+                        }
+                        $autoViolations++;
+                    } elseif ($existing) {
+                        // Tidak alpha lagi tapi ada violation lama → hapus
+                        $existing->delete();
+                        $autoViolations++;
+                    }
                 }
             }
 
-            foreach ($terlambatIds as $studentId => $count) {
-                if ($terlambatType) {
-                    $this->violationService->recordViolation([
-                        'student_id' => $studentId,
-                        'violation_type_id' => $terlambatType->id,
-                        'violation_date' => $date,
-                        'points' => $terlambatType->points,
-                        'description' => "Terlambat ({$count} jam pelajaran)",
-                        'notes' => 'Dibuat otomatis dari presensi.',
-                        'evidences' => [],
-                    ], $request->user()->id);
+            // Proses terlambat (similar logic, tanpa delete karena terlambat per event)
+            if ($terlambatType) {
+                foreach ($terlambatIds as $studentId => $count) {
+                    $existing = \App\Models\Violation::where('student_id', $studentId)
+                        ->where('violation_type_id', $terlambatType->id)
+                        ->where('violation_date', $date)
+                        ->where('recorded_by', $userId)
+                        ->first();
+
+                    if ($existing) {
+                        $existing->update([
+                            'points' => $terlambatType->points,
+                            'description' => "Terlambat ({$count} jam pelajaran)",
+                            'notes' => 'Diperbarui otomatis dari presensi.',
+                        ]);
+                    } else {
+                        $this->violationService->recordViolation([
+                            'student_id' => $studentId,
+                            'violation_type_id' => $terlambatType->id,
+                            'violation_date' => $date,
+                            'points' => $terlambatType->points,
+                            'description' => "Terlambat ({$count} jam pelajaran)",
+                            'notes' => 'Dibuat otomatis dari presensi.',
+                            'evidences' => [],
+                        ], $userId);
+                    }
                     $autoViolations++;
                 }
             }
