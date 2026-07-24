@@ -41,6 +41,19 @@
         .animate-fade-in { animation: fadeInUp 0.3s ease-out; }
         .stat-card-glow:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeInUp 0.3s ease-out; }
+        .stat-card-glow:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .flatpickr-calendar { border-radius: 12px !important; box-shadow: 0 8px 30px rgba(0,0,0,0.12) !important; }
+        .flatpickr-day.selected { border-radius: 8px !important; }
+        .flatpickr-day.today { border-radius: 8px !important; }
+    </style>
     @stack('styles')
 </head>
 <body class="h-full antialiased">
@@ -254,6 +267,24 @@
             </main>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr.localize(flatpickr.l10ns.id);
+            document.querySelectorAll('input[type="date"]').forEach(function(el) {
+                el.type = 'text';
+                flatpickr(el, {
+                    dateFormat: 'Y-m-d',
+                    altFormat: 'd/m/Y',
+                    altInput: true,
+                    allowInput: true,
+                    animate: true,
+                });
+            });
+        });
+    </script>
 
     @stack('scripts')
 
