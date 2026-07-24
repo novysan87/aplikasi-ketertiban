@@ -9,6 +9,7 @@
         <p class="text-sm text-gray-500">Sinkronkan data siswa dari Database Kesiswaan</p>
     </div>
 
+    {{-- Sync Database Kesiswaan --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <form action="{{ route('settings.sync.run') }}" method="POST" class="p-6 space-y-5">
             @csrf
@@ -75,5 +76,76 @@
             </button>
         </form>
     </div>
+
+    {{-- E-Jurnal Sync Token --}}
+    <div class="mt-8"></div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mt-4">
+        <div class="p-6 space-y-5">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Sinkronisasi Presensi E-Jurnal</h2>
+                <p class="text-sm text-gray-500 mt-1">Generate token untuk diinput di Aplikasi E-Jurnal Guru agar bisa push data presensi.</p>
+            </div>
+
+            {{-- Token display --}}
+            @if($hasEjurnalToken)
+                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5">
+                            <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-emerald-800">Token Aktif</div>
+                            <div class="mt-2 flex items-center gap-2">
+                                <code class="flex-1 block bg-white border border-emerald-200 rounded-lg px-3 py-2 text-sm font-mono text-emerald-900 select-all break-all" id="ejurnalTokenDisplay">{{ $ejurnalToken }}</code>
+                                <button type="button" onclick="copyToken()"
+                                    class="shrink-0 px-3 py-2 text-xs font-medium text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg hover:bg-emerald-200 transition whitespace-nowrap">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                            </div>
+                            <p class="mt-2 text-xs text-emerald-700">Salin token ini dan paste di menu Sinkronisasi Akademik → Aplikasi Ketertiban di E-Jurnal Guru.</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Regenerate --}}
+                <form action="{{ route('settings.sync.ejurnal-token.generate') }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('Regenerate token? Token lama akan langsung tidak berlaku.')"
+                        class="w-full px-4 py-3 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate"></i>
+                        Regenerate Token
+                    </button>
+                </form>
+
+            @else
+                {{-- Generate first token --}}
+                <form action="{{ route('settings.sync.ejurnal-token.generate') }}" method="POST">
+                    @csrf
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                        <div class="text-sm text-slate-500 mb-3">Belum ada token. Generate satu sekarang:</div>
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                            <i class="fa-solid fa-key"></i>
+                            Generate Token Sekarang
+                        </button>
+                    </div>
+                </form>
+            @endif
+        </div>
+    </div>
+
+    <script>
+    function copyToken() {
+        const el = document.getElementById('ejurnalTokenDisplay');
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent).then(() => {
+            const btn = el.nextElementSibling;
+            if (btn) {
+                btn.innerHTML = '<i class="fa-regular fa-check"></i> Tersalin';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin'; }, 2000);
+            }
+        });
+    }
+    </script>
 </div>
 @endsection

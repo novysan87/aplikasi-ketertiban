@@ -18,6 +18,25 @@ class SyncController extends Controller
         $this->syncService = $syncService;
     }
 
+    public function saveEjurnalToken(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ejurnal_token' => ['required', 'string', 'min:16'],
+        ]);
+
+        Setting::setValue('ejurnal_sync_token', $validated['ejurnal_token'], 'integration', 'Token untuk push presensi dari E-Jurnal Guru');
+
+        return back()->with('success', 'Token E-Jurnal berhasil ' . ($request->input('_regenerate') ? 'diperbarui' : 'disimpan') . '.');
+    }
+
+    public function generateEjurnalToken(): RedirectResponse
+    {
+        $token = \Illuminate\Support\Str::random(48);
+        Setting::setValue('ejurnal_sync_token', $token, 'integration', 'Token untuk push presensi dari E-Jurnal Guru');
+
+        return back()->with('success', 'Token baru berhasil digenerate. Salin dan paste di E-Jurnal Guru.');
+    }
+
     public function index(): View
     {
         $baseUrl = Setting::getValue('kesiswaan_base_url', '');
@@ -25,7 +44,10 @@ class SyncController extends Controller
         $hasToken = !empty($savedToken);
         $studentCount = \App\Models\Student::count();
 
-        return view('settings.sync', compact('baseUrl', 'savedToken', 'hasToken', 'studentCount'));
+        $ejurnalToken = Setting::getValue('ejurnal_sync_token', '');
+        $hasEjurnalToken = !empty($ejurnalToken);
+
+        return view('settings.sync', compact('baseUrl', 'savedToken', 'hasToken', 'studentCount', 'ejurnalToken', 'hasEjurnalToken'));
     }
 
     public function syncNow(Request $request): RedirectResponse

@@ -127,6 +127,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:sync-data')->group(function () {
         Route::get('/settings/sync', [SyncController::class, 'index'])->name('settings.sync');
         Route::post('/settings/sync', [SyncController::class, 'syncNow'])->name('settings.sync.run');
+        Route::post('/settings/sync/ejurnal-token', [SyncController::class, 'saveEjurnalToken'])->name('settings.sync.ejurnal-token');
+        Route::post('/settings/sync/ejurnal-token/generate', [SyncController::class, 'generateEjurnalToken'])->name('settings.sync.ejurnal-token.generate');
     });
 
     Route::middleware('permission:users-manage')->group(function () {
@@ -148,3 +150,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+// ===== API: Internal Sync (token auth, not session) =====
+Route::post('/api/v1/attendance/sync', [App\Http\Controllers\Api\AttendanceSyncController::class, 'sync'])
+    ->name('api.attendance.sync');
+Route::get('/api/v1/attendance/ping', [App\Http\Controllers\Api\AttendanceSyncController::class, 'ping'])
+    ->name('api.attendance.ping');
