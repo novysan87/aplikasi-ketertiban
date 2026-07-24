@@ -174,17 +174,24 @@
         const el = document.getElementById('ejurnalTokenDisplay');
         const btn = document.getElementById('copyTokenBtn');
         if (!el || !btn) return;
-        navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+
+        // Select the text
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        // Copy using execCommand (works on HTTP too)
+        try {
+            document.execCommand('copy');
+            sel.removeAllRanges();
             btn.innerHTML = '<i class="fa-regular fa-check"></i> Tersalin';
             setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin'; }, 2000);
-        }).catch(() => {
-            // Fallback: select text manually
-            const range = document.createRange();
-            range.selectNodeContents(el);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        });
+        } catch (err) {
+            // Fallback: show manual instruction
+            alert('Tekan Ctrl+C (Cmd+C di Mac) untuk menyalin token.');
+        }
     }
 
     function copyKesiswaanToken() {
