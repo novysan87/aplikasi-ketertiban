@@ -33,12 +33,20 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeInUp 0.3s ease-out; }
+        .stat-card-glow:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+    </style>
     @stack('styles')
 </head>
 <body class="h-full antialiased">
     <div x-data="notifications()" class="min-h-screen flex">
         {{-- Sidebar --}}
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-white via-blue-50/30 to-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-sm">
             <div class="flex items-start justify-between h-auto px-4 pt-4 pb-3 border-b border-gray-200">
                 <a href="{{ route('dashboard') }}" class="min-w-0">
                     <div class="flex items-center gap-2.5 mb-2">
@@ -228,7 +236,7 @@
             </header>
 
             {{-- Page Content --}}
-            <main class="flex-1 p-4 lg:p-6">
+            <main class="flex-1 p-4 lg:p-6 animate-fade-in">
                 @if (session('success'))
                     <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 flex items-center justify-between">
                         <span>{{ session('success') }}</span>

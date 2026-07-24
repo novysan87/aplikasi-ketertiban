@@ -3,8 +3,8 @@
 @php
 $isActive = $active ?? request()->fullUrlIs($href) || request()->is(trim(parse_url($href, PHP_URL_PATH) ?? '', '/'));
 $classes = $isActive
-    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-500'
-    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900';
+    ? 'bg-gradient-to-r from-blue-50 to-white text-blue-700 border-l-[3px] border-blue-500 shadow-sm'
+    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70 border-l-[3px] border-transparent';
 
 $faIcons = [
     'home' => 'fa-solid fa-house',
@@ -26,7 +26,7 @@ $faIcons = [
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 @endphp
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'group flex items-center px-3 py-2 text-sm font-medium rounded-md ' . $classes]) }}>
-    <i class="{{ $faClass }} mr-3 w-5 text-center text-sm flex-shrink-0"></i>
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 ' . $classes]) }}>
+    <i class="{{ $faClass }} mr-3 w-5 text-center text-sm flex-shrink-0 {{ $isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
     {{ $slot }}
 </a>
