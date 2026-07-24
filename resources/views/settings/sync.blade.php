@@ -29,30 +29,28 @@
                 @endif
             </div>
 
-            {{-- Token --}}
+            {{-- Token display --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Token Sinkronisasi</label>
-                <div class="relative">
-                    <input type="password" name="token" value="{{ old('token', $hasToken ? '********' : '') }}"
-                        placeholder="Masukkan token akses"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition pr-24"
-                        id="tokenInput"
-                        @if($hasToken) readonly onfocus="this.removeAttribute('readonly'); this.value=''; this.type='password';" @endif>
-                    @if($hasToken)
-                        <button type="button" onclick="document.getElementById('tokenInput').removeAttribute('readonly'); document.getElementById('tokenInput').value=''; document.getElementById('tokenInput').focus();"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-                            Ganti
-                        </button>
-                    @endif
-                </div>
-                @error('token') <p class="mt-1 text-sm text-blue-600">{{ $message }}</p> @enderror
                 @if($hasToken)
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 block bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono text-gray-800 select-all" id="kesiswaanTokenDisplay">{{ $savedToken }}</code>
+                        <button type="button" onclick="copyKesiswaanToken()"
+                            class="shrink-0 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </div>
+                    <input type="hidden" name="token" value="{{ $savedToken }}">
                     <p class="mt-1.5 text-xs text-green-600 flex items-center">
                         <i class="fa-solid fa-check"></i>
-                        Token sudah tersimpan. Klik <strong>"Ganti"</strong> untuk memperbarui.
+                        Token tersimpan. Ganti dengan mengisi form di bawah jika diperlukan.
                     </p>
                 @else
-                    <p class="mt-1 text-xs text-gray-500">Token didapatkan dari menu Pengaturan → Sync Tokens di Database Kesiswaan.</p>
+                    <input type="password" name="token" value=""
+                        placeholder="Masukkan token akses"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                        id="tokenInput">
+                    <p class="mt-1 text-xs text-gray-500">Token didapatkan dari menu Pengaturan Database Kesiswaan.</p>
                 @endif
             </div>
 
@@ -64,6 +62,26 @@
                         <div class="text-sm text-blue-700">
                             <strong>{{ $studentCount }}</strong> siswa sudah tersinkron. Sinkronisasi ulang akan memperbarui data yang sudah ada.
                         </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Status + Test Connection --}}
+            @if($hasToken && $baseUrl)
+                <div id="kesiswaan-status" class="p-4 bg-slate-50 border border-slate-200 rounded-xl" data-saved-url="{{ $baseUrl }}" data-saved-token="{{ $savedToken }}">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span id="kesiswaan-status-dot" class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                                <span id="kesiswaan-status-text" class="text-sm font-semibold text-slate-500">Belum dites</span>
+                            </div>
+                            <p id="kesiswaan-status-detail" class="mt-1 text-xs text-slate-400">Klik "Test Koneksi" untuk verifikasi.</p>
+                        </div>
+                        <button type="button" id="test-kesiswaan-btn"
+                            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition">
+                            <i class="fa-solid fa-plug"></i>
+                            Test Koneksi
+                        </button>
                     </div>
                 </div>
             @endif
@@ -146,6 +164,73 @@
             }
         });
     }
+
+    function copyKesiswaanToken() {
+        const el = document.getElementById('kesiswaanTokenDisplay');
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent).then(() => {
+            const btn = el.nextElementSibling;
+            if (btn) {
+                btn.innerHTML = '<i class="fa-regular fa-check"></i> Tersalin';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin'; }, 2000);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const testBtn = document.getElementById('test-kesiswaan-btn');
+        const st = document.getElementById('kesiswaan-status');
+        const dot = document.getElementById('kesiswaan-status-dot');
+        const txt = document.getElementById('kesiswaan-status-text');
+        const det = document.getElementById('kesiswaan-status-detail');
+
+        if (testBtn && st && dot && txt && det) {
+            testBtn.addEventListener('click', async function () {
+                const url = (st.dataset.savedUrl || '').replace(/\/+$/, '');
+                const token = st.dataset.savedToken || '';
+
+                testBtn.disabled = true;
+                testBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing...';
+                st.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl';
+                dot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-slate-300';
+                txt.className = 'text-sm font-semibold text-slate-500';
+                txt.textContent = 'Menguji koneksi...';
+                det.textContent = 'Menghubungi ' + url + '...';
+
+                try {
+                    const resp = await fetch('{{ route('settings.sync.test') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        },
+                        body: JSON.stringify({ base_url: url, token: token }),
+                    });
+                    const data = await resp.json();
+
+                    if (resp.ok && data.success) {
+                        st.className = 'p-4 bg-emerald-50 border border-emerald-200 rounded-xl';
+                        dot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-emerald-500';
+                        txt.className = 'text-sm font-semibold text-emerald-800';
+                        txt.textContent = '✅ Terhubung';
+                        det.innerHTML = 'Data siswa: ' + (data.data?.students || '?') + ' siswa terdeteksi';
+                    } else {
+                        throw new Error(data.message || 'Koneksi gagal');
+                    }
+                } catch (err) {
+                    st.className = 'p-4 bg-red-50 border border-red-200 rounded-xl';
+                    dot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-red-500';
+                    txt.className = 'text-sm font-semibold text-red-800';
+                    txt.textContent = '❌ Tidak Terhubung';
+                    det.textContent = err.message;
+                } finally {
+                    testBtn.disabled = false;
+                    testBtn.innerHTML = '<i class="fa-solid fa-plug"></i> Test Koneksi';
+                }
+            });
+        }
+    });
     </script>
 </div>
 @endsection

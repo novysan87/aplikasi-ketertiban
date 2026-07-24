@@ -50,6 +50,41 @@ class SyncController extends Controller
         return view('settings.sync', compact('baseUrl', 'savedToken', 'hasToken', 'studentCount', 'ejurnalToken', 'hasEjurnalToken'));
     }
 
+    public function testKesiswaanConnection(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $url = $request->input('base_url', Setting::getValue('kesiswaan_base_url', ''));
+        $token = $request->input('token', Setting::getValue('kesiswaan_token', ''));
+
+        if (empty($url) || empty($token)) {
+            return response()->json(['success' => false, 'message' => 'URL atau token belum diisi.'], 422);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::acceptJson()
+                ->withToken($token)
+                ->timeout(10)
+                ->get(rtrim($url, '/') . '/api/integration/students?per_page=1');
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $count = $data['meta']['total'] ?? count($data['data'] ?? []);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Koneksi berhasil.',
+                    'data' => [
+                        'students' => $count,
+                    ],
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json(['success' => false, 'message' => 'Token tidak valid (401).'], 422);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Respon server: ' . $response->status()], 422);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat terhubung: ' . $e->getMessage()], 422);
+        }
+    }
+
     public function syncNow(Request $request): RedirectResponse
     {
         $validated = $request->validate([

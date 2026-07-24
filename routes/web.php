@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:sync-data')->group(function () {
         Route::get('/settings/sync', [SyncController::class, 'index'])->name('settings.sync');
         Route::post('/settings/sync', [SyncController::class, 'syncNow'])->name('settings.sync.run');
+        Route::post('/settings/sync/test', [SyncController::class, 'testKesiswaanConnection'])->name('settings.sync.test');
         Route::post('/settings/sync/ejurnal-token', [SyncController::class, 'saveEjurnalToken'])->name('settings.sync.ejurnal-token');
         Route::post('/settings/sync/ejurnal-token/generate', [SyncController::class, 'generateEjurnalToken'])->name('settings.sync.ejurnal-token.generate');
     });
