@@ -19,6 +19,7 @@ class ViolationService
         $violation = DB::transaction(function () use ($data, $userId) {
             $violation = Violation::create([
                 'student_id' => $data['student_id'],
+                'student_class' => \App\Models\Student::where('id', $data['student_id'])->value('class_name'),
                 'violation_type_id' => $data['violation_type_id'],
                 'recorded_by' => $userId,
                 'description' => $data['description'] ?? null,

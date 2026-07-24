@@ -51,9 +51,11 @@ class AttendanceSyncController extends Controller
         ];
 
         $sourceIds = array_unique(array_column($attendances, 'source_student_id'));
-        $studentMap = Student::whereIn('source_id', $sourceIds)
+        \$students = Student::whereIn('source_id', $sourceIds)
             ->where('is_active', true)
-            ->pluck('id', 'source_id');
+            ->get(['id', 'source_id', 'class_name']);
+        $studentMap = $students->pluck('id', 'source_id');
+        $classNameMap = $students->pluck('class_name', 'id');
 
         $alphaCounts = [];
         $alphaDate = null;
@@ -88,6 +90,7 @@ class AttendanceSyncController extends Controller
                     ],
                     [
                         'status' => $localStatus,
+                        'class_name' => $classNameMap[$localStudentId] ?? null,
                         'notes' => $item['notes'] ?? null,
                         'recorded_by' => null,
                     ]

@@ -12,7 +12,7 @@ class Violation extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'student_id', 'violation_type_id', 'recorded_by',
+        'student_id', 'student_class', 'violation_type_id', 'recorded_by',
         'description', 'points', 'sanction', 'location',
         'violation_date', 'violation_time',
         'is_verified', 'verified_by', 'verified_at',

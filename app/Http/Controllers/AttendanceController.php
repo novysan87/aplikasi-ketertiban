@@ -162,6 +162,7 @@ class AttendanceController extends Controller
                     ],
                     [
                         'status' => $data['status'],
+                        'class_name' => $class_name,
                         'recorded_by' => $request->user()->id,
                     ]
                 );

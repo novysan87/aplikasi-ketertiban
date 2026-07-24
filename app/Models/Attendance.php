@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Attendance extends Model
 {
     protected $fillable = [
-        'student_id', 'date', 'lesson_hour',
+        'student_id', 'class_name', 'date', 'lesson_hour',
         'status', 'notes', 'recorded_by',
     ];
 
