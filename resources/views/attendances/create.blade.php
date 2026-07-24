@@ -27,9 +27,19 @@
                         class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         <option value="">Pilih kelas...</option>
                         @foreach($classNames as $cn)
-                            <option value="{{ $cn }}" @selected($className == $cn)>{{ $cn }}</option>
+                            @php
+                                $stat = $classAttendanceStatus[$cn] ?? ['has_data' => false, 'recorded' => 0, 'total' => 0];
+                                $label = $stat['has_data']
+                                    ? '✅ ' . $cn . ' (' . $stat['recorded'] . '/' . $stat['total'] . ')'
+                                    : '⬜ ' . $cn;
+                            @endphp
+                            <option value="{{ $cn }}" @selected($className == $cn)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <div class="mt-1.5 flex items-center gap-3 text-[10px] text-gray-400">
+                        <span>⬜ Belum diisi</span>
+                        <span>✅ Sudah diisi (siswa terdata/total)</span>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal <span class="text-red-500">*</span></label>

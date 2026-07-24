@@ -105,11 +105,30 @@ class AttendanceController extends Controller
             ->orderBy('class_name')
             ->pluck('class_name');
 
+        // Cek status presensi per kelas untuk tanggal ini
+        $classAttendanceStatus = [];
+        foreach ($classNames as $cn) {
+            $studentIdsInClass = Student::where('is_active', true)
+                ->where('class_name', $cn)
+                ->pluck('id');
+            $count = Attendance::where('date', $date)
+                ->whereIn('student_id', $studentIdsInClass)
+                ->distinct('student_id')
+                ->count('student_id');
+            $totalStudents = $studentIdsInClass->count();
+            $classAttendanceStatus[$cn] = [
+                'has_data' => $count > 0,
+                'recorded' => $count,
+                'total' => $totalStudents,
+            ];
+        }
+
         $lessonHours = range(1, 10);
 
         return view('attendances.create', compact(
             'students', 'date', 'className',
-            'classNames', 'lessonHours', 'existing'
+            'classNames', 'lessonHours', 'existing',
+            'classAttendanceStatus'
         ));
     }
 
