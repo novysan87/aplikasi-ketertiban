@@ -57,6 +57,7 @@ class AttendanceSyncController extends Controller
 
         $alphaCounts = [];
         $alphaDate = null;
+        $allStudentIdsInPush = []; // track all students for cleanup
 
         foreach ($attendances as $item) {
             $sourceId = $item['source_student_id'];
@@ -68,6 +69,7 @@ class AttendanceSyncController extends Controller
             }
 
             $localStudentId = $studentMap[$sourceId];
+            $allStudentIdsInPush[$localStudentId] = true;
 
             $statusMap = [
                 'present' => 'hadir',
@@ -107,35 +109,35 @@ class AttendanceSyncController extends Controller
             }
         }
 
-        // Auto-generate / update violations for alpha students
-        if (!empty($alphaCounts)) {
-            $alphaType = ViolationType::where('slug', 'alpha')->first();
+        // Auto-generate / update / hapus violations untuk alpha siswa di push ini
+        $alphaType = ViolationType::where('slug', 'alpha')->first();
 
-            if ($alphaType) {
-                $violationService = app(\App\Services\ViolationService::class);
-                foreach ($alphaCounts as $studentId => $count) {
-                    try {
+        if ($alphaType) {
+            $violationService = app(\App\Services\ViolationService::class);
+
+            foreach ($allStudentIdsInPush as $studentId => $_) {
+                try {
+                    $count = $alphaCounts[$studentId] ?? 0;
+
+                    // Cari existing system-generated violation
+                    $existing = \App\Models\Violation::where('student_id', $studentId)
+                        ->where('violation_type_id', $alphaType->id)
+                        ->where('violation_date', $alphaDate)
+                        ->whereNull('recorded_by')
+                        ->first();
+
+                    if ($count > 0) {
+                        // Ada alpha → buat/update violation
                         $points = max(1, (int) round(($alphaType->points / 10) * $count));
                         $desc = "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)";
 
-                        // Cek apakah sudah ada pelanggaran alpha untuk siswa+ tanggal+type yang sama
-                        // (system-generated: recorded_by IS NULL)
-                        $existing = \App\Models\Violation::where('student_id', $studentId)
-                            ->where('violation_type_id', $alphaType->id)
-                            ->where('violation_date', $alphaDate)
-                            ->whereNull('recorded_by')
-                            ->first();
-
                         if ($existing) {
-                            // Update existing violation (points & description mungkin berubah)
                             $existing->update([
                                 'points' => $points,
                                 'description' => $desc,
                                 'notes' => 'Diperbarui otomatis dari sinkron E-Jurnal.',
                             ]);
-                            $results['violations']++;
                         } else {
-                            // Buat baru (via service biar notifikasi & SP threshold jalan)
                             $violationService->recordViolation([
                                 'student_id' => $studentId,
                                 'violation_type_id' => $alphaType->id,
@@ -145,15 +147,19 @@ class AttendanceSyncController extends Controller
                                 'notes' => 'Dibuat otomatis dari sinkron E-Jurnal.',
                                 'evidences' => [],
                             ], null);
-                            $results['violations']++;
                         }
-                    } catch (\Exception $e) {
-                        $results['errors'][] = "Violation failed for student={$studentId}: " . $e->getMessage();
+                        $results['violations']++;
+                    } elseif ($existing) {
+                        // Tidak ada alpha tapi ada violation lama → hapus (ganti status ke hadir)
+                        $existing->delete();
+                        $results['violations']++;
                     }
+                } catch (\Exception $e) {
+                    $results['errors'][] = "Violation sync failed for student={$studentId}: " . $e->getMessage();
                 }
-            } else {
-                $results['errors'][] = 'Violation type "Alpha" not found. Create a violation type with slug "alpha".';
             }
+        } else {
+            $results['errors'][] = 'Violation type "Alpha" not found. Create a violation type with slug "alpha".';
         }
 
         return response()->json([
