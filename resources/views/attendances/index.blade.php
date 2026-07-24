@@ -92,26 +92,43 @@
             {{-- Calendar grid --}}
             <div class="grid grid-cols-7 gap-1">
                 <template x-for="(day, idx) in days" :key="idx">
-                    <div class="relative min-h-[70px] sm:min-h-[80px] rounded-xl border transition-all duration-150 p-1.5"
+                    <div @click="day.total > 0 && day.isCurrentMonth ? window.location.href = '{{ route('attendances.create', ['date' => '']) }}' + day.dateStr : null"
+                        class="relative min-h-[70px] sm:min-h-[80px] rounded-xl border transition-all duration-150 p-1.5"
+                        :class="day.total > 0 && day.isCurrentMonth ? 'cursor-pointer' : 'cursor-default'"
                         :class="day.isToday
-                            ? 'border-blue-300 bg-blue-50/50 ring-1 ring-blue-200'
+                            ? day.total > 0
+                                ? (day.alpha > 0 ? 'border-red-300 bg-red-50 ring-2 ring-red-200' : 'border-emerald-300 bg-emerald-50 ring-2 ring-emerald-200')
+                                : 'border-blue-300 bg-blue-50 ring-2 ring-blue-200'
                             : day.isCurrentMonth && day.total > 0
-                                ? 'border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50'
+                                ? (day.alpha > 0
+                                    ? 'border-red-200 bg-red-50/70 hover:bg-red-100 hover:border-red-300'
+                                    : 'border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 hover:border-emerald-300')
                                 : day.isCurrentMonth
                                     ? 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
-                                    : 'border-gray-50 bg-gray-50/30 text-gray-300'">
-                        {{-- Date number --}}
-                        <div class="text-xs font-semibold"
-                            :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-700' : 'text-gray-300')"
-                            x-text="day.day">
+                                    : 'border-gray-50 bg-gray-50/30 text-gray-300 cursor-default'">
+                        {{-- Date number + total --}}
+                        <div class="flex items-start justify-between">
+                            <div class="text-xs font-semibold"
+                                :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-700' : 'text-gray-300')"
+                                x-text="day.day">
+                            </div>
+                            <template x-if="day.total > 0 && day.isCurrentMonth">
+                                <span class="text-[10px] font-bold"
+                                    :class="day.alpha > 0 ? 'text-red-500' : 'text-emerald-600'">
+                                    <i class="fa-solid" :class="day.alpha > 0 ? 'fa-circle-exclamation' : 'fa-check-circle'"></i>
+                                </span>
+                            </template>
                         </div>
-                        {{-- Badge jumlah siswa --}}
+                        {{-- Info bar --}}
                         <template x-if="day.total > 0 && day.isCurrentMonth">
-                            <a :href="'{{ route('attendances.create', ['date' => '']) }}' + day.dateStr"
-                                class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[22px] h-[22px] text-[10px] font-bold text-white rounded-full shadow-sm"
-                                :class="day.alpha > 0 ? 'bg-red-500' : 'bg-emerald-500'"
-                                x-text="day.total">
-                            </a>
+                            <div class="mt-1">
+                                <div class="flex items-center justify-between text-[9px] text-gray-400">
+                                    <span x-text="day.total + ' siswa'"></span>
+                                    <template x-if="day.alpha > 0">
+                                        <span class="text-red-400 font-medium" x-text="day.alpha + ' alpha'"></span>
+                                    </template>
+                                </div>
+                            </div>
                         </template>
                     </div>
                 </template>
@@ -120,12 +137,12 @@
         {{-- Legend --}}
         <div class="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center gap-4 text-[11px] text-gray-500">
             <span class="inline-flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Hadir semua
+                <span class="w-3 h-3 rounded-sm bg-emerald-200 border border-emerald-400"></span> Semua hadir
             </span>
             <span class="inline-flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded bg-red-500"></span> Ada alpha
+                <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-300"></span> Ada alpha
             </span>
-            <span class="ml-auto text-gray-400">Klik badge untuk input presensi</span>
+            <span class="ml-auto text-gray-400">&#128073; Klik kotak untuk input presensi</span>
         </div>
     </div>
 </div>
