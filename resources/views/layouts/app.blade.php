@@ -59,7 +59,7 @@
             backdrop-filter: blur(8px);
             margin-top: 6px;
             padding: 8px;
-            width: 300px !important;
+            width: 370px !important;
         }
         .flatpickr-months { margin-bottom: 6px; }
         .flatpickr-current-month .flatpickr-monthDropdown-months { font-weight: 700; font-size: 14px; padding: 4px 8px; border-radius: 8px; }
@@ -70,8 +70,8 @@
             font-size: 13px;
             font-weight: 500;
             margin: 1px;
-            height: 38px;
-            line-height: 38px;
+            height: 42px;
+            line-height: 42px;
             transition: all 0.12s ease;
         }
         .flatpickr-day:hover { background: #f1f5f9 !important; transform: scale(1.05); }
