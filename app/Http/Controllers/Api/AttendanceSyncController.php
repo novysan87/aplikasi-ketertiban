@@ -16,6 +16,33 @@ class AttendanceSyncController extends Controller
      * Receive attendance push from E-Jurnal.
      * Auto-generate violations for alpha students (with notifications).
      */
+    /**
+     * Test connection — validate token and return simple status.
+     * GET /api/v1/attendance/ping?token=***
+     */
+    public function ping(Request $request)
+    {
+        $expectedToken = Setting::getValue('ejurnal_sync_token', '');
+        $providedToken = $request->input('token');
+
+        if (empty($expectedToken) || $providedToken !== $expectedToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token tidak valid.',
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Koneksi OK.',
+            'data' => [
+                'app' => config('app.name', 'Aplikasi Ketertiban'),
+                'students' => Student::where('is_active', true)->count(),
+                'token_valid' => true,
+            ],
+        ]);
+    }
+
     public function sync(Request $request)
     {
         $expectedToken = Setting::getValue('ejurnal_sync_token', '');
