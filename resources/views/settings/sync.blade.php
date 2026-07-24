@@ -132,7 +132,7 @@
                             <div class="text-sm font-medium text-emerald-800">Token Aktif</div>
                             <div class="mt-2 flex items-center gap-2">
                                 <code class="flex-1 block bg-white border border-emerald-200 rounded-lg px-3 py-2 text-sm font-mono text-emerald-900 select-all break-all" id="ejurnalTokenDisplay">{{ $ejurnalToken }}</code>
-                                <button type="button" onclick="copyToken()"
+                                <button type="button" id="copyTokenBtn" onclick="copyToken2()"
                                     class="shrink-0 px-3 py-2 text-xs font-medium text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg hover:bg-emerald-200 transition whitespace-nowrap">
                                     <i class="fa-regular fa-copy"></i> Salin
                                 </button>
@@ -170,15 +170,20 @@
     </div>
 
     <script>
-    function copyToken() {
+    function copyToken2() {
         const el = document.getElementById('ejurnalTokenDisplay');
-        if (!el) return;
-        navigator.clipboard.writeText(el.textContent).then(() => {
-            const btn = el.nextElementSibling;
-            if (btn) {
-                btn.innerHTML = '<i class="fa-regular fa-check"></i> Tersalin';
-                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin'; }, 2000);
-            }
+        const btn = document.getElementById('copyTokenBtn');
+        if (!el || !btn) return;
+        navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+            btn.innerHTML = '<i class="fa-regular fa-check"></i> Tersalin';
+            setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin'; }, 2000);
+        }).catch(() => {
+            // Fallback: select text manually
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
         });
     }
 
