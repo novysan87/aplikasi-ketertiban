@@ -14,11 +14,10 @@ class AttendanceSyncController extends Controller
 {
     /**
      * Receive attendance push from E-Jurnal.
-     * Auto-generate violations for alpha students.
+     * Auto-generate violations for alpha students (with notifications).
      */
     public function sync(Request $request)
     {
-        // Validate token
         $expectedToken = Setting::getValue('ejurnal_sync_token', '');
         $providedToken = $request->input('token');
 
@@ -33,7 +32,6 @@ class AttendanceSyncController extends Controller
             ], 401);
         }
 
-        // Validate payload structure
         $request->validate([
             'attendances' => 'required|array|min:1|max:500',
             'attendances.*.source_student_id' => 'required|integer',
@@ -52,13 +50,11 @@ class AttendanceSyncController extends Controller
             'violations' => 0,
         ];
 
-        // Lookup map: source_student_id -> local student id
         $sourceIds = array_unique(array_column($attendances, 'source_student_id'));
         $studentMap = Student::whereIn('source_id', $sourceIds)
             ->where('is_active', true)
             ->pluck('id', 'source_id');
 
-        // Track alpha counts per student for auto-violation
         $alphaCounts = [];
         $alphaDate = null;
 
@@ -73,7 +69,6 @@ class AttendanceSyncController extends Controller
 
             $localStudentId = $studentMap[$sourceId];
 
-            // Map status from e-jurnal to aplikasi-ketertiban format
             $statusMap = [
                 'present' => 'hadir',
                 'sick' => 'sakit',
@@ -83,7 +78,6 @@ class AttendanceSyncController extends Controller
             $localStatus = $statusMap[$item['status']] ?? $item['status'];
 
             try {
-                // Upsert: unique constraint on (student_id, date, lesson_hour)
                 $attendance = Attendance::updateOrCreate(
                     [
                         'student_id' => $localStudentId,
@@ -93,7 +87,7 @@ class AttendanceSyncController extends Controller
                     [
                         'status' => $localStatus,
                         'notes' => $item['notes'] ?? null,
-                        'recorded_by' => null, // system-generated
+                        'recorded_by' => null,
                     ]
                 );
 
@@ -103,7 +97,6 @@ class AttendanceSyncController extends Controller
                     $results['updated']++;
                 }
 
-                // Track alpha for auto-violation
                 if ($localStatus === 'alpha') {
                     $alphaCounts[$localStudentId] = ($alphaCounts[$localStudentId] ?? 0) + 1;
                     $alphaDate = $item['date'];
@@ -114,22 +107,23 @@ class AttendanceSyncController extends Controller
             }
         }
 
-        // Auto-generate violation for alpha students
+        // Auto-generate violations via service (includes realtime notifications)
         if (!empty($alphaCounts)) {
             $alphaType = ViolationType::where('slug', 'alpha')->first();
 
             if ($alphaType) {
+                $violationService = app(\App\Services\ViolationService::class);
                 foreach ($alphaCounts as $studentId => $count) {
                     try {
-                        \App\Models\Violation::create([
+                        $violationService->recordViolation([
                             'student_id' => $studentId,
                             'violation_type_id' => $alphaType->id,
                             'violation_date' => $alphaDate,
                             'points' => max(1, (int) round(($alphaType->points / 10) * $count)),
                             'description' => "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)",
                             'notes' => 'Dibuat otomatis dari sinkron E-Jurnal.',
-                            'recorded_by' => null,
-                        ]);
+                            'evidences' => [],
+                        ], null);
                         $results['violations']++;
                     } catch (\Exception $e) {
                         $results['errors'][] = "Violation creation failed for student={$studentId}: " . $e->getMessage();

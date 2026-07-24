@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class ViolationService
 {
-    public function recordViolation(array $data, int $userId): Violation
+    public function recordViolation(array $data, ?int $userId = null): Violation
     {
         $violation = DB::transaction(function () use ($data, $userId) {
             $violation = Violation::create([
@@ -72,7 +72,7 @@ class ViolationService
         return $violation;
     }
 
-    protected function generateSpLetter(Student $student, SpThreshold $threshold, int $userId): SpLetter
+    protected function generateSpLetter(Student $student, SpThreshold $threshold, ?int $userId = null): SpLetter
     {
         $schoolName = Setting::getValue('school_name', 'SMK');
         $letterCount = SpLetter::where('sp_threshold_id', $threshold->id)->count() + 1;
