@@ -50,7 +50,7 @@
                     <input type="date" name="date" value="{{ $date }}"
                         class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                 </div>
-                <div class="flex items-end">
+                <div class="flex items-center pt-[22px]">
                     <button type="submit"
                         class="w-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-right text-xs"></i>
