@@ -117,7 +117,11 @@ class AttendanceSyncController extends Controller
 
             foreach ($allStudentIdsInPush as $studentId => $_) {
                 try {
-                    $count = $alphaCounts[$studentId] ?? 0;
+                    // Hitung total alpha di DB (akumulasi dari semua push, bukan cuma push ini)
+                    $totalAlpha = \App\Models\Attendance::where('student_id', $studentId)
+                        ->where('date', $alphaDate)
+                        ->where('status', 'alpha')
+                        ->count();
 
                     // Cari existing system-generated violation
                     $existing = \App\Models\Violation::where('student_id', $studentId)
@@ -126,10 +130,10 @@ class AttendanceSyncController extends Controller
                         ->whereNull('recorded_by')
                         ->first();
 
-                    if ($count > 0) {
+                    if ($totalAlpha > 0) {
                         // Ada alpha → buat/update violation
-                        $points = max(1, (int) round(($alphaType->points / 10) * $count));
-                        $desc = "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)";
+                        $points = max(1, (int) round(($alphaType->points / 10) * $totalAlpha));
+                        $desc = "Alpha - Tidak hadir tanpa keterangan ({$totalAlpha} jam pelajaran)";
 
                         if ($existing) {
                             $existing->update([
