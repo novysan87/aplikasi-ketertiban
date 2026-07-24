@@ -107,7 +107,7 @@ class AttendanceSyncController extends Controller
             }
         }
 
-        // Auto-generate violations via service (includes realtime notifications)
+        // Auto-generate / update violations for alpha students
         if (!empty($alphaCounts)) {
             $alphaType = ViolationType::where('slug', 'alpha')->first();
 
@@ -115,18 +115,40 @@ class AttendanceSyncController extends Controller
                 $violationService = app(\App\Services\ViolationService::class);
                 foreach ($alphaCounts as $studentId => $count) {
                     try {
-                        $violationService->recordViolation([
-                            'student_id' => $studentId,
-                            'violation_type_id' => $alphaType->id,
-                            'violation_date' => $alphaDate,
-                            'points' => max(1, (int) round(($alphaType->points / 10) * $count)),
-                            'description' => "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)",
-                            'notes' => 'Dibuat otomatis dari sinkron E-Jurnal.',
-                            'evidences' => [],
-                        ], null);
-                        $results['violations']++;
+                        $points = max(1, (int) round(($alphaType->points / 10) * $count));
+                        $desc = "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)";
+
+                        // Cek apakah sudah ada pelanggaran alpha untuk siswa+ tanggal+type yang sama
+                        // (system-generated: recorded_by IS NULL)
+                        $existing = \App\Models\Violation::where('student_id', $studentId)
+                            ->where('violation_type_id', $alphaType->id)
+                            ->where('violation_date', $alphaDate)
+                            ->whereNull('recorded_by')
+                            ->first();
+
+                        if ($existing) {
+                            // Update existing violation (points & description mungkin berubah)
+                            $existing->update([
+                                'points' => $points,
+                                'description' => $desc,
+                                'notes' => 'Diperbarui otomatis dari sinkron E-Jurnal.',
+                            ]);
+                            $results['violations']++;
+                        } else {
+                            // Buat baru (via service biar notifikasi & SP threshold jalan)
+                            $violationService->recordViolation([
+                                'student_id' => $studentId,
+                                'violation_type_id' => $alphaType->id,
+                                'violation_date' => $alphaDate,
+                                'points' => $points,
+                                'description' => $desc,
+                                'notes' => 'Dibuat otomatis dari sinkron E-Jurnal.',
+                                'evidences' => [],
+                            ], null);
+                            $results['violations']++;
+                        }
                     } catch (\Exception $e) {
-                        $results['errors'][] = "Violation creation failed for student={$studentId}: " . $e->getMessage();
+                        $results['errors'][] = "Violation failed for student={$studentId}: " . $e->getMessage();
                     }
                 }
             } else {
