@@ -8,55 +8,44 @@
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Presensi Siswa</h1>
-            <p class="text-sm text-gray-500 mt-1">Pencatatan kehadiran siswa per jam pelajaran</p>
+            <p class="text-sm text-gray-500 mt-1">Pantau dan kelola kehadiran siswa per jam pelajaran</p>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('attendances.recap') }}"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-violet-600 bg-violet-50 border border-violet-200 rounded-xl hover:bg-violet-100 transition shadow-sm">
-                <i class="fa-solid fa-chart-simple text-xs"></i>
-                Rekap Bulanan
-            </a>
-            <a href="{{ route('attendances.create') }}"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
-                <i class="fa-solid fa-plus text-xs"></i>
-                Input Presensi
-            </a>
-        </div>
+        <a href="{{ route('attendances.create') }}"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
+            <i class="fa-solid fa-plus text-xs"></i>
+            Input Presensi
+        </a>
     </div>
 
-    {{-- Quick Stats --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 shadow-sm">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-clipboard-check text-white text-6xl"></i></div>
-            <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Dipresensi Hari Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $todayStudents }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">siswa tercatat</p>
+    {{-- Stats Hari Ini --}}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="fa-regular fa-calendar-check"></i>
+                <span>Siswa Hari Ini</span>
             </div>
+            <div class="mt-2 text-3xl font-bold text-gray-900">{{ $todayStudents }}</div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-5 shadow-sm">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-xmark text-white text-6xl"></i></div>
-            <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Alpha Hari Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $todayAlphaStudents }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">siswa tanpa keterangan</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-5">
+            <div class="flex items-center gap-2 text-sm text-red-600">
+                <i class="fa-solid fa-exclamation-circle"></i>
+                <span>Alpha Hari Ini</span>
             </div>
+            <div class="mt-2 text-3xl font-bold text-red-600">{{ $todayAlphaStudents }}</div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 shadow-sm">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-user text-white text-6xl"></i></div>
-            <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Bulan Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $monthStudents }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">pernah dipresensi</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="fa-regular fa-calendar-alt"></i>
+                <span>Siswa Bulan Ini</span>
             </div>
+            <div class="mt-2 text-3xl font-bold text-gray-900">{{ $monthStudents }}</div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 to-violet-600 p-5 shadow-sm">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10"><i class="fa-solid fa-chart-bar text-white text-6xl"></i></div>
-            <div class="relative z-10">
-                <p class="text-xs font-semibold text-white/70 uppercase tracking-wider">Siswa Alpha Bulan Ini</p>
-                <p class="text-3xl font-bold text-white mt-1">{{ $monthAlphaStudents }}</p>
-                <p class="text-[10px] text-white/50 mt-0.5">pernah alpha</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-5">
+            <div class="flex items-center gap-2 text-sm text-red-600">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <span>Alpha Bulan Ini</span>
             </div>
+            <div class="mt-2 text-3xl font-bold text-red-600">{{ $monthAlphaStudents }}</div>
         </div>
     </div>
 
@@ -92,57 +81,43 @@
             {{-- Calendar grid --}}
             <div class="grid grid-cols-7 gap-1">
                 <template x-for="(day, idx) in days" :key="idx">
-                    <div @click="day.total > 0 && day.isCurrentMonth ? window.location.href = '{{ route('attendances.create', ['date' => '']) }}' + day.dateStr : null"
-                        class="relative min-h-[70px] sm:min-h-[80px] rounded-xl border transition-all duration-150 p-1.5"
-                        :class="day.total > 0 && day.isCurrentMonth ? 'cursor-pointer' : 'cursor-default'"
-                        :class="day.isToday
-                            ? day.total > 0
-                                ? (day.alpha > 0 ? 'border-red-300 bg-red-50 ring-2 ring-red-200' : 'border-emerald-300 bg-emerald-50 ring-2 ring-emerald-200')
-                                : 'border-blue-300 bg-blue-50 ring-2 ring-blue-200'
-                            : day.isCurrentMonth && day.total > 0
-                                ? (day.alpha > 0
-                                    ? 'border-red-200 bg-red-50/70 hover:bg-red-100 hover:border-red-300'
-                                    : 'border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 hover:border-emerald-300')
-                                : day.isCurrentMonth
-                                    ? 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
-                                    : 'border-gray-50 bg-gray-50/30 text-gray-300 cursor-default'">
-                        {{-- Date number + total --}}
-                        <div class="flex items-start justify-between">
-                            <div class="text-xs font-semibold"
-                                :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-700' : 'text-gray-300')"
-                                x-text="day.day">
-                            </div>
-                            <template x-if="day.total > 0 && day.isCurrentMonth">
-                                <span class="text-[10px] font-bold"
-                                    :class="day.alpha > 0 ? 'text-red-500' : 'text-emerald-600'">
-                                    <i class="fa-solid" :class="day.alpha > 0 ? 'fa-circle-exclamation' : 'fa-check-circle'"></i>
-                                </span>
-                            </template>
+                    <a :href="day.total > 0 && day.isCurrentMonth ? '{{ route('attendances.create', ['date' => '']) }}' + day.dateStr : null"
+                        class="relative min-h-[70px] sm:min-h-[80px] rounded-xl border transition-all duration-150 p-1.5 block"
+                        :class="[
+                            day.isToday
+                                ? 'border-blue-300 bg-blue-50/50 ring-1 ring-blue-200'
+                                : day.isCurrentMonth && day.total > 0
+                                    ? 'border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50'
+                                    : day.isCurrentMonth
+                                        ? 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                        : 'border-gray-50 bg-gray-50/30 text-gray-300',
+                            day.total > 0 && day.isCurrentMonth ? 'cursor-pointer' : 'cursor-default'
+                        ]">
+                        {{-- Date number --}}
+                        <div class="text-xs font-semibold"
+                            :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-700' : 'text-gray-300')"
+                            x-text="day.day">
                         </div>
-                        {{-- Info bar --}}
+                        {{-- Badge jumlah siswa --}}
                         <template x-if="day.total > 0 && day.isCurrentMonth">
-                            <div class="mt-1">
-                                <div class="flex items-center justify-between text-[9px] text-gray-400">
-                                    <span x-text="day.total + ' siswa'"></span>
-                                    <template x-if="day.alpha > 0">
-                                        <span class="text-red-400 font-medium" x-text="day.alpha + ' alpha'"></span>
-                                    </template>
-                                </div>
-                            </div>
+                            <span class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[22px] h-[22px] text-[10px] font-bold text-white rounded-full shadow-sm"
+                                :class="day.alpha > 0 ? 'bg-red-500' : 'bg-emerald-500'">
+                                <span x-text="day.total"></span>
+                            </span>
                         </template>
-                    </div>
+                    </a>
                 </template>
             </div>
         </div>
         {{-- Legend --}}
         <div class="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center gap-4 text-[11px] text-gray-500">
             <span class="inline-flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-sm bg-emerald-200 border border-emerald-400"></span> Semua hadir
+                <span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Hadir semua
             </span>
             <span class="inline-flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-300"></span> Ada alpha
+                <span class="w-2.5 h-2.5 rounded bg-red-500"></span> Ada alpha
             </span>
-            <span class="ml-auto text-gray-400">&#128073; Klik kotak untuk input presensi</span>
+            <span class="ml-auto text-gray-400">Klik kotak untuk input presensi</span>
         </div>
     </div>
 </div>
@@ -233,7 +208,8 @@
                     .then(data => {
                         this.attendanceData = data;
                         this.render();
-                    });
+                    })
+                    .catch(err => console.error('Calendar fetch error:', err));
             }
         };
     }
