@@ -3,7 +3,7 @@
 @section('title', 'Hak Akses Role')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
+<div>
     {{-- Header --}}
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Hak Akses Role</h1>
