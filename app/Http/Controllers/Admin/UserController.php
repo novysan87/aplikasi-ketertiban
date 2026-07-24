@@ -40,7 +40,7 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,bk,wali_kelas,staff'],
+            'role' => ['required', 'in:admin,bk,wali_kelas,staff,other'],
             'is_active' => ['boolean'],
         ]);
 
@@ -60,7 +60,7 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,bk,wali_kelas,staff'],
+            'role' => ['required', 'in:admin,bk,wali_kelas,staff,other'],
             'is_active' => ['boolean'],
         ]);
 

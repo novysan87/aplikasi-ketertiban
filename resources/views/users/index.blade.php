@@ -34,6 +34,7 @@
                     <option value="bk" @selected(request('role') == 'bk')>BK</option>
                     <option value="wali_kelas" @selected(request('role') == 'wali_kelas')>Wali Kelas</option>
                     <option value="staff" @selected(request('role') == 'staff')>Staff</option>
+                    <option value="other" @selected(request('role') == 'other')>Other</option>
                 </select>
                 <div class="flex space-x-2">
                     <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition">
@@ -209,6 +210,7 @@
                                 <option value="admin">Admin — Full akses</option>
                                 <option value="wali_kelas">Wali Kelas — Lihat kelas sendiri</option>
                                 <option value="staff">Staff — Terbatas</option>
+                                <option value="other">Other — Guest / Terbatas</option>
                             </select>
                         </div>
                     </div>

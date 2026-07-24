@@ -19,7 +19,7 @@ class PermissionController extends Controller
             ->get()
             ->groupBy('group');
 
-        $roles = ['admin', 'bk', 'wali_kelas', 'staff'];
+        $roles = ['admin', 'bk', 'wali_kelas', 'staff', 'other'];
 
         $rolePermissions = [];
         foreach ($roles as $role) {
