@@ -293,15 +293,15 @@ class AttendanceController extends Controller
                     $key = $dateStr . '-' . $student->id;
                     $studentAtt = $allAttendances->get($key, collect());
 
-                    // Per hari: 1 jika ada minimal 1 record status tsb
+                    // Per hari: binary untuk hadir/sakit/izin/terlambat
                     $hadir = $studentAtt->where('status', 'hadir')->count() > 0 ? 1 : 0;
-                    // Alpha proporsional: jumlah jam alpha / total jam
-                    $total = $studentAtt->count();
+                    // Alpha proporsional: jumlah jam alpha / 10 (max jam sekolah per hari)
                     $alphaCount = $studentAtt->where('status', 'alpha')->count();
-                    $alpha = $total > 0 ? round($alphaCount / $total, 1) : 0;
+                    $alpha = round($alphaCount / 10, 1);
                     $sakit = $studentAtt->where('status', 'sakit')->count() > 0 ? 1 : 0;
                     $izin = $studentAtt->where('status', 'izin')->count() > 0 ? 1 : 0;
                     $terlambat = $studentAtt->where('status', 'terlambat')->count() > 0 ? 1 : 0;
+                    $total = $studentAtt->count();
 
                     $row['students'][$student->id] = [
                         'name' => $student->full_name,
@@ -407,12 +407,9 @@ class AttendanceController extends Controller
                         if ($hasIzin) $iCount++;
                         if ($hasTerlambat) $tCount++;
 
-                        // Alpha proporsional: jika semua jam di hari itu alpha
-                        $totalJam = $dayAtt->count();
+                        // Alpha proporsional: jumlah jam alpha / 10 (max jam sekolah per hari)
                         $alphaJam = $dayAtt->where('status', 'alpha')->count();
-                        if ($totalJam > 0) {
-                            $aCount += round($alphaJam / $totalJam, 1);
-                        }
+                        $aCount += round($alphaJam / 10, 1);
                     }
 
                     $row['students'][$student->id] = [
