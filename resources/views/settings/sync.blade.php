@@ -46,10 +46,17 @@
                     </div>
                     <input type="hidden" name="token" value="{{ $savedToken }}" id="kesiswaanTokenHidden">
                     <div id="kesiswaan-token-edit" class="hidden">
-                        <input type="text" name="token_new" value="{{ $savedToken }}"
-                            class="w-full px-4 py-2.5 border border-amber-300 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
-                            id="kesiswaanTokenInput">
-                        <p class="mt-1 text-xs text-amber-600">Edit token di atas, lalu simpan form.</p>
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="token_new" value="{{ $savedToken }}"
+                                class="flex-1 px-4 py-2.5 border border-amber-300 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                                id="kesiswaanTokenInput">
+                            <button type="button" onclick="simpanKesiswaanToken()"
+                                class="shrink-0 px-4 py-2.5 text-sm font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm inline-flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                Simpan
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-amber-600">Edit token, lalu klik Simpan.</p>
                     </div>
                     <p class="mt-1.5 text-xs text-green-600 flex items-center">
                         <i class="fa-solid fa-check"></i>
@@ -196,6 +203,15 @@
         document.getElementById('kesiswaan-token-row').classList.add('hidden');
         document.getElementById('kesiswaan-token-edit').classList.remove('hidden');
         document.getElementById('kesiswaanTokenHidden').disabled = true;
+    }
+
+    function simpanKesiswaanToken() {
+        const newToken = document.getElementById('kesiswaanTokenInput').value;
+        document.getElementById('kesiswaanTokenHidden').value = newToken;
+        document.getElementById('kesiswaanTokenHidden').disabled = false;
+        // Submit the parent form
+        const form = document.getElementById('kesiswaanTokenInput').closest('form');
+        if (form) form.submit();
     }
 
     // On form submit: copy token_new to hidden token field
