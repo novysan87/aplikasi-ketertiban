@@ -69,7 +69,7 @@ class PermissionController extends Controller
         }
 
         // Clear cache
-        foreach (['admin', 'bk', 'wali_kelas', 'staff'] as $role) {
+        foreach (['admin', 'bk', 'wali_kelas', 'staff', 'other'] as $role) {
             Cache::forget('role_permissions:' . $role);
         }
 

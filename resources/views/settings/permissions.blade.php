@@ -22,7 +22,16 @@
                     <tr class="bg-gray-50 border-b border-gray-200">
                         <th class="text-left px-4 py-3 font-semibold text-gray-700">Permission</th>
                         @foreach ($roles as $role)
-                            <th class="text-center px-3 py-3 font-semibold text-gray-700 capitalize">{{ $role }}</th>
+                            @php
+                                $label = [
+                                    'admin' => 'Admin',
+                                    'bk' => 'BK',
+                                    'wali_kelas' => 'Wali Kelas',
+                                    'staff' => 'Staff',
+                                    'other' => 'Other (Guest)',
+                                ][$role] ?? ucfirst($role);
+                            @endphp
+                            <th class="text-center px-3 py-3 font-semibold text-gray-700">{{ $label }}</th>
                         @endforeach
                     </tr>
                 </thead>
