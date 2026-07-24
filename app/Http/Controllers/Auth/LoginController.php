@@ -25,6 +25,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            // Role 'other' langsung ke presensi, bukan dashboard
+            if (Auth::user()->role === 'other') {
+                return redirect()->route('attendances.index');
+            }
+
             return redirect()->intended(route('dashboard'));
         }
 
