@@ -6,53 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\ViolationType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AttendanceSyncController extends Controller
 {
     /**
-     * Test connection — validate token and return simple status.
-     * GET /api/v1/attendance/ping?token=xxx
-     */
-    public function ping(Request $request)
-    {
-        $expectedToken = Setting::getValue('ejurnal_sync_token', '');
-        $providedToken = $request->input('token');
-
-        if (empty($expectedToken) || $providedToken !== $expectedToken) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Token tidak valid.',
-            ], 401);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Koneksi OK.',
-            'data' => [
-                'app' => config('app.name', 'Aplikasi Ketertiban'),
-                'students' => Student::where('is_active', true)->count(),
-                'token_valid' => true,
-            ],
-        ]);
-    }
-    /**
      * Receive attendance push from E-Jurnal.
-     * 
-     * Request body:
-     * {
-     *   "token": "shared-secret",
-     *   "attendances": [
-     *     {
-     *       "source_student_id": 123,
-     *       "date": "2026-07-24",
-     *       "lesson_hour": 1,
-     *       "status": "hadir",
-     *       "notes": null
-     *     }
-     *   ]
-     * }
+     * Auto-generate violations for alpha students.
      */
     public function sync(Request $request)
     {
@@ -87,6 +49,7 @@ class AttendanceSyncController extends Controller
             'updated' => 0,
             'skipped' => 0,
             'errors' => [],
+            'violations' => 0,
         ];
 
         // Lookup map: source_student_id -> local student id
@@ -95,10 +58,13 @@ class AttendanceSyncController extends Controller
             ->where('is_active', true)
             ->pluck('id', 'source_id');
 
+        // Track alpha counts per student for auto-violation
+        $alphaCounts = [];
+        $alphaDate = null;
+
         foreach ($attendances as $item) {
             $sourceId = $item['source_student_id'];
 
-            // Skip if student not found in local DB
             if (!isset($studentMap[$sourceId])) {
                 $results['skipped']++;
                 $results['errors'][] = "Student source_id={$sourceId} not found";
@@ -136,15 +102,47 @@ class AttendanceSyncController extends Controller
                 } else {
                     $results['updated']++;
                 }
+
+                // Track alpha for auto-violation
+                if ($localStatus === 'alpha') {
+                    $alphaCounts[$localStudentId] = ($alphaCounts[$localStudentId] ?? 0) + 1;
+                    $alphaDate = $item['date'];
+                }
             } catch (\Exception $e) {
                 $results['errors'][] = "student_id={$sourceId} jam={$item['lesson_hour']}: " . $e->getMessage();
                 $results['skipped']++;
             }
         }
 
+        // Auto-generate violation for alpha students
+        if (!empty($alphaCounts)) {
+            $alphaType = ViolationType::where('slug', 'alpha')->first();
+
+            if ($alphaType) {
+                foreach ($alphaCounts as $studentId => $count) {
+                    try {
+                        \App\Models\Violation::create([
+                            'student_id' => $studentId,
+                            'violation_type_id' => $alphaType->id,
+                            'violation_date' => $alphaDate,
+                            'points' => max(1, (int) round(($alphaType->points / 10) * $count)),
+                            'description' => "Alpha - Tidak hadir tanpa keterangan ({$count} jam pelajaran)",
+                            'notes' => 'Dibuat otomatis dari sinkron E-Jurnal.',
+                            'recorded_by' => null,
+                        ]);
+                        $results['violations']++;
+                    } catch (\Exception $e) {
+                        $results['errors'][] = "Violation creation failed for student={$studentId}: " . $e->getMessage();
+                    }
+                }
+            } else {
+                $results['errors'][] = 'Violation type "Alpha" not found. Create a violation type with slug "alpha".';
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'message' => "Sync completed: {$results['created']} created, {$results['updated']} updated, {$results['skipped']} skipped.",
+            'message' => "Sync completed: {$results['created']} created, {$results['updated']} updated, {$results['skipped']} skipped, {$results['violations']} violations.",
             'results' => $results,
         ]);
     }
