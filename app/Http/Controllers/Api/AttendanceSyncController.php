@@ -51,7 +51,7 @@ class AttendanceSyncController extends Controller
         ];
 
         $sourceIds = array_unique(array_column($attendances, 'source_student_id'));
-        \$students = Student::whereIn('source_id', $sourceIds)
+        $students = Student::whereIn('source_id', $sourceIds)
             ->where('is_active', true)
             ->get(['id', 'source_id', 'class_name']);
         $studentMap = $students->pluck('id', 'source_id');
