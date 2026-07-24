@@ -121,30 +121,6 @@
                 <p class="text-sm text-gray-500 mt-1">Generate token untuk diinput di Aplikasi E-Jurnal Guru agar bisa push data presensi.</p>
             </div>
 
-            {{-- Status + Test Connection --}}
-            @if($hasEjurnalToken)
-                <div id="ejurnal-status" class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span id="ejurnal-status-dot" class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300"></span>
-                                <span id="ejurnal-status-text" class="text-sm font-semibold text-slate-500">Belum diverifikasi</span>
-                            </div>
-                            <p id="ejurnal-status-detail" class="mt-1 text-xs text-slate-400">Masukkan URL E-Jurnal dan klik Test Koneksi.</p>
-                        </div>
-                    </div>
-                    <div class="mt-3 flex items-center gap-2">
-                        <input type="text" id="ejurnal-test-url" placeholder="https://ejurnal.sekolah.sch.id"
-                            class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                        <button type="button" id="test-ejurnal-btn"
-                            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition">
-                            <i class="fa-solid fa-plug"></i>
-                            Test Koneksi
-                        </button>
-                    </div>
-                </div>
-            @endif
-
             {{-- Token display --}}
             @if($hasEjurnalToken)
                 <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
@@ -302,64 +278,6 @@
             });
         }
 
-        // === E-Jurnal Connection Test ===
-        const ejBtn = document.getElementById('test-ejurnal-btn');
-        const ejSt = document.getElementById('ejurnal-status');
-        const ejDot = document.getElementById('ejurnal-status-dot');
-        const ejTxt = document.getElementById('ejurnal-status-text');
-        const ejDet = document.getElementById('ejurnal-status-detail');
-        const ejUrlInput = document.getElementById('ejurnal-test-url');
-
-        if (ejBtn && ejSt && ejDot && ejTxt && ejDet && ejUrlInput) {
-            ejBtn.addEventListener('click', async function () {
-                const tokenDisplay = document.getElementById('ejurnalTokenDisplay');
-                const token = tokenDisplay ? tokenDisplay.textContent.trim() : '';
-                const url = ejUrlInput.value.trim().replace(/\/+$/, '');
-
-                if (!url || !token) {
-                    ejSt.className = 'p-4 bg-amber-50 border border-amber-200 rounded-xl';
-                    ejDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-amber-400';
-                    ejTxt.className = 'text-sm font-semibold text-amber-800';
-                    ejTxt.textContent = '⚠️ URL atau token belum lengkap';
-                    ejDet.textContent = 'Isi URL E-Jurnal dan pastikan token sudah digenerate.';
-                    return;
-                }
-
-                ejBtn.disabled = true;
-                ejBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing...';
-                ejSt.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl';
-                ejDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-slate-300';
-                ejTxt.className = 'text-sm font-semibold text-slate-500';
-                ejTxt.textContent = 'Menguji koneksi...';
-                ejDet.textContent = 'Menghubungi ' + url + '...';
-
-                try {
-                    const resp = await fetch(url + '/api/v1/ping?token=' + encodeURIComponent(token));
-                    const data = await resp.json();
-
-                    if (resp.ok && data.success) {
-                        ejSt.className = 'p-4 bg-emerald-50 border border-emerald-200 rounded-xl';
-                        ejDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-emerald-500';
-                        ejTxt.className = 'text-sm font-semibold text-emerald-800';
-                        ejTxt.textContent = '✅ Terhubung ke E-Jurnal';
-                        ejDet.innerHTML = 'Siswa: ' + (data.data?.students || '?') + ' terdata';
-                    } else {
-                        throw new Error(data.message || 'Token tidak valid');
-                    }
-                } catch (err) {
-                    ejSt.className = 'p-4 bg-red-50 border border-red-200 rounded-xl';
-                    ejDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-red-500';
-                    ejTxt.className = 'text-sm font-semibold text-red-800';
-                    ejTxt.textContent = '❌ Tidak Terhubung';
-                    ejDet.textContent = err.message.includes('Failed to fetch')
-                        ? 'Tidak dapat menjangkau ' + url + '. Periksa URL.'
-                        : err.message;
-                } finally {
-                    ejBtn.disabled = false;
-                    ejBtn.innerHTML = '<i class="fa-solid fa-plug"></i> Test Koneksi';
-                }
-            });
-        }
     });
     </script>
 </div>
