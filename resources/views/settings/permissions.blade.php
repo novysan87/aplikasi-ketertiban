@@ -112,18 +112,14 @@
                                                         <i class="fa-solid fa-lock text-xs text-blue-400"></i>
                                                     </div>
                                                 @else
-                                                    <label class="relative inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 transition-all duration-150 cursor-pointer
-                                                        {{ $checked ? 'bg-blue-500 border-blue-500 shadow-sm shadow-blue-200' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50' }}"
-                                                        onclick="this.querySelector('input').click(); return false;">
+                                                    <label class="relative inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 transition-all duration-150 cursor-pointer select-none
+                                                        {{ $checked ? 'bg-blue-500 border-blue-500 shadow-sm shadow-blue-200' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50' }}">
                                                         <input type="checkbox"
                                                             name="permissions[{{ $role }}][]"
                                                             value="{{ $perm->id }}"
                                                             {{ $checked ? 'checked' : '' }}
-                                                            onchange="this.parentElement.className = 'relative inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 transition-all duration-150 cursor-pointer ' + (this.checked ? 'bg-blue-500 border-blue-500 shadow-sm shadow-blue-200' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50');"
-                                                            class="sr-only">
-                                                        @if($checked)
-                                                            <i class="fa-solid fa-check text-white text-xs"></i>
-                                                        @endif
+                                                            class="peer sr-only">
+                                                        <i class="fa-solid fa-check text-white text-xs peer-checked:opacity-100 opacity-0 transition-opacity duration-150"></i>
                                                     </label>
                                                 @endif
                                             </td>
