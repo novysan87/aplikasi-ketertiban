@@ -33,8 +33,18 @@
                         class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
 
-                {{-- Dropdowns --}}
+                {{-- Dropdowns: Jurusan → Tingkat Kelas → Kelas --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Jurusan</label>
+                        <select name="department"
+                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="">Semua Jurusan</option>
+                            @foreach($departments as $code => $name)
+                                <option value="{{ $code }}" @selected(request('department') == $code)>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tingkat Kelas</label>
                         <select name="class_level"
@@ -52,16 +62,6 @@
                             <option value="">Semua Kelas</option>
                             @foreach($classNames as $cn)
                                 <option value="{{ $cn }}" @selected(request('class_name') == $cn)>{{ $cn }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Jurusan</label>
-                        <select name="department"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            <option value="">Semua Jurusan</option>
-                            @foreach($departments as $code => $name)
-                                <option value="{{ $code }}" @selected(request('department') == $code)>{{ $name }} ({{ $code }})</option>
                             @endforeach
                         </select>
                     </div>

@@ -50,6 +50,7 @@ class StudentReportController extends Controller
             ->whereNotNull('department_code')
             ->where('department_code', '!=', '')
             ->get()
+            ->sortBy('department_name')
             ->pluck('department_name', 'department_code');
 
         return view('students.index', compact('students', 'classLevels', 'classNames', 'departments'));
