@@ -18,13 +18,15 @@
     </div>
 
     {{-- Pilih Kelas + Tanggal --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
-        <form method="GET" class="p-5">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="rounded-2xl bg-gradient-to-br from-white to-gray-50/80 border border-gray-200 shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
+        <form method="GET" class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelas <span class="text-red-500">*</span></label>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-school text-gray-400 mr-1"></i> Kelas <span class="text-red-500">*</span>
+                    </label>
                     <select name="class_name" required
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                         <option value="">Pilih kelas...</option>
                         @foreach($classNames as $cn)
                             @php
@@ -37,18 +39,20 @@
                         @endforeach
                     </select>
                     <div class="mt-1.5 flex items-center gap-3 text-[10px] text-gray-400">
-                        <span>⬜ Belum diisi</span>
-                        <span>✅ Sudah diisi (siswa terdata/total)</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-gray-300"></span> Belum</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-emerald-400"></span> Terisi</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal <span class="text-red-500">*</span></label>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-calendar text-gray-400 mr-1"></i> Tanggal <span class="text-red-500">*</span>
+                    </label>
                     <input type="date" name="date" value="{{ $date }}"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                 </div>
                 <div class="flex items-end">
                     <button type="submit"
-                        class="w-full px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm inline-flex items-center justify-center gap-2">
+                        class="w-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-right text-xs"></i>
                         Lanjutkan
                     </button>
@@ -81,19 +85,23 @@
             <input type="hidden" name="auto_violation" value="1">
 
             {{-- Info bar --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-4">
-                <div class="px-6 py-3 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-br from-gray-50 to-gray-100/50 border-b border-gray-100">
+            <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-gray-200 shadow-sm overflow-hidden mb-5 transition-all duration-200 hover:shadow-md">
+                <div class="px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-users text-gray-400"></i>
-                        <span class="text-sm font-semibold text-gray-700">{{ $students->count() }} siswa</span>
-                        <span class="w-px h-4 bg-gray-200"></span>
-                        <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}</span>
-                        <span class="w-px h-4 bg-gray-200"></span>
-                        <span class="text-xs text-gray-500">Kelas {{ $className }}</span>
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-users text-white text-xs"></i>
+                        </div>
+                        <div>
+                            <span class="text-sm font-bold text-gray-800">{{ $students->count() }} siswa</span>
+                            <span class="mx-2 text-gray-300">•</span>
+                            <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}</span>
+                            <span class="mx-2 text-gray-300">•</span>
+                            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg">{{ $className }}</span>
+                        </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('attendances.recap', ['class_name' => $className]) }}"
-                            class="text-xs font-semibold text-violet-600 hover:text-violet-800 transition inline-flex items-center gap-1">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-violet-600 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition">
                             <i class="fa-solid fa-chart-simple"></i> Rekap
                         </a>
                     </div>
@@ -101,48 +109,58 @@
             </div>
 
             {{-- Grid table --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead>
-                            <tr class="bg-gray-50/80">
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50/80 z-10 min-w-[150px]">Siswa</th>
-                                <th class="px-1 py-3 text-center text-[9px] font-semibold text-gray-300 uppercase tracking-wider min-w-[80px]">Set</th>
+                            <tr class="bg-gradient-to-r from-gray-50 to-white">
+                                <th class="px-4 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest sticky left-0 bg-gradient-to-r from-gray-50 to-white z-10 min-w-[160px]">
+                                    <i class="fa-solid fa-user text-gray-300 mr-1.5"></i> Siswa
+                                </th>
+                                <th class="px-1 py-3.5 text-center text-[9px] font-bold text-gray-300 uppercase tracking-wider min-w-[90px]">
+                                    <div class="inline-flex items-center gap-0.5 bg-gray-100/80 px-2 py-1 rounded-lg">
+                                        <span class="text-gray-400">Set</span>
+                                        <i class="fa-solid fa-chevron-down text-[8px] text-gray-300"></i>
+                                    </div>
+                                </th>
                                 @foreach($lessonHours as $lh)
-                                    <th class="px-2 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider min-w-[70px]">
-                                        Jam ke-{{ $lh }}
+                                    <th class="px-2 py-3.5 text-center min-w-[76px]">
+                                        <div class="inline-flex flex-col items-center">
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Jam</span>
+                                            <span class="text-sm font-black text-gray-700 -mt-0.5">{{ $lh }}</span>
+                                        </div>
                                     </th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @foreach($students as $s)
-                                <tr class="hover:bg-gray-50/50 transition">
+                                <tr class="hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-white transition-all duration-100 group">
                                     {{-- Student name --}}
-                                    <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white z-10">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                                <span class="text-[10px] font-bold text-gray-500">{{ strtoupper(substr($s->full_name, 0, 1)) }}</span>
+                                    <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white group-hover:bg-gradient-to-r group-hover:from-blue-50/30 group-hover:to-white z-10 transition-all duration-100">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:from-blue-100 group-hover:to-blue-200 transition-all duration-200">
+                                                <span class="text-[11px] font-bold text-gray-500 group-hover:text-blue-600 transition-colors">{{ strtoupper(substr($s->full_name, 0, 1)) }}</span>
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-xs font-semibold text-gray-900 truncate max-w-[130px]">{{ $s->full_name }}</p>
+                                                <p class="text-xs font-semibold text-gray-900 truncate max-w-[140px]">{{ $s->full_name }}</p>
                                             </div>
                                         </div>
                                     </td>
 
                                     {{-- Per-row bulk buttons --}}
                                     <td class="px-1 py-2.5 text-center whitespace-nowrap">
-                                        <div class="flex items-center gap-px">
+                                        <div class="flex items-center justify-center gap-0.5 bg-gray-50/80 rounded-lg p-1 border border-gray-100">
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'hadir')" title="Semua Hadir"
-                                                class="w-5 h-5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 hover:bg-emerald-200 transition">H</button>
+                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 hover:bg-emerald-200 hover:scale-110 transition-all duration-150 shadow-sm">H</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'sakit')" title="Semua Sakit"
-                                                class="w-5 h-5 rounded text-[9px] font-bold bg-purple-100 text-purple-700 border border-purple-300 hover:bg-purple-200 transition">S</button>
+                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-purple-100 text-purple-700 border border-purple-300 hover:bg-purple-200 hover:scale-110 transition-all duration-150 shadow-sm">S</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'izin')" title="Semua Izin"
-                                                class="w-5 h-5 rounded text-[9px] font-bold bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 transition">I</button>
+                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 hover:scale-110 transition-all duration-150 shadow-sm">I</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'alpha')" title="Semua Alpha"
-                                                class="w-5 h-5 rounded text-[9px] font-bold bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 transition">A</button>
+                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 hover:scale-110 transition-all duration-150 shadow-sm">A</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'terlambat')" title="Semua Terlambat"
-                                                class="w-5 h-5 rounded text-[9px] font-bold bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200 transition">T</button>
+                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200 hover:scale-110 transition-all duration-150 shadow-sm">T</button>
                                         </div>
                                     </td>
 
@@ -152,35 +170,22 @@
                                             $key = $s->id . '-' . $lh;
                                             $currentStatus = isset($existing[$key]) ? $existing[$key]->status : 'hadir';
                                             $statusColors = [
-                                                'hadir' => 'bg-emerald-100 border-emerald-300 text-emerald-700',
-                                                'sakit' => 'bg-purple-100 border-purple-300 text-purple-700',
-                                                'izin' => 'bg-blue-100 border-blue-300 text-blue-700',
-                                                'alpha' => 'bg-red-100 border-red-300 text-red-700',
-                                                'terlambat' => 'bg-yellow-100 border-yellow-300 text-yellow-700',
+                                                'hadir' => 'bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200',
+                                                'sakit' => 'bg-purple-100 border-purple-300 text-purple-700 hover:bg-purple-200',
+                                                'izin' => 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200',
+                                                'alpha' => 'bg-red-100 border-red-300 text-red-700 hover:bg-red-200',
+                                                'terlambat' => 'bg-yellow-100 border-yellow-300 text-yellow-700 hover:bg-yellow-200',
                                             ];
                                             $statusLabels = [
-                                                'hadir' => 'H',
-                                                'sakit' => 'S',
-                                                'izin' => 'I',
-                                                'alpha' => 'A',
-                                                'terlambat' => 'T',
+                                                'hadir' => 'H', 'sakit' => 'S', 'izin' => 'I',
+                                                'alpha' => 'A', 'terlambat' => 'T',
                                             ];
                                             $statusFull = [
-                                                'hadir' => 'Hadir',
-                                                'sakit' => 'Sakit',
-                                                'izin' => 'Izin',
-                                                'alpha' => 'Alpha',
-                                                'terlambat' => 'Terlambat',
-                                            ];
-                                            $nextStatus = [
-                                                'hadir' => 'sakit',
-                                                'sakit' => 'izin',
-                                                'izin' => 'alpha',
-                                                'alpha' => 'terlambat',
-                                                'terlambat' => 'hadir',
+                                                'hadir' => 'Hadir', 'sakit' => 'Sakit', 'izin' => 'Izin',
+                                                'alpha' => 'Alpha', 'terlambat' => 'Terlambat',
                                             ];
                                         @endphp
-                                        <td class="px-2 py-2.5 text-center">
+                                        <td class="px-2 py-2 text-center">
                                             <input type="hidden"
                                                 name="attendances[{{ $s->id }}][{{ $lh }}][student_id]"
                                                 value="{{ $s->id }}">
@@ -194,7 +199,7 @@
 
                                             <button type="button"
                                                 onclick="rotateStatus({{ $s->id }}, {{ $lh }})"
-                                                class="status-btn w-9 h-9 rounded-lg text-xs font-bold border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-105 {{ $statusColors[$currentStatus] }}"
+                                                class="status-btn w-10 h-10 rounded-xl text-sm font-black border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-110 active:scale-95 {{ $statusColors[$currentStatus] }}"
                                                 id="btn-{{ $s->id }}-{{ $lh }}"
                                                 title="{{ $statusFull[$currentStatus] }}">
                                                 {{ $statusLabels[$currentStatus] }}
@@ -208,29 +213,44 @@
                 </div>
             </div>
 
-            {{-- Submit --}}
-            <div class="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3 text-xs text-gray-500">
-                    <span class="inline-flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-emerald-100 border border-emerald-300 text-[9px] font-bold text-emerald-700 flex items-center justify-center">H</span> Hadir</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-purple-100 border border-purple-300 text-[9px] font-bold text-purple-700 flex items-center justify-center">S</span> Sakit</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-blue-100 border border-blue-300 text-[9px] font-bold text-blue-700 flex items-center justify-center">I</span> Izin</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-red-100 border border-red-300 text-[9px] font-bold text-red-700 flex items-center justify-center">A</span> Alpha</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-yellow-100 border border-yellow-300 text-[9px] font-bold text-yellow-700 flex items-center justify-center">T</span> Terlambat</span>
-                    <span class="w-px h-4 bg-gray-200"></span>
-                    <span>Klik tombol untuk ganti status</span>
+            {{-- Bottom actions --}}
+            <div class="mt-6 space-y-4">
+                {{-- Legend + Submit --}}
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-gray-500">
+                        @php
+                            $legends = [
+                                'hadir' => ['emerald', 'H', 'Hadir'],
+                                'sakit' => ['purple', 'S', 'Sakit'],
+                                'izin' => ['blue', 'I', 'Izin'],
+                                'alpha' => ['red', 'A', 'Alpha'],
+                                'terlambat' => ['yellow', 'T', 'Terlambat'],
+                            ];
+                        @endphp
+                        @foreach($legends as $key => $lg)
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-5 h-5 rounded-md bg-{{ $lg[0] }}-100 border border-{{ $lg[0] }}-300 text-[9px] font-bold text-{{ $lg[0] }}-700 flex items-center justify-center">{{ $lg[1] }}</span>
+                                <span>{{ $lg[2] }}</span>
+                            </span>
+                        @endforeach
+                        <span class="w-px h-4 bg-gray-200 hidden sm:inline-block"></span>
+                        <span class="text-gray-400"><i class="fa-solid fa-rotate mr-1"></i>Klik untuk ganti status</span>
+                    </div>
+                    <button type="submit"
+                        class="px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk text-xs"></i>
+                        Simpan Presensi
+                    </button>
                 </div>
-                <button type="submit"
-                    class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm inline-flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-floppy-disk text-xs"></i>
-                    Simpan Presensi
-                </button>
-            </div>
 
-            {{-- Info --}}
-            <div class="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-100 rounded-2xl p-4">
-                <div class="flex items-start gap-3 text-xs text-emerald-700">
-                    <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <span>Siswa dengan status <strong>Alpha (A)</strong> minimal 1 jam akan otomatis dicatat sebagai pelanggaran.</span>
+                {{-- Info --}}
+                <div class="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200 shadow-sm p-4">
+                    <div class="flex items-start gap-3 text-xs text-emerald-700">
+                        <div class="w-6 h-6 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <i class="fa-solid fa-circle-info text-emerald-500 text-[10px]"></i>
+                        </div>
+                        <span>Siswa dengan status <strong>Alpha (A)</strong> minimal 1 jam akan otomatis dicatat sebagai pelanggaran. Klik tombol status untuk <strong>rotasi</strong>: H → S → I → A → T → H.</span>
+                    </div>
                 </div>
             </div>
         </form>
@@ -242,11 +262,11 @@
 <script>
 const STATUS_CYCLE = ['hadir', 'sakit', 'izin', 'alpha', 'terlambat'];
 const STATUS_COLORS = {
-    'hadir': 'bg-emerald-100 border-emerald-300 text-emerald-700',
-    'sakit': 'bg-purple-100 border-purple-300 text-purple-700',
-    'izin': 'bg-blue-100 border-blue-300 text-blue-700',
-    'alpha': 'bg-red-100 border-red-300 text-red-700',
-    'terlambat': 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    'hadir': 'bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200',
+    'sakit': 'bg-purple-100 border-purple-300 text-purple-700 hover:bg-purple-200',
+    'izin': 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200',
+    'alpha': 'bg-red-100 border-red-300 text-red-700 hover:bg-red-200',
+    'terlambat': 'bg-yellow-100 border-yellow-300 text-yellow-700 hover:bg-yellow-200',
 };
 const STATUS_LABELS = {
     'hadir': 'H', 'sakit': 'S', 'izin': 'I',
@@ -263,7 +283,7 @@ function studentBulkSet(studentId, status) {
         const btn = document.getElementById('btn-' + studentId + '-' + lh);
         if (hidden && btn) {
             hidden.value = status;
-            btn.className = 'status-btn w-9 h-9 rounded-lg text-xs font-bold border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-105 ' + STATUS_COLORS[status];
+            btn.className = 'status-btn w-10 h-10 rounded-xl text-sm font-black border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-110 active:scale-95 ' + STATUS_COLORS[status];
             btn.textContent = STATUS_LABELS[status];
             btn.title = STATUS_FULL[status];
         }
@@ -278,7 +298,7 @@ function rotateStatus(studentId, lessonHour) {
     const next = STATUS_CYCLE[nextIdx];
 
     hiddenInput.value = next;
-    btn.className = 'status-btn w-9 h-9 rounded-lg text-xs font-bold border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-105 ' + STATUS_COLORS[next];
+    btn.className = 'status-btn w-10 h-10 rounded-xl text-sm font-black border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-110 active:scale-95 ' + STATUS_COLORS[next];
     btn.textContent = STATUS_LABELS[next];
     btn.title = STATUS_FULL[next];
 }
