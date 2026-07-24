@@ -67,6 +67,15 @@
 
             <div class="p-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {{-- Presensi --}}
+                    <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-orange-300 has-[:checked]:bg-orange-50/50 transition-all select-none">
+                        <input type="checkbox" name="reset_items[]" value="attendances" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-offset-0 flex-shrink-0">
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">Presensi</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['attendances'] }} data (dari sinkron E-Jurnal & manual)</p>
+                        </div>
+                    </label>
+
                     {{-- Pelanggaran & Evidences --}}
                     <label class="reset-card relative flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300 has-[:checked]:border-red-300 has-[:checked]:bg-red-50/50 transition-all select-none">
                         <input type="checkbox" name="reset_items[]" value="violations" class="reset-checkbox mt-0.5 w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-400 focus:ring-offset-0 flex-shrink-0">

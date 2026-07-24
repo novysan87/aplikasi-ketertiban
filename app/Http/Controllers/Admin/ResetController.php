@@ -18,6 +18,7 @@ class ResetController extends Controller
     public function index(): View
     {
         $stats = [
+            'attendances' => DB::table('attendances')->count(),
             'violations' => DB::table('violations')->count(),
             'evidences' => DB::table('violation_evidences')->count(),
             'handlings' => DB::table('violation_handlings')->count(),
@@ -41,7 +42,7 @@ class ResetController extends Controller
         $request->validate([
             'confirm_password' => ['required', 'string'],
             'reset_items' => ['required', 'array', 'min:1'],
-            'reset_items.*' => ['in:violations,evidences,handlings,sp_letters,notifications,students,classes,categories,types,thresholds,settings,users,backups'],
+            'reset_items.*' => ['in:attendances,violations,evidences,handlings,sp_letters,notifications,students,classes,categories,types,thresholds,settings,users,backups'],
         ]);
 
         if (!Hash::check($request->confirm_password, $request->user()->password)) {
@@ -72,6 +73,11 @@ class ResetController extends Controller
         if (in_array('evidences', $items)) {
             DB::table('violation_evidences')->delete();
             $cleared[] = 'Foto bukti';
+        }
+
+        if (in_array('attendances', $items)) {
+            DB::table('attendances')->delete();
+            $cleared[] = 'Presensi';
         }
 
         if (in_array('violations', $items)) {
