@@ -243,10 +243,17 @@
                                 <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Dicatat Oleh</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
-                                    <span class="text-[10px] font-bold text-gray-500">{{ strtoupper(substr($violation->recorder->name ?? '?', 0, 1)) }}</span>
-                                </div>
-                                <p class="text-sm font-medium text-gray-900">{{ $violation->recorder->name ?? '—' }}</p>
+                                @if($violation->recorder)
+                                    <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-[10px] font-bold text-gray-500">{{ strtoupper(substr($violation->recorder->name, 0, 1)) }}</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $violation->recorder->name }}</p>
+                                @else
+                                    <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fa-solid fa-rotate text-[10px] text-blue-500"></i>
+                                    </div>
+                                    <p class="text-sm font-medium text-blue-600">E-Jurnal (Sinkron Otomatis)</p>
+                                @endif
                             </div>
                         </div>
                     </div>
