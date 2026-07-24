@@ -89,4 +89,22 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'User berhasil dihapus.');
     }
+
+    public function resetPassword(Request $request, User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id() && $user->role === 'admin') {
+            return back()->with('error', 'Ganti password admin lewat profil.');
+        }
+
+        $validated = $request->validate([
+            'new_password' => ['required', 'string', 'min:6'],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
+
+        return redirect()->route('users.index')
+            ->with('success', 'Password untuk ' . $user->name . ' berhasil direset.');
+    }
 }

@@ -111,8 +111,12 @@
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end space-x-1">
                                     <button @click="openEdit({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->username }}', '{{ $user->email }}', '{{ $user->role }}', {{ $user->is_active ? 'true' : 'false' }})"
-                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
                                         <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button onclick="resetPassword({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                        class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Reset Password">
+                                        <i class="fa-solid fa-key"></i>
                                     </button>
                                     @if($user->id !== auth()->id())
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
@@ -258,6 +262,44 @@ function userManager() {
         }
     };
 }
+    function resetPassword(userId, userName) {
+        Swal.fire({
+            title: 'Reset Password untuk ' + userName,
+            html: '<input type="password" id="new-password" class="swal2-input" placeholder="Password baru (min. 6 karakter)" minlength="6">' +
+                  '<input type="password" id="confirm-password" class="swal2-input" placeholder="Konfirmasi password">',
+            confirmButtonText: '<i class="fa-solid fa-floppy-disk"></i> Simpan',
+            showCancelButton: true,
+            cancelButtonText: 'Batal',
+            preConfirm: () => {
+                const pwd = document.getElementById('new-password').value;
+                const confirm = document.getElementById('confirm-password').value;
+                if (!pwd || pwd.length < 6) {
+                    Swal.showValidationMessage('Password minimal 6 karakter');
+                    return false;
+                }
+                if (pwd !== confirm) {
+                    Swal.showValidationMessage('Password tidak cocok');
+                    return false;
+                }
+                return pwd;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('{{ url('users') }}/' + userId + '/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ new_password: result.value }),
+                }).then(r => {
+                    if (r.redirected) window.location.href = r.url;
+                    else location.reload();
+                });
+            }
+        });
+    }
 </script>
 @endpush
 @endsection
