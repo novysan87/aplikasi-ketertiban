@@ -53,7 +53,20 @@ class StudentReportController extends Controller
             ->sortBy('department_name')
             ->pluck('department_name', 'department_code');
 
-        return view('students.index', compact('students', 'classLevels', 'classNames', 'departments'));
+        // Data kelas dengan level & jurusan untuk filter dependen
+        $classOptions = Student::where('is_active', true)
+            ->selectRaw('DISTINCT class_name, class_level, department_code')
+            ->whereNotNull('class_name')
+            ->where('class_name', '!=', '')
+            ->orderBy('class_name')
+            ->get()
+            ->map(fn($c) => [
+                'name' => $c->class_name,
+                'level' => $c->class_level,
+                'dept' => $c->department_code,
+            ]);
+
+        return view('students.index', compact('students', 'classLevels', 'classNames', 'departments', 'classOptions'));
     }
 
     public function show(Student $student): View

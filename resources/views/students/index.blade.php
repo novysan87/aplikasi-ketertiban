@@ -57,7 +57,7 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Kelas</label>
-                        <select name="class_name"
+                        <select name="class_name" id="filter-class-name"
                             class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Kelas</option>
                             @foreach($classNames as $cn)
@@ -192,4 +192,47 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    // Data kelas untuk filter dependen
+    const classOptions = @json($classOptions);
+
+    function filterKelas() {
+        const dept = document.querySelector('select[name="department"]').value;
+        const level = document.querySelector('select[name="class_level"]').value;
+        const kelasSelect = document.getElementById('filter-class-name');
+        const currentVal = kelasSelect.value;
+
+        // Filter
+        let filtered = classOptions;
+        if (dept) filtered = filtered.filter(c => c.dept === dept);
+        if (level) filtered = filtered.filter(c => c.level === level);
+
+        // Sort unique names
+        const names = [...new Set(filtered.map(c => c.name))].sort();
+
+        // Rebuild options
+        kelasSelect.innerHTML = '<option value="">Semua Kelas</option>';
+        names.forEach(n => {
+            const opt = document.createElement('option');
+            opt.value = n;
+            opt.textContent = n;
+            if (n === currentVal) opt.selected = true;
+            kelasSelect.appendChild(opt);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const deptSelect = document.querySelector('select[name="department"]');
+        const levelSelect = document.querySelector('select[name="class_level"]');
+
+        deptSelect.addEventListener('change', filterKelas);
+        levelSelect.addEventListener('change', filterKelas);
+
+        // Apply initial filter if level/dept pre-selected
+        if (deptSelect.value || levelSelect.value) filterKelas();
+    });
+</script>
+@endpush
 @endsection
