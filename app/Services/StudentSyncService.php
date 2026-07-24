@@ -34,7 +34,9 @@ class StudentSyncService
             $payload = $response->json();
             $items = Arr::get($payload, 'data', []);
 
-            DB::transaction(function () use ($items, &$results) {
+            \$syncedIds = [];
+
+            DB::transaction(function () use ($items, &$results, &$syncedIds) {
                 foreach ($items as $item) {
                     // Only sync active students
                     $status = $item['status'] ?? 'active';
@@ -107,8 +109,16 @@ class StudentSyncService
 
                     if ($student->wasRecentlyCreated) $results['students_created']++;
                     else $results['students_updated']++;
+
+                    $syncedIds[] = $student->id;
                 }
             });
+
+            // Deactivate students not in this sync (graduated/dropped out)
+            \$deactivated = Student::where('is_active', true)
+                ->whereNotIn('id', $syncedIds)
+                ->update(['is_active' => false]);
+            $results['students_deactivated'] = $deactivated;
 
             return $results;
         } catch (\Exception $e) {

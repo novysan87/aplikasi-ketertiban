@@ -76,7 +76,11 @@ class SyncController extends Controller
         Setting::setValue('kesiswaan_base_url', $validated['base_url'], 'integration', 'URL Database Kesiswaan');
         Setting::setValue('kesiswaan_token', $validated['token'], 'integration', 'Token sinkronisasi');
 
+        $deactivated = $result['students_deactivated'] ?? 0;
         $msg = 'Sinkron berhasil! ' . $result['students_created'] . ' siswa baru, ' . $result['students_updated'] . ' diperbarui, ' . $result['classes_created'] . ' kelas baru.';
+        if ($deactivated > 0) {
+            $msg .= ' ' . $deactivated . ' siswa dinonaktifkan (tidak aktif tahun ajaran baru).';
+        }
 
         if (!empty($result['errors'])) {
             $skipped = count($result['errors']);
