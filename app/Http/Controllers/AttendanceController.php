@@ -153,6 +153,9 @@ class AttendanceController extends Controller
                 if (!isset($data['student_id'], $data['lesson_hour'], $data['status'])) {
                     continue;
                 }
+                if ($data['status'] === 'belum') {
+                    continue;
+                }
                 $data['lesson_hour'] = (int) $data['lesson_hour'];
                 Attendance::updateOrCreate(
                     [

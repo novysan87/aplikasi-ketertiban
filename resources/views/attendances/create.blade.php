@@ -52,7 +52,7 @@
                 </div>
                 <div class="flex items-center pt-[22px]">
                     <button type="submit"
-                        class="w-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
+                        class="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 active:scale-[0.97] transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-right text-xs"></i>
                         Lanjutkan
                     </button>
@@ -101,8 +101,8 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('attendances.recap', ['class_name' => $className]) }}"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-violet-600 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition">
-                            <i class="fa-solid fa-chart-simple"></i> Rekap
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 active:scale-[0.97] transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-chart-simple"></i> Rekap Presensi
                         </a>
                     </div>
                 </div>
@@ -150,17 +150,17 @@
 
                                     {{-- Per-row bulk buttons --}}
                                     <td class="px-1 py-2.5 text-center whitespace-nowrap">
-                                        <div class="flex items-center justify-center gap-0.5 bg-gray-50/80 rounded-lg p-1 border border-gray-100">
+                                        <div class="flex items-center justify-center gap-1 bg-gray-50/80 rounded-xl p-1.5 border border-gray-100">
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'hadir')" title="Semua Hadir"
-                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 hover:bg-emerald-200 hover:scale-110 transition-all duration-150 shadow-sm">H</button>
+                                                class="w-8 h-8 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 border-2 border-emerald-300 hover:bg-emerald-200 hover:scale-110 active:scale-95 transition-all duration-150 shadow-sm">H</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'sakit')" title="Semua Sakit"
-                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-purple-100 text-purple-700 border border-purple-300 hover:bg-purple-200 hover:scale-110 transition-all duration-150 shadow-sm">S</button>
+                                                class="w-8 h-8 rounded-lg text-xs font-bold bg-purple-100 text-purple-700 border-2 border-purple-300 hover:bg-purple-200 hover:scale-110 active:scale-95 transition-all duration-150 shadow-sm">S</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'izin')" title="Semua Izin"
-                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 hover:scale-110 transition-all duration-150 shadow-sm">I</button>
+                                                class="w-8 h-8 rounded-lg text-xs font-bold bg-blue-100 text-blue-700 border-2 border-blue-300 hover:bg-blue-200 hover:scale-110 active:scale-95 transition-all duration-150 shadow-sm">I</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'alpha')" title="Semua Alpha"
-                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 hover:scale-110 transition-all duration-150 shadow-sm">A</button>
+                                                class="w-8 h-8 rounded-lg text-xs font-bold bg-red-100 text-red-700 border-2 border-red-300 hover:bg-red-200 hover:scale-110 active:scale-95 transition-all duration-150 shadow-sm">A</button>
                                             <button type="button" onclick="studentBulkSet('{{ $s->id }}', 'terlambat')" title="Semua Terlambat"
-                                                class="w-6 h-6 rounded-md text-[9px] font-bold bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200 hover:scale-110 transition-all duration-150 shadow-sm">T</button>
+                                                class="w-8 h-8 rounded-lg text-xs font-bold bg-yellow-100 text-yellow-700 border-2 border-yellow-300 hover:bg-yellow-200 hover:scale-110 active:scale-95 transition-all duration-150 shadow-sm">T</button>
                                         </div>
                                     </td>
 
@@ -168,8 +168,9 @@
                                     @foreach($lessonHours as $lh)
                                         @php
                                             $key = $s->id . '-' . $lh;
-                                            $currentStatus = isset($existing[$key]) ? $existing[$key]->status : 'hadir';
+                                            $currentStatus = isset($existing[$key]) ? $existing[$key]->status : 'belum';
                                             $statusColors = [
+                'belum' => 'bg-gray-100 border-gray-300 text-gray-400 hover:bg-gray-200',
                                                 'hadir' => 'bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200',
                                                 'sakit' => 'bg-purple-100 border-purple-300 text-purple-700 hover:bg-purple-200',
                                                 'izin' => 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200',
@@ -177,10 +178,12 @@
                                                 'terlambat' => 'bg-yellow-100 border-yellow-300 text-yellow-700 hover:bg-yellow-200',
                                             ];
                                             $statusLabels = [
+                'belum' => '—',
                                                 'hadir' => 'H', 'sakit' => 'S', 'izin' => 'I',
                                                 'alpha' => 'A', 'terlambat' => 'T',
                                             ];
                                             $statusFull = [
+                'belum' => 'Belum diisi',
                                                 'hadir' => 'Hadir', 'sakit' => 'Sakit', 'izin' => 'Izin',
                                                 'alpha' => 'Alpha', 'terlambat' => 'Terlambat',
                                             ];
@@ -237,7 +240,7 @@
                         <span class="text-gray-400"><i class="fa-solid fa-rotate mr-1"></i>Klik untuk ganti status</span>
                     </div>
                     <button type="submit"
-                        class="px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
+                        class="px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 active:scale-[0.97] transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
                         <i class="fa-solid fa-floppy-disk text-xs"></i>
                         Simpan Presensi
                     </button>
@@ -260,8 +263,9 @@
 
 @push('scripts')
 <script>
-const STATUS_CYCLE = ['hadir', 'sakit', 'izin', 'alpha', 'terlambat'];
+const STATUS_CYCLE = ['belum', 'hadir', 'sakit', 'izin', 'alpha', 'terlambat'];
 const STATUS_COLORS = {
+    'belum': 'bg-gray-100 border-gray-300 text-gray-400 hover:bg-gray-200',
     'hadir': 'bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200',
     'sakit': 'bg-purple-100 border-purple-300 text-purple-700 hover:bg-purple-200',
     'izin': 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200',
@@ -269,10 +273,12 @@ const STATUS_COLORS = {
     'terlambat': 'bg-yellow-100 border-yellow-300 text-yellow-700 hover:bg-yellow-200',
 };
 const STATUS_LABELS = {
+    'belum': '-',
     'hadir': 'H', 'sakit': 'S', 'izin': 'I',
     'alpha': 'A', 'terlambat': 'T',
 };
 const STATUS_FULL = {
+    'belum': 'Belum diisi',
     'hadir': 'Hadir', 'sakit': 'Sakit', 'izin': 'Izin',
     'alpha': 'Alpha', 'terlambat': 'Terlambat',
 };
