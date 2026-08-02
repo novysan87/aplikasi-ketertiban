@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SyncController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FaceIdController;
 use App\Http\Controllers\SpLetterController;
 use App\Http\Controllers\StudentReportController;
 use App\Http\Controllers\ViolationController;
@@ -45,6 +46,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/violations', [ViolationController::class, 'store'])->name('violations.store');
     });
 
+    // Face ID: scan wajah (permission khusus)
+    Route::middleware('permission:face-scan')->group(function () {
+        Route::get('/face/scan', [FaceIdController::class, 'scan'])->name('face.scan');
+        Route::post('/face/scan', [FaceIdController::class, 'scanVerify'])->name('face.scan.verify');
+    });
+
+    // Face ID: registrasi wajah (permission khusus)
+    Route::middleware('permission:face-register')->group(function () {
+        Route::get('/face/register', [FaceIdController::class, 'register'])->name('face.register');
+        Route::post('/face/register', [FaceIdController::class, 'registerStore'])->name('face.register.store');
+        Route::post('/face/register/quick', [FaceIdController::class, 'registerQuick'])->name('face.register.quick');
+    });
+
     Route::middleware('permission:view-violations')->group(function () {
         Route::get('/violations', [ViolationController::class, 'index'])->name('violations.index');
         Route::get('/violations/{violation}', [ViolationController::class, 'show'])->name('violations.show');
@@ -56,6 +70,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/api/students/search', [ViolationController::class, 'searchStudents'])->name('api.students.search');
     });
 
+    // Notifikasi WA ke orang tua (permission khusus)
+    Route::middleware('permission:notify-parent-wa')->group(function () {
+        Route::get('/violations/{violation}/notify-wa', [ViolationController::class, 'notifyParentWa'])->name('violations.notify-wa');
+    });
+
     Route::middleware('permission:view-students')->group(function () {
         Route::get('/students', [StudentReportController::class, 'index'])->name('students.index');
         Route::get('/students/{student}', [StudentReportController::class, 'show'])->name('students.show');
@@ -65,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:manage-attendance')->group(function () {
         Route::get('/attendances', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendances.index');
         Route::get('/attendances/create', [\App\Http\Controllers\AttendanceController::class, 'create'])->name('attendances.create');
+        Route::get('/attendances/availability', [\App\Http\Controllers\AttendanceController::class, 'availability'])->name('attendances.availability');
         Route::post('/attendances', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendances.store');
         Route::get('/attendances/recap', [\App\Http\Controllers\AttendanceController::class, 'recap'])->name('attendances.recap');
         Route::get('/attendances/calendar-data', [\App\Http\Controllers\AttendanceController::class, 'calendarData'])->name('attendances.calendar-data');
@@ -91,6 +111,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings/violation-types', [MasterDataController::class, 'storeType'])->name('settings.violation-types.store');
         Route::put('/settings/violation-types/{type}', [MasterDataController::class, 'updateType'])->name('settings.violation-types.update');
         Route::delete('/settings/violation-types/{type}', [MasterDataController::class, 'destroyType'])->name('settings.violation-types.destroy');
+        Route::get('/settings/handling-types', [MasterDataController::class, 'handlingTypes'])->name('settings.handling-types');
+        Route::post('/settings/handling-types', [MasterDataController::class, 'storeHandlingType'])->name('settings.handling-types.store');
+        Route::post('/settings/handling-types/reorder', [MasterDataController::class, 'reorderHandlingTypes'])->name('settings.handling-types.reorder');
+        Route::put('/settings/handling-types/{type}', [MasterDataController::class, 'updateHandlingType'])->name('settings.handling-types.update');
+        Route::delete('/settings/handling-types/{type}', [MasterDataController::class, 'destroyHandlingType'])->name('settings.handling-types.destroy');
+        Route::post('/settings/handling-roles', [MasterDataController::class, 'storeHandlingRole'])->name('settings.handling-roles.store');
+        Route::post('/settings/handling-roles/reorder', [MasterDataController::class, 'reorderHandlingRoles'])->name('settings.handling-roles.reorder');
+        Route::delete('/settings/handling-roles/{role}', [MasterDataController::class, 'destroyHandlingRole'])->name('settings.handling-roles.destroy');
+        Route::get('/settings/homeroom', [MasterDataController::class, 'homeroomTeachers'])->name('settings.homeroom');
+        Route::put('/settings/homeroom', [MasterDataController::class, 'updateHomeroomTeacher'])->name('settings.homeroom.update');
     });
 
     Route::middleware('permission:thresholds-manage')->group(function () {

@@ -26,24 +26,34 @@ class AttendanceController extends Controller
         $thisMonth = now()->month;
         $thisYear = now()->year;
 
+        // Wali kelas murni → hanya siswa di kelas yang diwalikan
+        $scopedStudentIds = null;
+        if (auth()->user()->isScopedWaliKelas()) {
+            $scopedStudentIds = \App\Models\Student::whereIn('class_id', auth()->user()->homeroomClassIds())->pluck('id')->all();
+        }
+
         // Hitung berdasarkan jumlah siswa unik, bukan total record per jam
         $todayStudents = \App\Models\Attendance::where('date', $today)
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->distinct('student_id')
             ->count('student_id');
 
         $todayAlphaStudents = \App\Models\Attendance::where('date', $today)
             ->where('status', 'alpha')
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->distinct('student_id')
             ->count('student_id');
 
         $monthStudents = \App\Models\Attendance::whereMonth('date', $thisMonth)
             ->whereYear('date', $thisYear)
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->distinct('student_id')
             ->count('student_id');
 
         $monthAlphaStudents = \App\Models\Attendance::whereMonth('date', $thisMonth)
             ->whereYear('date', $thisYear)
             ->where('status', 'alpha')
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->distinct('student_id')
             ->count('student_id');
 
@@ -53,12 +63,14 @@ class AttendanceController extends Controller
 
         $totalRows = \App\Models\Attendance::selectRaw('date, COUNT(DISTINCT student_id) as total')
             ->whereBetween('date', [$calendarStart, $calendarEnd])
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->groupBy('date')
             ->pluck('total', 'date');
 
         $alphaRows = \App\Models\Attendance::selectRaw('date, COUNT(DISTINCT student_id) as alpha')
             ->whereBetween('date', [$calendarStart, $calendarEnd])
             ->where('status', 'alpha')
+            ->when($scopedStudentIds, fn ($q) => $q->whereIn('student_id', $scopedStudentIds))
             ->groupBy('date')
             ->pluck('alpha', 'date');
 
@@ -75,6 +87,36 @@ class AttendanceController extends Controller
             'monthStudents', 'monthAlphaStudents',
             'calendarData'
         ));
+    }
+
+    public function availability(Request $request): JsonResponse
+    {
+        $date = $request->input('date', now()->toDateString());
+
+        $classNames = Student::where('is_active', true)
+            ->whereNotNull('class_name')
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()))
+            ->distinct()
+            ->orderBy('class_name')
+            ->pluck('class_name');
+
+        $result = [];
+        foreach ($classNames as $cn) {
+            $studentIdsInClass = Student::where('is_active', true)
+                ->where('class_name', $cn)
+                ->pluck('id');
+            $count = Attendance::where('date', $date)
+                ->whereIn('student_id', $studentIdsInClass)
+                ->distinct('student_id')
+                ->count('student_id');
+            $result[$cn] = [
+                'has_data' => $count > 0,
+                'recorded' => $count,
+                'total' => $studentIdsInClass->count(),
+            ];
+        }
+
+        return response()->json($result);
     }
 
     public function create(Request $request): View
@@ -101,6 +143,7 @@ class AttendanceController extends Controller
 
         $classNames = Student::where('is_active', true)
             ->whereNotNull('class_name')
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()))
             ->distinct()
             ->orderBy('class_name')
             ->pluck('class_name');
@@ -143,6 +186,13 @@ class AttendanceController extends Controller
 
         $date = $request->input('date');
         $class_name = $request->input('class_name');
+
+        // Wali kelas murni hanya boleh input presensi kelasnya sendiri
+        if (auth()->user()->isScopedWaliKelas()) {
+            $ownNames = \App\Models\Classes::whereIn('id', auth()->user()->homeroomClassIds())->pluck('name')->all();
+            abort_unless($class_name && in_array($class_name, $ownNames, true), 403);
+        }
+
         $saved = 0;
         $autoViolations = 0;
         $alphaIds = [];
@@ -285,6 +335,7 @@ class AttendanceController extends Controller
 
         $classNames = Student::where('is_active', true)
             ->whereNotNull('class_name')
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()))
             ->distinct()
             ->orderBy('class_name')
             ->pluck('class_name');

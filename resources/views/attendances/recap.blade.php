@@ -48,17 +48,6 @@
             <form method="GET">
                 <input type="hidden" name="type" value="{{ $type }}">
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelas</label>
-                        <select name="class_name"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            <option value="">Semua Kelas</option>
-                            @foreach($classNames as $cn)
-                                <option value="{{ $cn }}" @selected($className == $cn)>{{ $cn }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     @if($type == 'daily')
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
@@ -91,6 +80,17 @@
                         </select>
                     </div>
                     @endif
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelas</label>
+                        <select name="class_name"
+                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classNames as $cn)
+                                <option value="{{ $cn }}" @selected($className == $cn)>{{ $cn }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="flex items-end">
                         <button type="submit"

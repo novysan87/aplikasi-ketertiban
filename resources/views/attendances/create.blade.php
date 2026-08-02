@@ -19,36 +19,36 @@
 
     {{-- Pilih Kelas + Tanggal --}}
     <div class="rounded-2xl bg-gradient-to-br from-white to-gray-50/80 border border-gray-200 shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
-        <form method="GET" class="p-6">
+        <form method="GET" x-data="attendanceLink()" class="p-6">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-calendar text-gray-400 mr-1"></i> Tanggal <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="date" value="{{ $date }}" x-model="date" @change="refreshStatus($event)"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
+                </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                         <i class="fa-solid fa-school text-gray-400 mr-1"></i> Kelas <span class="text-red-500">*</span>
                     </label>
-                    <select name="class_name" required
+                    <select name="class_name" required x-model="sel"
                         class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                         <option value="">Pilih kelas...</option>
-                        @foreach($classNames as $cn)
-                            @php
-                                $stat = $classAttendanceStatus[$cn] ?? ['has_data' => false, 'recorded' => 0, 'total' => 0];
-                                $label = $stat['has_data']
-                                    ? '✅ ' . $cn . ' (' . $stat['recorded'] . '/' . $stat['total'] . ')'
-                                    : '⬜ ' . $cn;
-                            @endphp
-                            <option value="{{ $cn }}" @selected($className == $cn)>{{ $label }}</option>
-                        @endforeach
+                        <template x-for="cn in classList" :key="cn">
+                            <option :value="cn" x-text="label(cn)"></option>
+                        </template>
                     </select>
                     <div class="mt-1.5 flex items-center gap-3 text-[10px] text-gray-400">
                         <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-gray-300"></span> Belum</span>
                         <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-emerald-400"></span> Terisi</span>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                        <i class="fa-solid fa-calendar text-gray-400 mr-1"></i> Tanggal <span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" name="date" value="{{ $date }}"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
+                    <p class="mt-2 text-[11px] font-semibold text-emerald-600" x-show="terisiCount > 0">
+                        <i class="fa-solid fa-circle-check"></i> <span x-text="terisiCount"></span> kelas terisi pada <span class="underline decoration-dotted" x-text="date"></span>
+                    </p>
+                    <p class="mt-2 text-[11px] font-semibold text-amber-600" x-show="terisiCount === 0">
+                        <i class="fa-solid fa-circle-info"></i> Belum ada kelas terisi pada <span class="underline decoration-dotted" x-text="date"></span> — coba pilih tanggal lain
+                    </p>
                 </div>
                 <div class="flex items-center pt-[22px]">
                     <button type="submit"
@@ -307,6 +307,33 @@ function rotateStatus(studentId, lessonHour) {
     btn.className = 'status-btn w-10 h-10 rounded-xl text-sm font-black border-2 transition-all duration-150 shadow-sm hover:shadow-md hover:scale-110 active:scale-95 ' + STATUS_COLORS[next];
     btn.textContent = STATUS_LABELS[next];
     btn.title = STATUS_FULL[next];
+}
+
+function attendanceLink() {
+    return {
+        date: '{{ $date }}',
+        sel: '{{ $className }}',
+        status: @json($classAttendanceStatus),
+        get classList() {
+            return Object.keys(this.status || {});
+        },
+        get terisiCount() {
+            return Object.values(this.status || {}).filter(s => s.has_data).length;
+        },
+        label(cn) {
+            const s = this.status[cn];
+            if (!s) return cn;
+            return s.has_data ? '✅ ' + cn + ' (' + s.recorded + '/' + s.total + ')' : '⬜ ' + cn;
+        },
+        async refreshStatus(ev) {
+            if (ev && ev.target && ev.target.value) this.date = ev.target.value;
+            try {
+                const res = await fetch('{{ route("attendances.availability") }}?date=' + encodeURIComponent(this.date));
+                const j = await res.json();
+                this.status = j;
+            } catch (e) {}
+        },
+    };
 }
 </script>
 @endpush
