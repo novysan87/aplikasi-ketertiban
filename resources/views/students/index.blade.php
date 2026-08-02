@@ -134,10 +134,10 @@
                             </td>
                             {{-- Pelanggaran --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full
-                                    {{ ($s->violations_count ?? 0) > 0 ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-gray-50 text-gray-400 border border-gray-200' }}">
-                                    <i class="fa-solid {{ ($s->violations_count ?? 0) > 0 ? 'fa-exclamation' : 'fa-check' }} text-[10px]"></i>
-                                    {{ $s->violations_count ?? 0 }}x
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full
+                                    {{ $s->violations_count > 3 ? 'bg-red-50 text-red-700 border border-red-200' : ($s->violations_count > 0 ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-gray-50 text-gray-400 border border-gray-200') }}">
+                                    <i class="fa-solid {{ $s->violations_count > 0 ? 'fa-exclamation' : 'fa-check' }} text-[10px]"></i>
+                                    {{ $s->violations_count }}x
                                 </span>
                             </td>
                             {{-- Total Poin --}}

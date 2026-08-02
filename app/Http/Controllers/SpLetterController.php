@@ -13,6 +13,7 @@ class SpLetterController extends Controller
     public function index(Request $request): View
     {
         $letters = SpLetter::with(['student', 'spThreshold', 'generator'])
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereHas('student', fn ($qq) => $qq->whereIn('class_id', auth()->user()->homeroomClassIds())))
             ->latest()
             ->paginate(20);
 
@@ -21,6 +22,8 @@ class SpLetterController extends Controller
 
     public function show(SpLetter $spLetter): View
     {
+        abort_unless(auth()->user()->canViewStudent($spLetter->student_id), 403);
+
         $spLetter->load(['student', 'spThreshold', 'generator']);
         $school = [
             'name' => Setting::getValue('school_name', 'SMK'),
@@ -35,6 +38,8 @@ class SpLetterController extends Controller
 
     public function print(SpLetter $spLetter)
     {
+        abort_unless(auth()->user()->canViewStudent($spLetter->student_id), 403);
+
         $spLetter->load(['student', 'spThreshold', 'generator']);
         $school = [
             'name' => Setting::getValue('school_name', 'SMK'),

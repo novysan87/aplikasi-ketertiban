@@ -27,6 +27,7 @@ class SettingsController extends Controller
             'kepala_sekolah_name' => ['nullable', 'string', 'max:255'],
             'kepala_sekolah_nip' => ['nullable', 'string', 'max:50'],
             'bk_koordinator_name' => ['nullable', 'string', 'max:255'],
+            'wa_notification_template' => ['nullable', 'string', 'max:3000'],
         ]);
 
         foreach ($validated as $key => $value) {

@@ -32,6 +32,7 @@
                         'pelanggaran' => ['Pelanggaran', 'fa-triangle-exclamation', 'red'],
                         'data' => ['Data Master', 'fa-database', 'violet'],
                         'presensi' => ['Presensi', 'fa-clipboard-check', 'emerald'],
+                        'wajah' => ['Face ID', 'fa-fingerprint', 'indigo'],
                         'master-data' => ['Master Data', 'fa-gear', 'slate'],
                         'administrasi' => ['Administrasi', 'fa-shield-halved', 'amber'],
                     ];
@@ -61,6 +62,9 @@
                                                 'bk' => ['BK', 'indigo'],
                                                 'wali_kelas' => ['Wali Kelas', 'emerald'],
                                                 'staff' => ['Staff', 'amber'],
+                                                'kepala_sekolah' => ['Kepala Sekolah', 'amber'],
+                                                'waka_kesiswaan' => ['Waka Kesiswaan', 'rose'],
+                                                'ketua_tim' => ['Ketua Tim', 'teal'],
                                                 'other' => ['Guest', 'gray'],
                                             ];
                                             $rl = $roleLabels[$role] ?? [ucfirst($role), 'gray'];

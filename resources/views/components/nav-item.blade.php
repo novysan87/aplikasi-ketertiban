@@ -20,8 +20,12 @@ $faIcons = [
     'cog' => 'fa-solid fa-gear',
     'users-cog' => 'fa-solid fa-user-gear',
     'database' => 'fa-solid fa-database',
+    'face-scan' => 'fa-solid fa-camera-retro',
+    'user-plus' => 'fa-solid fa-user-plus',
     'arrows-rotate' => 'fa-solid fa-arrows-rotate',
     'lock' => 'fa-solid fa-lock',
+    'hand-holding-heart' => 'fa-solid fa-hand-holding-heart',
+    'chalkboard-user' => 'fa-solid fa-chalkboard-user',
 ];
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 
@@ -40,8 +44,12 @@ $iconColors = [
     'cog' => ['active' => 'text-slate-600', 'inactive' => 'text-slate-400/60 group-hover:text-slate-500'],
     'users-cog' => ['active' => 'text-purple-600', 'inactive' => 'text-purple-400/60 group-hover:text-purple-500'],
     'database' => ['active' => 'text-sky-600', 'inactive' => 'text-sky-400/60 group-hover:text-sky-500'],
+    'face-scan' => ['active' => 'text-cyan-600', 'inactive' => 'text-cyan-400/60 group-hover:text-cyan-500'],
+    'user-plus' => ['active' => 'text-indigo-600', 'inactive' => 'text-indigo-400/60 group-hover:text-indigo-500'],
     'arrows-rotate' => ['active' => 'text-rose-600', 'inactive' => 'text-rose-400/60 group-hover:text-rose-500'],
     'lock' => ['active' => 'text-yellow-600', 'inactive' => 'text-yellow-400/60 group-hover:text-yellow-500'],
+    'hand-holding-heart' => ['active' => 'text-amber-600', 'inactive' => 'text-amber-400/60 group-hover:text-amber-500'],
+    'chalkboard-user' => ['active' => 'text-emerald-600', 'inactive' => 'text-emerald-400/60 group-hover:text-emerald-500'],
 ];
 $ic = $iconColors[$icon] ?? ['active' => 'text-blue-600', 'inactive' => 'text-gray-400 group-hover:text-gray-600'];
 $iconClass = $isActive ? $ic['active'] : $ic['inactive'];

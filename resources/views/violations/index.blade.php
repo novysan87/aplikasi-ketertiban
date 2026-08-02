@@ -96,11 +96,29 @@
                         <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Verifikasi</th>
                         <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Penanganan</th>
                         <th class="px-5 py-3.5 text-left hidden lg:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Oleh</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Notif WA</th>
                         <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($violations as $v)
+                        @php
+                            $statusStyles = [
+                                'unhandled' => 'bg-red-50 text-red-700 border-red-200',
+                                'in_progress' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                'resolved' => 'bg-green-50 text-green-700 border-green-200',
+                            ];
+                            $statusLabels = [
+                                'unhandled' => 'Belum Ditangani',
+                                'in_progress' => 'Dalam Proses',
+                                'resolved' => 'Selesai',
+                            ];
+                            $statusDots = [
+                                'unhandled' => 'bg-red-500',
+                                'in_progress' => 'bg-yellow-500',
+                                'resolved' => 'bg-green-500',
+                            ];
+                        @endphp
                         <tr class="hover:bg-gray-50/50 transition">
                             {{-- Tanggal --}}
                             <td class="px-5 py-4 whitespace-nowrap">
@@ -127,6 +145,12 @@
                                         <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                             <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-medium bg-gray-100 text-gray-600 rounded-full border border-gray-200">{{ $v->student->nisn ?? '—' }}</span>
                                             <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 rounded-full border border-blue-200">{{ $v->student->class_name ?? '—' }}</span>
+                                        </div>
+                                        <div class="mt-1.5 lg:hidden">
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium border rounded-full {{ $statusStyles[$v->handling_status] ?? 'bg-gray-50 text-gray-700' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$v->handling_status] ?? 'bg-gray-500' }}"></span>
+                                                {{ $statusLabels[$v->handling_status] ?? ucfirst($v->handling_status) }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -161,23 +185,6 @@
                             </td>
                             {{-- Penanganan --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap hidden lg:table-cell">
-                                @php
-                                    $statusStyles = [
-                                        'unhandled' => 'bg-red-50 text-red-700 border-red-200',
-                                        'in_progress' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
-                                        'resolved' => 'bg-green-50 text-green-700 border-green-200',
-                                    ];
-                                    $statusLabels = [
-                                        'unhandled' => 'Belum Ditangani',
-                                        'in_progress' => 'Dalam Proses',
-                                        'resolved' => 'Selesai',
-                                    ];
-                                    $statusDots = [
-                                        'unhandled' => 'bg-red-500',
-                                        'in_progress' => 'bg-yellow-500',
-                                        'resolved' => 'bg-green-500',
-                                    ];
-                                @endphp
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border rounded-full {{ $statusStyles[$v->handling_status] ?? 'bg-gray-50 text-gray-700' }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$v->handling_status] ?? 'bg-gray-500' }}"></span>
                                     {{ $statusLabels[$v->handling_status] ?? ucfirst($v->handling_status) }}
@@ -192,6 +199,26 @@
                                     <span class="text-sm text-gray-500 truncate max-w-[120px]">{{ $v->recorder->name ?? '-' }}</span>
                                 </div>
                             </td>
+                            {{-- Notif WA --}}
+                            <td class="px-5 py-4 text-center whitespace-nowrap">
+                                @if ($v->notifications_count > 0)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full" title="Notifikasi sudah dikirim">
+                                        <i class="fa-solid fa-circle-check text-[10px]"></i>
+                                        Terkirim
+                                    </span>
+                                @elseif ($v->student?->parent_phone)
+                                    <a href="{{ route('violations.notify-wa', $v->id) }}" target="_blank" rel="noopener"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg hover:from-emerald-600 hover:to-green-600 active:scale-95 transition shadow-sm shadow-emerald-500/20">
+                                        <i class="fa-brands fa-whatsapp text-[10px]"></i>
+                                        Kirim WA
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-300 border border-gray-100 rounded-lg cursor-default" title="Nomor HP orang tua/wali belum diisi">
+                                        <i class="fa-brands fa-whatsapp text-[10px]"></i>
+                                        WA
+                                    </span>
+                                @endif
+                            </td>
                             {{-- Aksi --}}
                             <td class="px-5 py-4 text-right whitespace-nowrap">
                                 <a href="{{ route('violations.show', $v->id) }}"
@@ -203,7 +230,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-5 py-20 text-center">
+                            <td colspan="9" class="px-5 py-20 text-center">
                                 <div class="flex flex-col items-center">
                                     <div class="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
                                         <i class="fa-solid fa-triangle-exclamation text-gray-300 text-xl"></i>

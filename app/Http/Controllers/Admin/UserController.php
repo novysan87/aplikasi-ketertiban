@@ -25,7 +25,11 @@ class UserController extends Controller
         }
 
         if ($request->filled('role')) {
-            $query->where('role', $request->role);
+            $role = $request->role;
+            $query->where(function ($q) use ($role) {
+                $q->where('role', $role)
+                  ->orWhereJsonContains('roles', $role);
+            });
         }
 
         $users = $query->orderBy('name')->paginate(20);
@@ -40,10 +44,14 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,bk,wali_kelas,staff,other'],
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['in:admin,bk,wali_kelas,staff,other,kepala_sekolah,waka_kesiswaan,ketua_tim'],
             'is_active' => ['boolean'],
         ]);
 
+        $roles = array_values(array_unique($validated['roles']));
+        $validated['roles'] = $roles;
+        $validated['role'] = $roles[0];
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -60,9 +68,14 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,bk,wali_kelas,staff,other'],
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['in:admin,bk,wali_kelas,staff,other,kepala_sekolah,waka_kesiswaan,ketua_tim'],
             'is_active' => ['boolean'],
         ]);
+
+        $roles = array_values(array_unique($validated['roles']));
+        $validated['roles'] = $roles;
+        $validated['role'] = $roles[0];
 
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -92,7 +105,7 @@ class UserController extends Controller
 
     public function resetPassword(Request $request, User $user): RedirectResponse
     {
-        if ($user->id === auth()->id() && $user->role === 'admin') {
+        if ($user->id === auth()->id() && $user->isAdmin()) {
             return back()->with('error', 'Ganti password admin lewat profil.');
         }
 

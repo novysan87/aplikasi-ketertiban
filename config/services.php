@@ -40,4 +40,10 @@ return [
         'token' => env('KESISWAAN_TOKEN', ''),
     ],
 
+    'faceid' => [
+        'base_url' => env('FACEID_BASE_URL', 'http://127.0.0.1:8001'),
+        'api_key' => env('FACEID_API_KEY', ''),
+        'timeout' => (int) env('FACEID_TIMEOUT', 3),
+    ],
+
 ];

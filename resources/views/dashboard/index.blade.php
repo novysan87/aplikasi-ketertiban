@@ -54,6 +54,78 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    {{-- Grafik Tren Pelanggaran --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" x-data="trendToggle()">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white shadow-sm">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800">Tren Pelanggaran Siswa</h3>
+                    <p class="text-[11px] text-gray-400">Jumlah pelanggaran per hari</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold text-gray-500">Total <span x-text="period"></span> hari: <strong class="text-gray-800" x-text="period === 7 ? total7 : (period === 14 ? total14 : total30)"></strong></span>
+                <span class="text-xs font-semibold text-gray-500">Hari ini: <strong class="text-gray-800">{{ $dailyCurrent }}</strong></span>
+                @if ($trendPercent > 0)
+                    <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-600 ring-1 ring-red-200">
+                        <i class="fa-solid fa-arrow-trend-up"></i> +{{ $trendPercent }}% vs kemarin
+                    </span>
+                @elseif ($trendPercent < 0)
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-600 ring-1 ring-emerald-200">
+                        <i class="fa-solid fa-arrow-trend-down"></i> {{ $trendPercent }}% vs kemarin
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-500 ring-1 ring-slate-200">
+                        <i class="fa-solid fa-minus"></i> Stabil vs kemarin
+                    </span>
+                @endif
+                <div class="flex items-center gap-1 p-1 rounded-xl bg-gray-100">
+                    <button type="button" @click="setPeriod(7)" :class="period === 7 ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition">7 Hari</button>
+                    <button type="button" @click="setPeriod(14)" :class="period === 14 ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition">14 Hari</button>
+                    <button type="button" @click="setPeriod(30)" :class="period === 30 ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition">30 Hari</button>
+                </div>
+            </div>
+        </div>
+        <div class="p-5">
+            <div class="relative h-64">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- Grafik Jenis Pelanggaran --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white shadow-sm">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800">Pelanggaran per Jenis</h3>
+                    <p class="text-[11px] text-gray-400">Jenis pelanggaran paling banyak</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 rounded-xl bg-gray-100 p-1" x-data="{ typePeriod: 'today' }">
+                <button type="button" @click="typePeriod = 'today'; setTypePeriod('today')" class="rounded-lg px-3 py-1.5 text-[11px] font-bold transition"
+                    :class="typePeriod === 'today' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'">Hari Ini</button>
+                <button type="button" @click="typePeriod = 'week'; setTypePeriod('week')" class="rounded-lg px-3 py-1.5 text-[11px] font-bold transition"
+                    :class="typePeriod === 'week' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'">7 Hari</button>
+                <button type="button" @click="typePeriod = 'month'; setTypePeriod('month')" class="rounded-lg px-3 py-1.5 text-[11px] font-bold transition"
+                    :class="typePeriod === 'month' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'">Bulan Ini</button>
+            </div>
+        </div>
+        <div class="p-5">
+            <div class="relative h-64">
+                <canvas id="typeChart"></canvas>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Calendar --}}
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
@@ -339,6 +411,132 @@
             }
         };
     }
+</script>
+
+<script src="/vendor/chartjs/chart.umd.min.js"></script>
+<script>
+    function trendToggle() {
+        return {
+            period: 7,
+            total7: {{ $trendTotal7 }},
+            total14: {{ $trendTotal14 }},
+            total30: {{ $trendTotal30 }},
+            labels7: @json($dailyLabels7),
+            data7: @json($dailyData7),
+            labels14: @json($dailyLabels14),
+            data14: @json($dailyData14),
+            labels30: @json($dailyLabels30),
+            data30: @json($dailyData30),
+            chart: null,
+
+            init() {
+                const ctx = document.getElementById('trendChart');
+                if (!ctx || typeof Chart === 'undefined') return;
+                const g = ctx.getContext('2d');
+                const grad = g.createLinearGradient(0, 0, 0, 260);
+                grad.addColorStop(0, 'rgba(37, 99, 235, 0.28)');
+                grad.addColorStop(1, 'rgba(37, 99, 235, 0.02)');
+
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: this.labels7,
+                        datasets: [
+                            {
+                                label: 'Pelanggaran',
+                                data: this.data7,
+                                borderColor: '#2563eb',
+                                backgroundColor: grad,
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#2563eb',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                padding: 10,
+                                cornerRadius: 10,
+                                titleFont: { weight: 'bold' },
+                                callbacks: {
+                                    label: (ctx) => ctx.parsed.y + ' pelanggaran'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0, color: '#94a3b8' },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                ticks: { color: '#94a3b8', maxRotation: 0, autoSkip: true, maxTicksLimit: 15 },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            },
+
+            setPeriod(n) {
+                this.period = n;
+                if (!this.chart) return;
+                this.chart.data.labels = n === 7 ? this.labels7 : (n === 14 ? this.labels14 : this.labels30);
+                this.chart.data.datasets[0].data = n === 7 ? this.data7 : (n === 14 ? this.data14 : this.data30);
+                this.chart.update();
+            },
+        };
+    }
+
+    {{-- Grafik batang: pelanggaran per jenis --}}
+    const typeCtx = document.getElementById('typeChart');
+    let typeChart = null;
+    if (typeCtx && typeof Chart !== 'undefined') {
+        typeChart = new Chart(typeCtx, {
+            type: 'bar',
+            data: {
+                labels: @json($typeNames),
+                datasets: [
+                    { label: 'Hari Ini', data: @json($typeToday), backgroundColor: 'rgba(249, 115, 22, 0.85)', borderRadius: 8, barThickness: 18 },
+                    { label: '7 Hari', data: @json($typeWeek), backgroundColor: 'rgba(59, 130, 246, 0.85)', borderRadius: 8, barThickness: 18, hidden: true },
+                    { label: 'Bulan Ini', data: @json($typeMonth), backgroundColor: 'rgba(139, 92, 246, 0.85)', borderRadius: 8, barThickness: 18, hidden: true }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        callbacks: { label: (ctx) => ctx.parsed.x + ' pelanggaran' }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, ticks: { precision: 0, color: '#94a3b8' }, grid: { color: '#f1f5f9' } },
+                    y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { display: false } }
+                }
+            }
+        });
+    }
+    window.setTypePeriod = function (p) {
+        if (!typeChart) return;
+        const map = { today: 0, week: 1, month: 2 };
+        Object.keys(map).forEach(k => {
+            typeChart.data.datasets[map[k]].hidden = k !== p;
+        });
+        typeChart.update();
+    };
 </script>
 @endpush
 @endsection

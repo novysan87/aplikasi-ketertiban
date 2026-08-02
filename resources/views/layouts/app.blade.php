@@ -4,6 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- PWA --}}
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Ketertiban">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="icon" href="/icons/icon-192.png">
     @php
         $schoolName = App\Models\Setting::getValue('school_name', 'Ketertiban');
         $appName = App\Models\Setting::getValue('app_name', 'Aplikasi Ketertiban');
@@ -17,19 +26,19 @@
     <meta property="og:site_name" content="{{ $appName }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    @if($logoPath)
-        <meta property="og:image" content="{{ asset('storage/' . $logoPath) }}">
-        <meta property="og:image:width" content="256">
-        <meta property="og:image:height" content="256">
-    @else
-        <meta property="og:image" content="{{ asset('favicon.ico') }}">
-    @endif
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="{{ asset('og-image.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $appName }}">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('title', $appName) - {{ $schoolName }}">
     <meta name="twitter:description" content="Aplikasi Ketertiban Siswa {{ $schoolName }}.">
+    <meta name="twitter:image" content="{{ asset('og-image.png') }}">
 
-    <link rel="icon" type="image/png" href="{{ $logoPath ? asset('storage/' . $logoPath) : asset('favicon.ico') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ $logoPath ? asset('storage/' . $logoPath) : asset('favicon.ico') }}">
+    {{-- Favicon mengikuti logo sekolah --}}
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
+    <link rel="shortcut icon" href="/favicon.ico">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -112,7 +121,7 @@
 <body class="h-full antialiased">
     <div x-data="notifications()" class="min-h-screen flex">
         {{-- Sidebar --}}
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-white via-blue-50/30 to-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-sm">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-lg lg:shadow-sm">
             <div class="flex items-start justify-between h-auto px-4 pt-4 pb-3 border-b border-gray-200">
                 <a href="{{ route('dashboard') }}" class="min-w-0">
                     <div class="flex items-center gap-2.5 mb-2">
@@ -142,6 +151,9 @@
                 @canPermission('input-violations')
                 <x-nav-item href="{{ route('violations.create') }}" icon="plus-circle" :active="request()->routeIs('violations.create')">Input Pelanggaran</x-nav-item>
                 @endcanPermission
+                @canPermission('face-scan')
+                <x-nav-item href="{{ route('face.scan') }}" icon="face-scan" :active="request()->routeIs('face.scan')">Scan Wajah</x-nav-item>
+                @endcanPermission
                 @canPermission('view-violations')
                 <x-nav-item href="{{ route('violations.index') }}" icon="exclamation-triangle" :active="request()->routeIs('violations.index')">Data Pelanggaran</x-nav-item>
                 @endcanPermission
@@ -159,8 +171,13 @@
                 <div class="pt-4 mt-4 border-t border-gray-200">
                     <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>
                 </div>
+                @canPermission('face-register')
+                <x-nav-item href="{{ route('face.register') }}" icon="user-plus" :active="request()->routeIs('face.register')">Registrasi Wajah</x-nav-item>
+                @endcanPermission
                 <x-nav-item href="{{ route('settings.categories') }}" icon="tag" :active="request()->routeIs('settings.categories*')">Kategori Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('settings.violation-types') }}" icon="list" :active="request()->routeIs('settings.violation-types*')">Jenis Pelanggaran</x-nav-item>
+                <x-nav-item href="{{ route('settings.handling-types') }}" icon="hand-holding-heart" :active="request()->routeIs('settings.handling-types*')">Jenis Penanganan</x-nav-item>
+                <x-nav-item href="{{ route('settings.homeroom') }}" icon="chalkboard-user" :active="request()->routeIs('settings.homeroom*')">Wali Kelas</x-nav-item>
                 <x-nav-item href="{{ route('settings.thresholds') }}" icon="chart-bar" :active="request()->routeIs('settings.thresholds*')">Ambang SP</x-nav-item>
                 @endcanPermission
 
@@ -200,7 +217,7 @@
         </aside>
 
         {{-- Overlay for mobile --}}
-        <div @click="sidebarOpen = false" x-show="sidebarOpen" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-50 lg:hidden" style="display: none;"></div>
+        <div @click="sidebarOpen = false" x-show="sidebarOpen" class="fixed inset-0 z-40 bg-transparent lg:hidden" style="display: none;"></div>
 
         {{-- Main Content --}}
         <div class="flex-1 flex flex-col min-w-0">
@@ -255,11 +272,11 @@
                         <button @click="showUserMenu = !showUserMenu"
                             class="flex items-center gap-3 pl-3 pr-2 py-2 rounded-xl hover:bg-gray-50 transition group">
                             <div class="hidden sm:block text-right">
-                                <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition">{{ auth()->user()->name }}</p>
-                                <p class="text-xs text-gray-400 capitalize">{{ auth()->user()->role }}</p>
+                                <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition">{{ auth()->user()?->name ?? '' }}</p>
+                                <p class="text-xs text-gray-400 capitalize">{{ auth()->user()?->role ?? '' }}</p>
                             </div>
                             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                {{ strtoupper(substr(auth()->user()?->name ?? '', 0, 1)) }}
                             </div>
                             <i class="fa-solid fa-chevron-down"></i>
                         </button>
@@ -274,8 +291,8 @@
                             x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden z-50" style="display: none;">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-semibold text-gray-900">{{ auth()->user()->name }}</p>
-                                <p class="text-xs text-gray-400 capitalize">{{ auth()->user()->role }}</p>
+                                <p class="text-sm font-semibold text-gray-900">{{ auth()->user()?->name ?? '' }}</p>
+                                <p class="text-xs text-gray-400 capitalize">{{ auth()->user()?->role ?? '' }}</p>
                             </div>
                             <div class="py-1">
                                 <a href="{{ route('profile.index') }}"
@@ -434,6 +451,15 @@
             });
             return result.isConfirmed;
         };
+    </script>
+    {{-- PWA: Service Worker --}}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(err => console.error('SW registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>

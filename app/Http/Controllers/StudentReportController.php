@@ -14,7 +14,8 @@ class StudentReportController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Student::where('is_active', true);
+        $query = Student::where('is_active', true)
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()));
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -37,15 +38,20 @@ class StudentReportController extends Controller
             $query->where('department_code', $request->department);
         }
 
-        $students = $query->withCount(['violations' => fn($q) => $q->whereNull('deleted_at')])
-            ->orderBy('class_name')
+        // Default: siswa dengan poin pelanggaran tertinggi di urutan atas
+        $students = $query
+            ->withCount(['violations' => fn($q) => $q->whereNull('deleted_at')])
+            ->withSum(['violations' => fn($q) => $q->whereNull('deleted_at')], 'points')
+            ->orderByDesc('violations_sum_points')
             ->orderBy('full_name')
             ->paginate(20);
 
         // Data untuk dropdown filter
-        $classLevels = Student::where('is_active', true)->distinct()->pluck('class_level')->sort()->values();
-        $classNames = Student::where('is_active', true)->distinct()->pluck('class_name')->sort()->values();
-        $departments = Student::where('is_active', true)
+        $baseStudents = Student::where('is_active', true)
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()));
+        $classLevels = (clone $baseStudents)->distinct()->pluck('class_level')->sort()->values();
+        $classNames = (clone $baseStudents)->distinct()->pluck('class_name')->sort()->values();
+        $departments = (clone $baseStudents)
             ->selectRaw('DISTINCT department_code, department_name')
             ->whereNotNull('department_code')
             ->where('department_code', '!=', '')
@@ -71,6 +77,8 @@ class StudentReportController extends Controller
 
     public function show(Student $student): View
     {
+        abort_unless(auth()->user()->canViewStudent($student), 403);
+
         $student->load(['violations' => function ($q) {
             $q->with(['violationType.category', 'recorder', 'evidences', 'handlings.participants.user'])
               ->latest()
@@ -106,6 +114,8 @@ class StudentReportController extends Controller
 
     public function update(Request $request, Student $student): RedirectResponse
     {
+        abort_unless(auth()->user()->canViewStudent($student), 403);
+
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'nisn' => ['nullable', 'string', 'max:50'],
@@ -115,6 +125,7 @@ class StudentReportController extends Controller
             'date_of_birth' => ['nullable', 'date'],
             'address' => ['nullable', 'string', 'max:500'],
             'phone_number' => ['nullable', 'string', 'max:30'],
+            'parent_phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'class_name' => ['nullable', 'string', 'max:100'],
             'class_level' => ['nullable', 'string', 'max:20'],

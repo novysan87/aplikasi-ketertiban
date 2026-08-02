@@ -34,6 +34,9 @@
                     <option value="bk" @selected(request('role') == 'bk')>BK</option>
                     <option value="wali_kelas" @selected(request('role') == 'wali_kelas')>Wali Kelas</option>
                     <option value="staff" @selected(request('role') == 'staff')>Staff</option>
+                    <option value="kepala_sekolah" @selected(request('role') == 'kepala_sekolah')>Kepala Sekolah</option>
+                    <option value="waka_kesiswaan" @selected(request('role') == 'waka_kesiswaan')>Waka Kesiswaan</option>
+                    <option value="ketua_tim" @selected(request('role') == 'ketua_tim')>Ketua Tim</option>
                     <option value="other" @selected(request('role') == 'other')>Other</option>
                 </select>
                 <div class="flex space-x-2">
@@ -68,11 +71,7 @@
                         <tr class="hover:bg-gray-50 transition {{ !$user->is_active ? 'opacity-60' : '' }}">
                             <td class="px-5 py-4">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
-                                        @if($user->role === 'admin') bg-blue-100 text-blue-600
-                                        @elseif($user->role === 'bk') bg-blue-100 text-blue-600
-                                        @elseif($user->role === 'wali_kelas') bg-green-100 text-green-600
-                                        @else bg-gray-100 text-gray-600 @endif">
+                                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 bg-blue-100 text-blue-600">
                                         {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </div>
                                     <div>
@@ -83,17 +82,27 @@
                             </td>
                             <td class="px-5 py-4 text-sm text-gray-700 font-mono">{{ $user->username }}</td>
                             <td class="px-5 py-4">
-                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full
-                                    @if($user->role === 'admin') bg-blue-100 text-red-700
-                                    @elseif($user->role === 'bk') bg-blue-100 text-blue-700
-                                    @elseif($user->role === 'wali_kelas') bg-green-100 text-green-700
-                                    @else bg-gray-100 text-gray-700 @endif">
-                                    @if($user->role === 'admin') <i class="fa-solid fa-shield-halved mr-1"></i>
-                                    @elseif($user->role === 'bk') <i class="fa-solid fa-user-tie mr-1"></i>
-                                    @elseif($user->role === 'wali_kelas') <i class="fa-solid fa-chalkboard-user mr-1"></i>
-                                    @else <i class="fa-solid fa-user mr-1"></i> @endif
-                                    {{ ucfirst(str_replace('_', ' ', $user->role)) }}
-                                </span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach($user->roleList() as $r)
+                                        @php
+                                            $roleBadges = [
+                                                'admin' => ['bg-blue-100 text-blue-700', 'fa-shield-halved'],
+                                                'bk' => ['bg-cyan-100 text-cyan-700', 'fa-user-tie'],
+                                                'wali_kelas' => ['bg-emerald-100 text-emerald-700', 'fa-chalkboard-user'],
+                                                'staff' => ['bg-violet-100 text-violet-700', 'fa-user-gear'],
+                                                'kepala_sekolah' => ['bg-amber-100 text-amber-700', 'fa-crown'],
+                                                'waka_kesiswaan' => ['bg-rose-100 text-rose-700', 'fa-user-graduate'],
+                                                'ketua_tim' => ['bg-teal-100 text-teal-700', 'fa-user-group'],
+                                                'other' => ['bg-gray-100 text-gray-700', 'fa-user'],
+                                            ];
+                                            $rb = $roleBadges[$r] ?? ['bg-gray-100 text-gray-700', 'fa-user'];
+                                        @endphp
+                                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full {{ $rb[0] }}">
+                                            <i class="fa-solid {{ $rb[1] }} mr-1"></i>
+                                            {{ ucfirst(str_replace('_', ' ', $r)) }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </td>
                             <td class="px-5 py-4 text-center">
                                 @if($user->is_active)
@@ -110,7 +119,7 @@
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end space-x-1">
-                                    <button @click="openEdit({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->username }}', '{{ $user->email }}', '{{ $user->role }}', {{ $user->is_active ? 'true' : 'false' }})"
+                                    <button @click="openEdit({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->username }}', '{{ $user->email }}', '{{ implode(',', $user->roleList()) }}', {{ $user->is_active ? 'true' : 'false' }})"
                                         class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </button>
@@ -153,95 +162,168 @@
         </div>
     </div>
 
-    {{-- Modal --}}
-    <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
-            <div 
-                class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="isEditing ? 'bg-blue-100' : 'bg-blue-100'">
-                            <i class="fa-solid" :class="isEditing ? 'fa-pen-to-square text-blue-600' : 'fa-user-plus text-blue-600'"></i>
+{{-- Modal --}}
+    <div x-show="modalOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl mx-4 max-h-[92vh] overflow-y-auto">
+                {{-- Header hero --}}
+                <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 px-7 py-6 sticky top-0 z-10">
+                    <div class="pointer-events-none absolute -top-10 -right-10 w-44 h-44 rounded-full bg-white/10 blur-2xl"></div>
+                    <div class="pointer-events-none absolute -bottom-14 -left-8 w-40 h-40 rounded-full bg-sky-300/20 blur-3xl"></div>
+                    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+                        style="background-image: radial-gradient(circle at 25% 40%, #fff 1.5px, transparent 1.5px); background-size: 20px 20px;"></div>
+                    <div class="relative z-10 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center ring-1 ring-white/25 backdrop-blur-sm">
+                                <i class="fa-solid text-white text-xl" :class="isEditing ? 'fa-pen-to-square' : 'fa-user-plus'"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-black text-white" x-text="isEditing ? 'Edit User' : 'Tambah User'"></h3>
+                                <p class="text-xs text-white/75" x-text="isEditing ? 'Ubah data pengguna' : 'Buat akun pengguna baru'"></p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900" x-text="isEditing ? 'Edit User' : 'Tambah User'"></h3>
-                            <p class="text-sm text-gray-500" x-text="isEditing ? 'Ubah data pengguna' : 'Buat akun pengguna baru'"></p>
-                        </div>
+                        <button @click="modalOpen = false"
+                            class="w-9 h-9 rounded-xl bg-white/10 ring-1 ring-white/25 flex items-center justify-center text-white hover:bg-white/25 transition flex-shrink-0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <button @click="modalOpen = false" class="text-gray-400 hover:text-gray-600 transition">
-                        <i class="fa-solid fa-xmark text-xl"></i>
-                    </button>
                 </div>
 
                 {{-- Form --}}
-                <form :action="isEditing ? `/users/${editId}` : '{{ route('users.store') }}'" method="POST" class="p-6 space-y-4">
+                <form :action="isEditing ? `/users/${editId}` : '{{ route('users.store') }}'" method="POST" class="p-7">
                     @csrf
                     <input type="hidden" name="_method" :value="isEditing ? 'PUT' : 'POST'">
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap</label>
-                            <input type="text" x-model="formName" name="name" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                                placeholder="Nama lengkap">
-                        </div>
+                    <div class="space-y-5">
+                        {{-- Nama --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
-                            <input type="text" x-model="formUsername" name="username" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                                placeholder="username">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                                <input type="text" x-model="formName" name="name" required
+                                    class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                    placeholder="Nama lengkap">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                            <input type="email" x-model="formEmail" name="email" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                                placeholder="email@sekolah.sch.id">
+
+                        {{-- Username + Email --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Username <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-at absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                                    <input type="text" x-model="formUsername" name="username" required
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        placeholder="username">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                                    <input type="email" x-model="formEmail" name="email" required
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        placeholder="email@sekolah.sch.id">
+                                </div>
+                            </div>
                         </div>
+
+                        {{-- Password --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Password <span x-text="isEditing ? '(kosongkan jika tidak diubah)' : ''" class="text-gray-400 font-normal"></span>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Password <span class="text-red-500">*</span>
+                                <span x-show="isEditing" class="text-xs font-normal text-gray-400">(kosongkan jika tidak diubah)</span>
                             </label>
-                            <input type="password" x-model="formPassword" name="password" :required="!isEditing" minlength="6"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                                placeholder="Min. 6 karakter">
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                                <input :type="showPassword ? 'text' : 'password'" x-model="formPassword" name="password" :required="!isEditing" minlength="6"
+                                    class="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                    placeholder="Min. 6 karakter">
+                                <button type="button" @click="showPassword = !showPassword"
+                                    class="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition">
+                                    <i class="fa-solid text-sm" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                         </div>
+
+                        {{-- Role (multi) --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Role / Hak Akses</label>
-                            <select x-model="formRole" name="role" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
-                                <option value="bk">BK — Input & laporan</option>
-                                <option value="admin">Admin — Full akses</option>
-                                <option value="wali_kelas">Wali Kelas — Lihat kelas sendiri</option>
-                                <option value="staff">Staff — Terbatas</option>
-                                <option value="other">Other — Guest / Terbatas</option>
-                            </select>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Role / Hak Akses <span class="text-red-500">*</span> <span class="text-xs font-normal text-gray-400">(bisa pilih lebih dari satu)</span></label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <template x-for="r in [
+                                    { v: 'admin', label: 'Admin', desc: 'Full akses', icon: 'fa-user-shield', color: '#2563eb' },
+                                    { v: 'bk', label: 'BK', desc: 'Input & laporan', icon: 'fa-user-tie', color: '#14b8a6' },
+                                    { v: 'wali_kelas', label: 'Wali Kelas', desc: 'Lihat kelas sendiri', icon: 'fa-chalkboard-user', color: '#10b981' },
+                                    { v: 'staff', label: 'Staff', desc: 'Terbatas', icon: 'fa-user-gear', color: '#8b5cf6' },
+                                    { v: 'kepala_sekolah', label: 'Kepala Sekolah', desc: 'Pimpinan / persetujuan', icon: 'fa-crown', color: '#f59e0b' },
+                                    { v: 'waka_kesiswaan', label: 'Waka Kesiswaan', desc: 'Pengelola kesiswaan', icon: 'fa-user-graduate', color: '#f43f5e' },
+                                    { v: 'ketua_tim', label: 'Ketua Tim', desc: 'Koordinator tim', icon: 'fa-user-group', color: '#14b8a6' },
+                                    { v: 'other', label: 'Other', desc: 'Guest / Terbatas', icon: 'fa-user', color: '#64748b' },
+                                ]" :key="r.v">
+                                    <label class="flex items-center gap-3 rounded-2xl border-2 p-3 cursor-pointer transition-all duration-150 active:scale-[0.98]"
+                                        :class="formRoles.includes(r.v) ? 'border-transparent text-white shadow-md ring-2' : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'"
+                                        :style="formRoles.includes(r.v) ? 'background: linear-gradient(135deg, ' + r.color + ', ' + r.color + 'bb);' : ''">
+                                        <input type="checkbox" :name="'roles[]'" :value="r.v" x-model="formRoles" class="sr-only">
+                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                                            :class="formRoles.includes(r.v) ? 'bg-white/20' : 'bg-white shadow-sm border border-gray-200'">
+                                            <i :class="'fa-solid ' + r.icon" class="text-sm" :class="formRoles.includes(r.v) ? 'text-white' : 'text-gray-400'"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold" :class="formRoles.includes(r.v) ? 'text-white' : 'text-gray-800'" x-text="r.label"></p>
+                                            <p class="text-[10px]" :class="formRoles.includes(r.v) ? 'text-white/70' : 'text-gray-400'" x-text="r.desc"></p>
+                                        </div>
+                                        <i class="fa-solid fa-circle-check ml-auto text-base"
+                                            :class="formRoles.includes(r.v) ? 'text-white' : 'text-gray-200'"></i>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Aktif (edit) --}}
+                        <div x-show="isEditing" x-transition class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-white shadow-sm border border-gray-200 flex items-center justify-center">
+                                    <i class="fa-solid fa-power-off text-emerald-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">Akun Aktif</p>
+                                    <p class="text-xs text-gray-500">Nonaktifkan untuk menonaktifkan akun</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" x-model="formActive" name="is_active" value="1" class="sr-only">
+                                <span class="relative h-6 w-11 rounded-full transition-colors duration-200" :class="formActive ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-300'">
+                                    <span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200" :class="formActive ? 'translate-x-5' : ''"></span>
+                                </span>
+                            </label>
                         </div>
                     </div>
 
-                    <div x-show="isEditing" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Akun Aktif</p>
-                            <p class="text-xs text-gray-500">Nonaktifkan untuk menonaktifkan akun</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" x-model="formActive" name="is_active" value="1" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                        </label>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 pt-2">
+                    {{-- Footer --}}
+                    <div class="flex items-center justify-end gap-3 mt-7 pt-5 border-t border-gray-100">
                         <button type="button" @click="modalOpen = false"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition">Batal</button>
+                            class="px-6 py-3 text-sm font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition">
+                            Batal
+                        </button>
                         <button type="submit"
-                            class="px-5 py-2.5 text-sm font-medium text-white rounded-xl transition shadow-sm"
-                            :class="isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'"
-                            x-text="isEditing ? 'Simpan Perubahan' : 'Tambah User'"></button>
+                            class="px-7 py-3 text-sm font-black text-white bg-gradient-to-r from-blue-600 to-sky-500 rounded-2xl shadow-lg shadow-blue-200 hover:-translate-y-0.5 hover:brightness-105 transition-all inline-flex items-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span x-text="isEditing ? 'Simpan Perubahan' : 'Tambah User'"></span>
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 </div>
 
 @push('scripts')
@@ -249,16 +331,33 @@
 function userManager() {
     return {
         modalOpen: false, isEditing: false, editId: null,
-        formName: '', formUsername: '', formEmail: '', formPassword: '', formRole: 'bk', formActive: true,
+        formName: '', formUsername: '', formEmail: '', formPassword: '', formRoles: ['bk'], formActive: true,
+        showPassword: false,
+        get roleInfo() {
+            const map = {
+                admin: { icon: 'fa-user-shield', color: '#2563eb' },
+                bk: { icon: 'fa-user-tie', color: '#14b8a6' },
+                wali_kelas: { icon: 'fa-chalkboard-user', color: '#10b981' },
+                staff: { icon: 'fa-user-gear', color: '#8b5cf6' },
+                kepala_sekolah: { icon: 'fa-crown', color: '#f59e0b' },
+                waka_kesiswaan: { icon: 'fa-user-graduate', color: '#f43f5e' },
+                ketua_tim: { icon: 'fa-user-group', color: '#14b8a6' },
+                other: { icon: 'fa-user', color: '#64748b' },
+            };
+            const primary = this.formRoles[0] || 'bk';
+            return map[primary] || { icon: 'fa-user', color: '#64748b' };
+        },
         openCreate() {
             this.isEditing = false; this.editId = null;
             this.formName = ''; this.formUsername = ''; this.formEmail = ''; this.formPassword = '';
-            this.formRole = 'bk'; this.formActive = true; this.modalOpen = true;
+            this.formRoles = ['bk']; this.formActive = true; this.showPassword = false; this.modalOpen = true;
         },
-        openEdit(id, name, username, email, role, active) {
+        openEdit(id, name, username, email, rolesCsv, active) {
             this.isEditing = true; this.editId = id;
             this.formName = name; this.formUsername = username; this.formEmail = email;
-            this.formPassword = ''; this.formRole = role; this.formActive = active; this.modalOpen = true;
+            this.formPassword = '';
+            this.formRoles = rolesCsv ? rolesCsv.split(',') : ['bk'];
+            this.formActive = active; this.showPassword = false; this.modalOpen = true;
         }
     };
 }

@@ -4,6 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Favicon + OG --}}
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta property="og:title" content="E-TATIB S1WON - SMKN 1 Wonorejo">
+    <meta property="og:description" content="Sistem Ketertiban Siswa SMKN 1 Wonorejo — Manajemen pelanggaran, presensi, dan surat peringatan siswa.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ asset('og-image.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    {{-- PWA --}}
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Ketertiban">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     @php
         $schoolName = App\Models\Setting::getValue('school_name', 'Ketertiban');
         $appName = App\Models\Setting::getValue('app_name', 'Aplikasi Ketertiban');
@@ -69,6 +87,16 @@
         <div class="flex items-center justify-center bg-white p-4 sm:p-8 lg:p-8">
             <div class="w-full max-w-sm">
                 <div class="mb-5 text-center lg:text-left">
+                    {{-- Logo aplikasi — tampil di semua ukuran layar (penting utk mobile/PWA) --}}
+                    <div class="mb-4 flex justify-center lg:justify-start">
+                        <div class="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 ring-1 ring-blue-100 shadow-sm">
+                            @if($logoPath)
+                                <img src="{{ asset('storage/' . $logoPath) }}" alt="Logo {{ $appName }}" class="w-11 h-11 object-contain">
+                            @else
+                                <span class="text-xl font-extrabold tracking-tight text-blue-600">KT</span>
+                            @endif
+                        </div>
+                    </div>
                     <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">{{ $appName }}</p>
                     <p class="text-xs text-slate-400 mt-0.5">{{ $schoolName }}</p>
                     <h2 class="mt-2 text-2xl sm:text-[28px] font-semibold text-slate-900">Selamat Datang</h2>
@@ -162,6 +190,15 @@
                 }
             });
         });
+    </script>
+    {{-- PWA: Service Worker --}}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(err => console.error('SW registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>

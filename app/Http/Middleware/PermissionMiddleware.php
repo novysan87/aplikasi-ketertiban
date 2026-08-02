@@ -23,21 +23,15 @@ class PermissionMiddleware
         }
 
         // Admin always has all permissions
-        if ($user->role === 'admin') {
+        if ($user->isAdmin()) {
             return $next($request);
         }
 
-        // Cache role permissions (cleared when role_permissions changes)
-        $rolePermissions = Cache::remember('role_permissions:' . $user->role, 3600, function () use ($user) {
-            return \DB::table('role_permissions')
-                ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
-                ->where('role_permissions.role', $user->role)
-                ->pluck('permissions.key')
-                ->toArray();
-        });
+        // Gabungkan permission dari SEMUA role user (multi-role)
+        $userPermissions = $user->allPermissions();
 
         foreach ($permissions as $permission) {
-            if (in_array($permission, $rolePermissions)) {
+            if (in_array($permission, $userPermissions)) {
                 return $next($request);
             }
         }

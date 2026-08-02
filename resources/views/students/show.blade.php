@@ -14,7 +14,7 @@
         background: #e5e7eb;
     }
     .sp-progress-bar {
-        background: linear-gradient(90deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
+        background: linear-gradient(90deg, #fbbf24 0%, #f97316 40%, #ef4444 70%, #dc2626 100%);
     }
 </style>
 @endpush
@@ -39,172 +39,228 @@
     </div>
 
     {{-- ===== HERO CARD ===== --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div class="bg-gradient-to-r from-blue-500 via-blue-400 to-sky-300 h-24 sm:h-32"></div>
-        <div class="relative px-6 pb-6">
-            <div class="flex flex-col sm:flex-row sm:items-end -mt-12 sm:-mt-16 mb-5 gap-4">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white shadow-lg border-2 border-white flex items-center justify-center flex-shrink-0">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-sky-400 p-6 sm:p-8 text-white shadow-xl shadow-blue-200/60 mb-6">
+        <div class="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="pointer-events-none absolute -bottom-24 -left-12 h-72 w-72 rounded-full bg-sky-300/20 blur-3xl"></div>
+        <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style="background-image: radial-gradient(circle at 25% 40%, #fff 1.5px, transparent 1.5px); background-size: 22px 22px;"></div>
+
+        <div class="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center">
+            <div class="relative flex-shrink-0">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white/15 backdrop-blur-sm ring-1 ring-white/30 flex items-center justify-center overflow-hidden shadow-lg">
                     @if($student->photo_path)
                         <img src="{{ Storage::url($student->photo_path) }}" alt="{{ $student->full_name }}"
-                            class="w-full h-full rounded-2xl object-cover">
+                            class="w-full h-full object-cover">
                     @else
-                        <span class="text-3xl sm:text-4xl font-bold text-blue-600">{{ strtoupper(substr($student->full_name, 0, 1)) }}</span>
+                        <span class="text-4xl sm:text-5xl font-black text-white">{{ strtoupper(substr($student->full_name, 0, 1)) }}</span>
                     @endif
                 </div>
-                <div class="flex-1 min-w-0 pt-5 sm:pt-0">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 truncate leading-tight tracking-tight">{{ $student->full_name }}</h2>
-                            <div class="flex flex-wrap items-center gap-2 mt-3">
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-semibold bg-gray-100 text-blue-700 rounded-full border border-blue-200">
-                                    <i class="fa-solid fa-id-card text-blue-400"></i>
-                                    {{ $student->nisn ?? '—' }}
-                                </span>
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
-                                    <i class="fa-solid fa-building text-emerald-400"></i>
-                                    {{ $student->class_name ?? '—' }}
-                                </span>
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-purple-50 text-purple-700 rounded-full border border-purple-200">
-                                    <i class="fa-solid fa-graduation-cap text-purple-400"></i>
-                                    {{ $student->department_name ?? $student->department_code ?? '—' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            @if($student->is_active)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    Aktif
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 rounded-full">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                                    Tidak Aktif
-                                </span>
-                            @endif
-                        </div>
-                    </div>
+                @if($student->is_active)
+                    <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-400 border-4 border-white shadow"></span>
+                @endif
+            </div>
+            <div class="flex-1 min-w-0">
+                <nav class="flex items-center gap-1.5 text-xs text-white/60 mb-1.5">
+                    <a href="{{ route('students.index') }}" class="hover:text-white transition">Data Siswa</a>
+                    <span>/</span>
+                    <span class="text-white/80 font-medium truncate max-w-[200px]">{{ $student->full_name }}</span>
+                </nav>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white truncate leading-tight tracking-tight">{{ $student->full_name }}</h2>
+                <div class="flex flex-wrap items-center gap-2 mt-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold bg-white/15 rounded-full ring-1 ring-white/25 backdrop-blur-sm">
+                        <i class="fa-solid fa-id-card text-white/70"></i>
+                        {{ $student->nisn ?? '—' }}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-400/20 text-emerald-100 rounded-full ring-1 ring-emerald-300/30">
+                        <i class="fa-solid fa-building text-emerald-200"></i>
+                        {{ $student->class_name ?? '—' }}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-purple-400/20 text-purple-100 rounded-full ring-1 ring-purple-300/30">
+                        <i class="fa-solid fa-graduation-cap text-purple-200"></i>
+                        {{ $student->department_name ?? $student->department_code ?? '—' }}
+                    </span>
+                    @if(!$student->is_active)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-gray-500/30 text-gray-100 rounded-full ring-1 ring-gray-400/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            Tidak Aktif
+                        </span>
+                    @endif
                 </div>
             </div>
+            <a href="{{ route('students.index') }}"
+                class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-bold text-white bg-white/10 ring-1 ring-white/25 rounded-xl hover:bg-white/20 transition backdrop-blur-sm shrink-0 self-start lg:self-center">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                Kembali
+            </a>
+        </div>
 
-            {{-- SP Level Badge --}}
-            @if($currentSpLevel)
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold mb-4"
-                    style="background-color: {{ $currentSpLevel->color }}15; color: {{ $currentSpLevel->color }}; border: 1px solid {{ $currentSpLevel->color }}30;">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    {{ $currentSpLevel->name }} — {{ $currentSpLevel->min_points }}+ poin
-                </div>
-            @endif
+        {{-- SP Level Badge --}}
+        @if($currentSpLevel)
+            <div class="relative z-10 mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
+                style="background-color: {{ $currentSpLevel->color }}22; color: #fff; border: 1px solid {{ $currentSpLevel->color }}66;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                {{ $currentSpLevel->name }} — {{ $currentSpLevel->min_points }}+ poin
+            </div>
+        @endif
 
-            {{-- Gradient Stat Cards --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-sm">
-                    <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
-                        <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Total Poin</p>
-                    <p class="text-xl font-bold text-white mt-1">{{ $totalPoints }}</p>
+        {{-- Stat Cards --}}
+        <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+            <div class="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 p-4 shadow-lg">
+                <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
+                    <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500 to-red-600 p-4 shadow-sm">
-                    <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
-                        <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Pelanggaran</p>
-                    <p class="text-xl font-bold text-white mt-1">{{ $violationCount }}<span class="text-sm font-medium text-white/60">x</span></p>
+                <p class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Total Poin</p>
+                <p class="text-2xl font-black text-white mt-1">{{ $totalPoints }}</p>
+            </div>
+            <div class="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 p-4 shadow-lg">
+                <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
+                    <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 p-4 shadow-sm">
-                    <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
-                        <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
-                    <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider">SP Terbit</p>
-                    <p class="text-xl font-bold text-white mt-1">{{ $activeSpLetters }}</p>
+                <p class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Pelanggaran</p>
+                <p class="text-2xl font-black text-white mt-1">{{ $violationCount }}<span class="text-sm font-semibold text-white/60">x</span></p>
+            </div>
+            <div class="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 p-4 shadow-lg">
+                <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
+                    <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 </div>
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 p-4 shadow-sm">
-                    <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
-                        <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Terakhir</p>
-                    <p class="text-sm font-bold text-white mt-1">
-                        @if($lastViolation) {{ $lastViolation->violation_date->diffForHumans() }} @else — @endif
-                    </p>
+                <p class="text-[10px] font-bold text-white/70 uppercase tracking-wider">SP Terbit</p>
+                <p class="text-2xl font-black text-white mt-1">{{ $activeSpLetters }}</p>
+            </div>
+            <div class="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 p-4 shadow-lg">
+                <div class="absolute right-0 top-0 w-12 h-12 opacity-15">
+                    <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
+                <p class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Terakhir</p>
+                <p class="text-base font-black text-white mt-1.5">
+                    @if($lastViolation) {{ $lastViolation->violation_date->diffForHumans() }} @else — @endif
+                </p>
             </div>
         </div>
     </div>
 
     {{-- ===== SP PROGRESS ===== --}}
     @if($spThresholds->count() > 0)
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                <i class="fa-solid fa-chart-line text-blue-500 text-sm"></i>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900">Progress Ambang SP</h3>
-                <p class="text-xs text-gray-400">{{ $totalPoints }} / {{ $nextSpThreshold ? $nextSpThreshold->min_points : $spThresholds->last()->min_points }} poin</p>
-            </div>
-        </div>
-
         @php
-            $maxPoints = $nextSpThreshold ? $nextSpThreshold->min_points : $spThresholds->last()->min_points;
-            $progressPercent = $totalPoints >= $spThresholds->last()->min_points ? 100 : min(100, ($totalPoints / $maxPoints) * 100);
+            $lastMin = $spThresholds->last()->min_points;
+            $progressPercent = min(100, ($totalPoints / $lastMin) * 100);
         @endphp
-        <div class="relative h-3 bg-gray-100 rounded-full overflow-hidden mb-4">
-            <div class="sp-progress-bar h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        {{-- Header --}}
+        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-red-500 flex items-center justify-center shadow-md shadow-orange-200/50">
+                    <i class="fa-solid fa-triangle-exclamation text-white text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-gray-900">Progress Ambang SP</h3>
+                    <p class="text-xs text-gray-400">Jarak menuju surat peringatan</p>
+                </div>
+            </div>
+            <div class="text-right shrink-0">
+                <p class="text-2xl font-black text-gray-900 leading-none">{{ $totalPoints }}<span class="text-sm font-bold text-gray-400"> poin</span></p>
+                <p class="text-[10px] text-gray-400 mt-1">maks. {{ $lastMin }} poin</p>
+            </div>
         </div>
 
-        <div class="relative flex justify-between">
-            @foreach($spThresholds as $threshold)
-                @php $tsReached = $totalPoints >= $threshold->min_points; @endphp
-                <div class="flex flex-col items-center" style="flex:1">
-                    <div class="flex items-center gap-1.5 mb-1.5">
-                        <span class="w-3 h-3 rounded-full {{ $tsReached ? 'shadow-sm' : 'bg-gray-300' }}" style="background-color: {{ $tsReached ? $threshold->color : '' }}"></span>
-                        <span class="text-xs font-semibold {{ $tsReached ? '' : 'text-gray-400' }}" style="color: {{ $tsReached ? $threshold->color : '' }}">{{ $threshold->min_points }}</span>
+        {{-- Body --}}
+        <div class="p-6">
+            {{-- Bar + milestone --}}
+            <div class="relative h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                <div class="sp-progress-bar h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
+                {{-- Tick marker di atas bar --}}
+                @foreach($spThresholds as $threshold)
+                    @php $markerLeft = min(100, ($threshold->min_points / $lastMin) * 100); @endphp
+                    <div class="absolute top-0 bottom-0 w-0.5 bg-white/80" style="left: {{ $markerLeft }}%"></div>
+                @endforeach
+            </div>
+
+            {{-- Label marker --}}
+            <div class="relative h-11 mt-2">
+                @foreach($spThresholds as $threshold)
+                    @php
+                        $tsReached = $totalPoints >= $threshold->min_points;
+                        $markerLeft = min(100, ($threshold->min_points / $lastMin) * 100);
+                    @endphp
+                    <div class="absolute top-0 flex flex-col items-center -translate-x-1/2" style="left: {{ $markerLeft }}%">
+                        <span class="w-3 h-3 rounded-full mb-1 shadow-sm {{ $tsReached ? '' : 'bg-gray-300' }}"
+                            style="background-color: {{ $tsReached ? $threshold->color : '' }}"></span>
+                        <span class="text-[11px] font-black leading-none {{ $tsReached ? '' : 'text-gray-400' }}"
+                            style="color: {{ $tsReached ? $threshold->color : '' }}">{{ $threshold->min_points }}</span>
+                        <span class="text-[9px] font-semibold mt-0.5 {{ $tsReached ? '' : 'text-gray-400' }}"
+                            style="color: {{ $tsReached ? $threshold->color : '' }}">{{ $threshold->name }}</span>
                     </div>
-                    <span class="text-[10px] {{ $tsReached ? 'font-medium' : 'text-gray-400' }}" style="color: {{ $tsReached ? $threshold->color : '' }}">{{ $threshold->name }}</span>
-                </div>
-            @endforeach
-        </div>
+                @endforeach
+            </div>
 
-        @if($currentSpLevel)
-            <div class="mt-5 p-4 rounded-xl flex items-start gap-3" style="background-color: {{ $currentSpLevel->color }}10; border: 1px solid {{ $currentSpLevel->color }}20;">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: {{ $currentSpLevel->color }}20;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color: {{ $currentSpLevel->color }}"></i>
+            {{-- Status box --}}
+            @if($currentSpLevel)
+                <div class="mt-4 p-4 rounded-2xl flex items-start gap-3 border"
+                    style="background-color: {{ $currentSpLevel->color }}10; border-color: {{ $currentSpLevel->color }}30;">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                        style="background: linear-gradient(135deg, {{ $currentSpLevel->color }}, {{ $currentSpLevel->color }}bb);">
+                        <i class="fa-solid fa-triangle-exclamation text-white"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-black" style="color: {{ $currentSpLevel->color }}">{{ $currentSpLevel->name }} Sudah Tercapai</p>
+                        <p class="text-xs text-gray-500 mt-1">Siswa telah mencapai ambang <strong>{{ $currentSpLevel->min_points }}</strong> poin.
+                            @if($nextSpThreshold) Menuju {{ $nextSpThreshold->name }} ({{ $nextSpThreshold->min_points }} poin). @endif
+                        </p>
+                    </div>
+                    <span class="ml-auto inline-flex items-center px-2.5 py-1 text-[10px] font-bold rounded-full shrink-0"
+                        style="background-color: {{ $currentSpLevel->color }}20; color: {{ $currentSpLevel->color }};">
+                        <i class="fa-solid fa-flag-checkered mr-1"></i> Tercapai
+                    </span>
                 </div>
-                <div>
-                    <p class="text-sm font-semibold" style="color: {{ $currentSpLevel->color }}">{{ $currentSpLevel->name }} Sudah Tercapai</p>
-                    <p class="text-xs text-gray-500 mt-0.5">Siswa telah mencapai ambang {{ $currentSpLevel->min_points }} poin. Surat peringatan telah diterbitkan.</p>
+            @elseif($nextSpThreshold && $violationCount > 0)
+                <div class="mt-4 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <i class="fa-solid fa-circle-info text-white"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-black text-amber-700">Menuju {{ $nextSpThreshold->name }}</p>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <div class="flex-1 h-1.5 bg-amber-100 rounded-full overflow-hidden max-w-[160px]">
+                                <div class="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
+                                    style="width: {{ min(100, ($totalPoints / $nextSpThreshold->min_points) * 100) }}%"></div>
+                            </div>
+                            <p class="text-xs font-bold text-amber-600">{{ $nextSpThreshold->min_points - $totalPoints }} poin lagi</p>
+                        </div>
+                    </div>
+                    <span class="shrink-0 text-right">
+                        <p class="text-lg font-black text-amber-600 leading-none">{{ $totalPoints }}/{{ $nextSpThreshold->min_points }}</p>
+                        <p class="text-[9px] text-amber-400 font-semibold mt-0.5">menuju target</p>
+                    </span>
                 </div>
-            </div>
-        @elseif($nextSpThreshold && $violationCount > 0)
-            <div class="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-100 flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-circle-info text-blue-600"></i>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-blue-700">Menuju {{ $nextSpThreshold->name }}</p>
-                    <p class="text-xs text-blue-500/70 mt-0.5">{{ $nextSpThreshold->min_points - $totalPoints }} poin lagi untuk mencapai {{ $nextSpThreshold->name }}</p>
-                </div>
-            </div>
-        @endif
+            @endif
+        </div>
     </div>
     @endif
 
     {{-- ===== VIOLATIONS TIMELINE ===== --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-triangle-exclamation text-white text-sm"></i>
+        <div class="relative overflow-hidden bg-gradient-to-r from-orange-500 via-red-500 to-red-600 px-6 py-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl"></div>
+            <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+                style="background-image: radial-gradient(circle at 25% 40%, #fff 1.5px, transparent 1.5px); background-size: 20px 20px;"></div>
+            <div class="relative z-10 flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center ring-1 ring-white/25 backdrop-blur-sm">
+                    <i class="fa-solid fa-triangle-exclamation text-white text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-900">Riwayat Pelanggaran</h3>
-                    <p class="text-xs text-gray-400">{{ $violationCount }} catatan pelanggaran</p>
+                    <h3 class="text-base font-black text-white">Riwayat Pelanggaran</h3>
+                    <p class="text-xs text-white/75">{{ $violationCount }} catatan pelanggaran</p>
                 </div>
             </div>
+            <span class="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-black text-white bg-white/15 ring-1 ring-white/25 rounded-xl backdrop-blur-sm">
+                <i class="fa-solid fa-star text-[10px]"></i>
+                Total +{{ $totalPoints }} poin
+            </span>
         </div>
 
-        @forelse($student->violations as $v)
+        @if($student->violations->count() > 0)
+        <div class="relative pl-3">
+            <div class="absolute left-[26px] top-4 bottom-4 border-l-2 border-dashed border-gray-300"></div>
+        @foreach($student->violations as $v)
             @php
                 $handleStatusLabels = [
                     'unhandled' => ['label' => 'Belum Ditangani', 'class' => 'bg-red-50 text-red-600 border-red-200'],
@@ -213,11 +269,11 @@
                 ];
                 $hs = $handleStatusLabels[$v->handling_status] ?? ['label' => $v->handling_status, 'class' => 'bg-gray-50 text-gray-600'];
             @endphp
-            <div class="violation-timeline relative pl-[52px] pr-6 py-4 {{ !$loop->last ? 'border-b border-gray-50' : '' }} hover:bg-gray-50/50 transition">
-                {{-- Timeline dot --}}
-                <div class="absolute left-[15px] top-[15px] w-[16px] h-[16px] rounded-full border-[3px] bg-white flex items-center justify-center"
-                    style="border-color: {{ $v->violationType?->category?->color ?? '#9ca3af' }}">
-                    <span class="w-[6px] h-[6px] rounded-full" style="background-color: {{ $v->violationType?->category?->color ?? '#9ca3af' }}"></span>
+            <div class="relative pl-20 pr-8 py-5 hover:bg-gray-50/40 transition">
+                {{-- Bubble ikon kategori --}}
+                <div class="absolute left-[7px] top-5 w-10 h-10 rounded-xl flex items-center justify-center shadow-md ring-4 ring-gray-50"
+                    style="background: linear-gradient(135deg, {{ $v->violationType?->category?->color ?? '#6b7280' }}, {{ $v->violationType?->category?->color ?? '#6b7280' }}bb);">
+                    <i class="fa-solid fa-triangle-exclamation text-white text-sm"></i>
                 </div>
 
                 <div class="space-y-2.5">
@@ -225,7 +281,12 @@
                     <div class="flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="text-sm font-bold text-gray-900">{{ $v->violationType->name ?? '—' }}</span>
+                                <span class="text-sm font-black text-gray-900">{{ $v->violationType->name ?? '—' }}</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full"
+                                    style="background-color: {{ $v->violationType?->category?->color ?? '#6b7280' }}15; color: {{ $v->violationType?->category?->color ?? '#6b7280' }}">
+                                    <span class="w-1 h-1 rounded-full" style="background-color: {{ $v->violationType?->category?->color ?? '#6b7280' }}"></span>
+                                    {{ $v->violationType?->category?->name ?? '—' }}
+                                </span>
                                 {{-- Verification badge --}}
                                 @if($v->is_verified)
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
@@ -246,8 +307,8 @@
 
                         {{-- Poin --}}
                         <div class="flex flex-col items-center flex-shrink-0 min-w-[72px]">
-                            <span class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-lg shadow-sm
-                                {{ $v->points >= 50 ? 'bg-red-500 text-white' : ($v->points >= 15 ? 'bg-yellow-500 text-white' : 'bg-blue-500 text-white') }}">
+                            <span class="inline-flex items-center px-3.5 py-1.5 text-sm font-black text-white rounded-xl shadow-md
+                                {{ $v->points >= 50 ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-200' : ($v->points >= 15 ? 'bg-gradient-to-br from-amber-500 to-orange-500 shadow-amber-200' : 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-200') }}">
                                 +{{ $v->points }}
                             </span>
                             @if($v->sanction)
@@ -324,14 +385,16 @@
                     {{-- Detail link --}}
                     <div class="flex justify-end">
                         <a href="{{ route('violations.show', $v->id) }}"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition shadow-sm">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition shadow-sm">
                             Detail Pelanggaran
                             <i class="fa-solid fa-arrow-right text-[9px]"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        @empty
+        @endforeach
+        </div>
+        @else
             <div class="py-16 text-center">
                 <div class="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-face-smile text-gray-300 text-2xl"></i>
@@ -339,7 +402,7 @@
                 <h4 class="text-sm font-medium text-gray-500 mb-1">Belum Ada Pelanggaran</h4>
                 <p class="text-xs text-gray-400">Siswa ini belum memiliki catatan pelanggaran</p>
             </div>
-        @endforelse
+        @endif
     </div>
 
     {{-- ===== SP LETTERS ===== --}}
@@ -435,6 +498,7 @@
                 // Kontak
                 $contact = [
                     ['Telepon', $student->phone_number, 'fa-phone'],
+                    ['HP Orang Tua/Wali', $student->parent_phone, 'fa-user'],
                     ['Email', $student->email, 'fa-envelope'],
                 ];
                 // Sistem
@@ -574,26 +638,32 @@
         class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-4">
             <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
-            <div class="relative bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-                            <i class="fa-solid fa-pen-to-square text-white text-sm"></i>
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 px-7 py-6 sticky top-0 z-10">
+                    <div class="pointer-events-none absolute -top-10 -right-10 w-44 h-44 rounded-full bg-white/10 blur-2xl"></div>
+                    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+                        style="background-image: radial-gradient(circle at 25% 40%, #fff 1.5px, transparent 1.5px); background-size: 20px 20px;"></div>
+                    <div class="relative z-10 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center ring-1 ring-white/25 backdrop-blur-sm">
+                                <i class="fa-solid fa-pen-to-square text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-black text-white">Update Data Siswa</h3>
+                                <p class="text-xs text-white/75">Perbarui data diri {{ $student->full_name }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-900">Update Data Siswa</h3>
-                            <p class="text-xs text-gray-400">Perbarui data diri {{ $student->full_name }}</p>
-                        </div>
+                        <button @click="showEditModal = false"
+                            class="w-9 h-9 rounded-xl bg-white/10 ring-1 ring-white/25 flex items-center justify-center text-white hover:bg-white/25 transition flex-shrink-0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <button @click="showEditModal = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
                 </div>
 
-                <form action="{{ route('students.update', $student->id) }}" method="POST" class="p-6">
+                <form action="{{ route('students.update', $student->id) }}" method="POST" class="p-7">
                     @csrf @method('PUT')
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                             <input type="text" name="full_name" value="{{ $student->full_name }}" required
@@ -636,6 +706,11 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
                             <input type="text" name="phone_number" value="{{ $student->phone_number }}"
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">No. HP Orang Tua/Wali</label>
+                            <input type="text" name="parent_phone" value="{{ $student->parent_phone }}" placeholder="08xxxxxxxxxx"
                                 class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>

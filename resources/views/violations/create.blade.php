@@ -44,6 +44,12 @@
                     <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Siswa</span>
                 </div>
 
+                @if (request()->has('student_id'))
+                    <div class="mb-4 p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-xs text-cyan-700 flex items-center gap-2">
+                        <i class="fa-solid fa-fingerprint"></i> Siswa dipilih dari hasil Scan Wajah — periksa kembali sebelum menyimpan.
+                    </div>
+                @endif
+
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Cari Siswa <span class="text-red-500">*</span></label>
                     <div class="relative">
@@ -122,7 +128,7 @@
                                 <template x-for="(group, gi) in filtered" :key="gi">
                                     <div>
                                         <div class="sticky top-0 px-4 py-1.5 text-xs font-bold uppercase tracking-wider border-b flex items-center gap-1.5 z-10"
-                                            :style="'background:' + group.color + '12; color:' + group.color + '; border-color:' + group.color + '30'">
+                                            :style="'background:' + group.color + '; color:#fff; border-color:' + group.color">
                                             <span class="w-2 h-2 rounded-full" :style="'background:' + group.color"></span>
                                             <span x-text="group.label"></span>
                                             <span class="ml-auto text-[10px] opacity-60" x-text="'(' + group.types.length + ')'"></span>
@@ -174,21 +180,19 @@
                             <div class="space-y-2">
                                 <template x-for="(item, i) in selected" :key="item.id">
                                     <div class="flex items-center justify-between p-3 rounded-xl border shadow-sm"
-                                        :style="'border-color:' + item.color + '30; background:' + item.color + '06'">
+                                        :style="'background:' + item.color + '; border-color:' + item.color">
                                         <input type="hidden" :name="'violation_type_ids[' + i + ']'" :value="item.id">
                                         <div class="flex items-center gap-2.5 min-w-0">
-                                            <span class="w-3 h-3 rounded-full flex-shrink-0" :style="'background:' + item.color"></span>
+                                            <span class="w-3 h-3 rounded-full flex-shrink-0 bg-white/40 ring-2 ring-white/50" :style="'background:' + item.color"></span>
                                             <div class="min-w-0">
-                                                <p class="text-sm font-bold text-gray-900" x-text="item.name"></p>
-                                                <p class="text-xs text-gray-500" x-text="item.sanction || 'Tanpa sanksi'"></p>
+                                                <p class="text-sm font-bold text-white" x-text="item.name"></p>
+                                                <p class="text-xs text-white/75" x-text="item.sanction || 'Tanpa sanksi'"></p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0">
-                                            <span class="text-base font-bold"
-                                                :class="item.points >= 50 ? 'text-red-600' : (item.points >= 15 ? 'text-yellow-600' : 'text-blue-600')"
-                                                x-text="'+' + item.points"></span>
+                                            <span class="text-base font-bold text-white" x-text="'+' + item.points"></span>
                                             <button type="button" @click="removeType(i)"
-                                                class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition">
+                                                class="w-7 h-7 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
@@ -384,10 +388,19 @@ function typeMultiSearch(groups) {
     };
 }
 
+const facePrefill = (() => {
+    const p = new URLSearchParams(window.location.search);
+    const id = p.get('student_id');
+    if (!id) return null;
+    return { id, name: p.get('name') || '', info: p.get('info') || '' };
+})();
+
 function violationForm() {
     return {
-        searchQuery: '', results: [],
-        selectedStudentId: null, selectedStudentName: '', selectedStudentInfo: '',
+        searchQuery: facePrefill ? facePrefill.name : '', results: [],
+        selectedStudentId: facePrefill ? facePrefill.id : null,
+        selectedStudentName: facePrefill ? facePrefill.name : '',
+        selectedStudentInfo: facePrefill ? facePrefill.info : '',
         files: [],
 
         searchStudents() {

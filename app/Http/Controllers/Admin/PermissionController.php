@@ -19,7 +19,7 @@ class PermissionController extends Controller
             ->get()
             ->groupBy('group');
 
-        $roles = ['admin', 'bk', 'wali_kelas', 'staff', 'other'];
+        $roles = ['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim'];
 
         $rolePermissions = [];
         foreach ($roles as $role) {
@@ -69,7 +69,7 @@ class PermissionController extends Controller
         }
 
         // Clear cache
-        foreach (['admin', 'bk', 'wali_kelas', 'staff', 'other'] as $role) {
+        foreach (['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim'] as $role) {
             Cache::forget('role_permissions:' . $role);
         }
 

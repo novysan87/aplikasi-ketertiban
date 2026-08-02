@@ -24,7 +24,13 @@ class ViolationController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Violation::with(['student', 'violationType.category', 'recorder']);
+        $query = Violation::with(['student', 'violationType.category', 'recorder'])
+            ->withCount('notifications');
+
+        // Wali kelas murni → hanya kelas yang diwalikan
+        if (auth()->user()->isScopedWaliKelas()) {
+            $query->whereHas('student', fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()));
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -66,8 +72,19 @@ class ViolationController extends Controller
 
     public function create(): View
     {
-        $students = Student::where('is_active', true)->orderBy('full_name')->get();
-        $violationTypes = ViolationType::with('category')->where('is_active', true)->get();
+        $studentsQuery = Student::where('is_active', true);
+        if (auth()->user()->isScopedWaliKelas()) {
+            $studentsQuery->whereIn('class_id', auth()->user()->homeroomClassIds());
+        }
+        $students = $studentsQuery->orderBy('full_name')->get();
+        $violationTypes = ViolationType::with('category')
+            ->where('is_active', true)
+            ->orderBy(
+                \App\Models\ViolationCategory::select('sort_order')
+                    ->whereColumn('violation_categories.id', 'violation_types.category_id')
+            )
+            ->orderBy('name')
+            ->get();
 
         // Group by category for searchable dropdown
         $typeGroups = $violationTypes->groupBy(fn($t) => $t->category?->name ?? 'Lainnya')
@@ -100,6 +117,9 @@ class ViolationController extends Controller
             'evidences.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
         ]);
 
+        // Wali kelas murni hanya boleh mencatat siswa di kelasnya
+        abort_unless(auth()->user()->canViewStudent($validated['student_id']), 403);
+
         $evidences = $request->file('evidences') ?? [];
         $created = 0;
 
@@ -123,6 +143,8 @@ class ViolationController extends Controller
 
     public function show(Violation $violation): View
     {
+        abort_unless(auth()->user()->canViewStudent($violation->student_id), 403);
+
         $violation->load([
             'student', 'violationType.category', 'recorder', 'evidences',
             'handlings.participants.user', 'handlings.creator',
@@ -130,7 +152,12 @@ class ViolationController extends Controller
 
         $users = \App\Models\User::where('is_active', true)->orderBy('name')->get();
 
-        return view('violations.show', compact('violation', 'users'));
+        $handlingTypes = \App\Models\HandlingType::where('is_active', true)
+            ->orderBy('sort_order')->orderBy('name')->get();
+        $handlingTypeMap = $handlingTypes->keyBy('name');
+        $handlingRoles = \App\Models\HandlingType::roles();
+
+        return view('violations.show', compact('violation', 'users', 'handlingTypes', 'handlingTypeMap', 'handlingRoles'));
     }
 
     public function storeHandling(Request $request, Violation $violation): RedirectResponse
@@ -206,6 +233,32 @@ class ViolationController extends Controller
             ->with('success', 'Catatan penanganan berhasil dihapus.');
     }
 
+    /**
+     * Kirim notifikasi WhatsApp ke orang tua/wali (manual, wa.me).
+     * Mencatat log pengiriman lalu redirect ke WhatsApp dengan pesan terisi.
+     */
+    public function notifyParentWa(Violation $violation): RedirectResponse
+    {
+        $wa = $violation->buildWaNotification();
+        if (! $wa) {
+            return back()->with('error', 'Nomor HP orang tua/wali belum terisi untuk siswa ini — isi dulu di halaman siswa.');
+        }
+
+        [$phone, $message] = $wa;
+
+        $violation->notifications()->create([
+            'student_id' => $violation->student_id,
+            'channel' => 'whatsapp',
+            'recipient' => $phone,
+            'message' => $message,
+            'status' => 'sent',
+            'user_id' => auth()->id(),
+            'created_at' => now(),
+        ]);
+
+        return redirect()->away('https://wa.me/'.$phone.'?text='.rawurlencode($message));
+    }
+
     public function verify(Request $request, Violation $violation): RedirectResponse
     {
         $violation->update([
@@ -233,6 +286,8 @@ class ViolationController extends Controller
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('nisn', 'like', "%{$search}%");
             })
+            ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()))
+            ->withSum('violations', 'points')
             ->orderBy('full_name')
             ->take(20)
             ->get(['id', 'nisn', 'full_name', 'class_name', 'class_level']);

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classes;
+use App\Models\HandlingType;
 use App\Models\SpThreshold;
 use App\Models\ViolationCategory;
 use App\Models\ViolationType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -141,6 +144,147 @@ class MasterDataController extends Controller
         $type->delete();
 
         return back()->with('success', 'Jenis pelanggaran berhasil dihapus.');
+    }
+
+    // === Handling Types (Jenis Penanganan) ===
+    public function handlingTypes(): View
+    {
+        $types = HandlingType::orderBy('sort_order')->orderBy('name')->get();
+        $roles = HandlingType::roles();
+
+        return view('settings.handling-types', compact('types', 'roles'));
+    }
+
+    public function storeHandlingType(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:handling_types,name'],
+            'icon' => ['required', 'string', 'max:100'],
+            'color' => ['required', 'string', 'max:7'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:999'],
+        ]);
+
+        $validated['sort_order'] = $validated['sort_order'] ?? 0;
+        $validated['is_active'] = true;
+
+        HandlingType::create($validated);
+
+        return back()->with('success', 'Jenis penanganan berhasil ditambahkan.');
+    }
+
+    public function updateHandlingType(Request $request, HandlingType $type): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:handling_types,name,' . $type->id],
+            'icon' => ['required', 'string', 'max:100'],
+            'color' => ['required', 'string', 'max:7'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:999'],
+            'is_active' => ['boolean'],
+        ]);
+
+        $validated['sort_order'] = $validated['sort_order'] ?? $type->sort_order;
+        $validated['is_active'] = $request->boolean('is_active');
+
+        $type->update($validated);
+
+        return back()->with('success', 'Jenis penanganan berhasil diperbarui.');
+    }
+
+    public function reorderHandlingTypes(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'order' => ['required', 'array'],
+            'order.*' => ['integer', 'exists:handling_types,id'],
+        ]);
+
+        foreach ($validated['order'] as $i => $id) {
+            HandlingType::where('id', $id)->update(['sort_order' => $i + 1]);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function destroyHandlingType(HandlingType $type): RedirectResponse
+    {
+        if ($type->is_system) {
+            return back()->with('error', 'Jenis penanganan sistem tidak bisa dihapus. Nonaktifkan saja jika tidak diperlukan.');
+        }
+
+        $type->delete();
+
+        return back()->with('success', 'Jenis penanganan berhasil dihapus.');
+    }
+
+    public function storeHandlingRole(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role' => ['required', 'string', 'max:100'],
+        ]);
+
+        $roles = HandlingType::roles();
+        $role = trim($validated['role']);
+
+        if (in_array($role, $roles)) {
+            return back()->with('error', 'Peran "' . $role . '" sudah ada.');
+        }
+
+        $roles[] = $role;
+        HandlingType::saveRoles($roles);
+
+        return back()->with('success', 'Peran "' . $role . '" berhasil ditambahkan.');
+    }
+
+    public function destroyHandlingRole(string $role): RedirectResponse
+    {
+        $roles = HandlingType::roles();
+        $roles = array_values(array_filter($roles, fn($r) => $r !== $role));
+        HandlingType::saveRoles($roles);
+
+        return back()->with('success', 'Peran "' . $role . '" berhasil dihapus.');
+    }
+
+    public function reorderHandlingRoles(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'order' => ['required', 'array'],
+            'order.*' => ['required', 'string', 'max:100'],
+        ]);
+
+        HandlingType::saveRoles($validated['order']);
+
+        return response()->json(['ok' => true]);
+    }
+
+    // === Homeroom Teachers (Wali Kelas) ===
+    public function homeroomTeachers(): View
+    {
+        $classes = Classes::with('homeroomTeacher')
+            ->where('is_active', true)
+            ->orderBy('level')
+            ->orderBy('name')
+            ->get();
+        $teachers = \App\Models\User::where(function ($q) {
+            $q->whereJsonContains('roles', 'wali_kelas')->orWhere('role', 'wali_kelas');
+        })
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('settings.homeroom', compact('classes', 'teachers'));
+    }
+
+    public function updateHomeroomTeacher(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'class_id' => ['required', 'exists:classes,id'],
+            'teacher_id' => ['nullable', 'exists:users,id'],
+        ]);
+
+        $class = Classes::findOrFail($validated['class_id']);
+        $class->homeroom_teacher_id = $validated['teacher_id'] ?? null;
+        $class->save();
+
+        return back()->with('success', 'Wali kelas untuk ' . $class->name . ' berhasil diperbarui.');
     }
 
     // === SP Thresholds ===
