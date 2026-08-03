@@ -94,4 +94,48 @@ class SingleSessionTest extends TestCase
 
         $this->assertNull($user->refresh()->active_session_token);
     }
+
+    public function test_sesi_yang_sudah_kadaluarsa_dianggap_mati(): void
+    {
+        // Produksi pakai driver file — uji perilaku sesungguhnya
+        config()->set('session.driver', 'file');
+
+        $user = $this->makeUser();
+        $sessionId = str_repeat('a', 40); // id sesi valid (format 40 char)
+        $user->forceFill(['active_session_token' => $sessionId])->save();
+
+        // Simulasikan file sesi lama: sudah lewat masa hidup (10 menit lalu)
+        $file = storage_path('framework/sessions/'.$sessionId);
+        file_put_contents($file, 'expired');
+        touch($file, time() - 600);
+
+        $this->assertFalse($user->refresh()->sessionTokenIsAlive());
+
+        // Login kedua harusnya DITERIMA sekarang
+        $this->post('/login', [
+            'username' => 'bksession',
+            'password' => 'rahasia123',
+        ])->assertRedirect();
+
+        $this->assertAuthenticated();
+        @unlink($file);
+    }
+
+    public function test_sesi_yang_masih_hidup_dianggap_hidup(): void
+    {
+        // Produksi pakai driver file — uji perilaku sesungguhnya
+        config()->set('session.driver', 'file');
+
+        $user = $this->makeUser();
+        $sessionId = str_repeat('b', 40);
+        $user->forceFill(['active_session_token' => $sessionId])->save();
+
+        // File sesi baru (aktivitas sekarang)
+        $file = storage_path('framework/sessions/'.$sessionId);
+        file_put_contents($file, 'fresh');
+        touch($file);
+
+        $this->assertTrue($user->refresh()->sessionTokenIsAlive());
+        @unlink($file);
+    }
 }

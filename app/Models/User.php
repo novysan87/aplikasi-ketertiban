@@ -152,7 +152,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Cek apakah token sesi aktif masih "hidup" (session file/DB masih ada).
+     * Cek apakah token sesi aktif masih "hidup".
+     * Sesi dianggap hidup hanya jika file/row masih ada DAN belum lewat masa
+     * hidup (session.lifetime). Sesi yang sudah kadaluarsa dianggap mati,
+     * sehingga user bebas login lagi di perangkat mana pun.
      * Driver array/lain → dianggap hidup (aman, tolak login ganda).
      */
     public function sessionTokenIsAlive(): bool
@@ -162,12 +165,31 @@ class User extends Authenticatable
             return false;
         }
 
+        $lifetimeSeconds = (int) config('session.lifetime') * 60;
+
         return match (config('session.driver')) {
-            'file' => file_exists(storage_path('framework/sessions/'.$token)),
+            'file' => $this->fileSessionIsAlive($token, $lifetimeSeconds),
             'database' => \Illuminate\Support\Facades\DB::table(config('session.table', 'sessions'))
                 ->where('id', $token)
+                ->where('last_activity', '>=', time() - $lifetimeSeconds)
                 ->exists(),
             default => true,
         };
+    }
+
+    /**
+     * Cek sesi berbasis file: file ada DAN aktivitas terakhir (mtime) masih
+     * dalam masa hidup. Laravel menulis ulang file sesi di setiap request,
+     * jadi mtime = aktivitas terakhir user.
+     */
+    protected function fileSessionIsAlive(string $token, int $lifetimeSeconds): bool
+    {
+        $path = storage_path('framework/sessions/'.$token);
+
+        if (! is_file($path)) {
+            return false;
+        }
+
+        return (time() - (int) filemtime($path)) <= $lifetimeSeconds;
     }
 }
