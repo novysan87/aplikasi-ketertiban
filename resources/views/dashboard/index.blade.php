@@ -218,12 +218,16 @@
                     </div>
                 </div>
                 <div class="p-5 space-y-3">
-                    @foreach($spThresholds as $threshold)
+                    @foreach($spThresholds as $i => $threshold)
                         @php
-                            $studentsAtRisk = \App\Models\Student::where('is_active', true)->get()->filter(function($s) use ($threshold) {
+                            // Batas atas level ini = ambang minimal level berikutnya
+                            $nextMin = $spThresholds[$i + 1]->min_points ?? null;
+                            $studentsAtRisk = \App\Models\Student::where('is_active', true)->get()->filter(function($s) use ($threshold, $nextMin) {
                                 $pts = $s->total_points;
-                                $maxOk = $threshold->max_points ?? 9999;
-                                return $pts >= $threshold->min_points && $pts <= $maxOk;
+                                if ($nextMin !== null) {
+                                    return $pts >= $threshold->min_points && $pts < $nextMin;
+                                }
+                                return $pts >= $threshold->min_points;
                             });
                             $count = $studentsAtRisk->count();
                         @endphp
@@ -232,7 +236,7 @@
                             <div class="flex items-center justify-between relative z-10">
                                 <div>
                                     <p class="text-sm font-bold" style="color: {{ $threshold->color }}">{{ $threshold->name }}</p>
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ $threshold->min_points }}{{ $threshold->max_points ? '–'.$threshold->max_points : '+' }} poin</p>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ $threshold->min_points }}{{ $nextMin !== null ? '–'.($nextMin - 1) : '+' }} poin</p>
                                 </div>
                                 <div class="text-center">
                                     <p class="text-2xl font-bold" style="color: {{ $threshold->color }}">{{ $count }}</p>

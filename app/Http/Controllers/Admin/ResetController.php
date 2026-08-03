@@ -199,9 +199,9 @@ class ResetController extends Controller
     private function seedDefaultThresholds(): void
     {
         $thresholds = [
-            ['name' => 'SP 1', 'slug' => 'sp-1', 'min_points' => 50, 'max_points' => 99, 'color' => '#eab308', 'is_active' => true, 'default_description' => 'Surat Peringatan 1 — poin mencapai 50', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'SP 2', 'slug' => 'sp-2', 'min_points' => 100, 'max_points' => 149, 'color' => '#f97316', 'is_active' => true, 'default_description' => 'Surat Peringatan 2 — poin mencapai 100', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'SP 3', 'slug' => 'sp-3', 'min_points' => 150, 'max_points' => null, 'color' => '#ef4444', 'is_active' => true, 'default_description' => 'Surat Peringatan 3 — poin mencapai 150', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 1', 'slug' => 'sp-1', 'min_points' => 50, 'color' => '#eab308', 'is_active' => true, 'default_description' => 'Surat Peringatan 1 — poin mencapai 50', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 2', 'slug' => 'sp-2', 'min_points' => 100, 'color' => '#f97316', 'is_active' => true, 'default_description' => 'Surat Peringatan 2 — poin mencapai 100', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'SP 3', 'slug' => 'sp-3', 'min_points' => 150, 'color' => '#ef4444', 'is_active' => true, 'default_description' => 'Surat Peringatan 3 — poin mencapai 150', 'created_at' => now(), 'updated_at' => now()],
         ];
         DB::table('sp_thresholds')->insert($thresholds);
     }

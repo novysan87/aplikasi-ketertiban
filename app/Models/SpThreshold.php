@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SpThreshold extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'min_points', 'max_points',
+        'name', 'slug', 'min_points',
         'color', 'default_description', 'is_active',
     ];
 
@@ -15,7 +15,6 @@ class SpThreshold extends Model
     {
         return [
             'min_points' => 'integer',
-            'max_points' => 'integer',
             'is_active' => 'boolean',
         ];
     }

@@ -300,7 +300,6 @@ class MasterDataController extends Controller
             'thresholds' => ['required', 'array'],
             'thresholds.*.id' => ['required', 'exists:sp_thresholds,id'],
             'thresholds.*.min_points' => ['required', 'integer', 'min:0'],
-            'thresholds.*.max_points' => ['nullable', 'integer', 'min:0'],
             'thresholds.*.name' => ['required', 'string', 'max:255'],
             'thresholds.*.default_description' => ['nullable', 'string', 'max:500'],
         ]);
@@ -311,7 +310,6 @@ class MasterDataController extends Controller
             $update = [
                 'name' => $data['name'],
                 'min_points' => $data['min_points'],
-                'max_points' => $data['max_points'],
                 'default_description' => $data['default_description'],
                 'is_active' => isset($inputs[$idx]['is_active']),
             ];
@@ -328,7 +326,6 @@ class MasterDataController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'min_points' => ['required', 'integer', 'min:0'],
-            'max_points' => ['nullable', 'integer', 'min:0'],
             'default_description' => ['nullable', 'string', 'max:500'],
             'color' => ['nullable', 'string', 'max:20'],
         ]);
@@ -338,7 +335,6 @@ class MasterDataController extends Controller
             'name' => $data['name'],
             'slug' => $slug,
             'min_points' => $data['min_points'],
-            'max_points' => $data['max_points'],
             'default_description' => $data['default_description'],
             'color' => $data['color'] ?? '#6b7280',
             'is_active' => true,

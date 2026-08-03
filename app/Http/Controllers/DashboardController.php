@@ -59,7 +59,7 @@ class DashboardController extends Controller
             ->where('is_read', false)
             ->count();
 
-        $spThresholds = \App\Models\SpThreshold::where('is_active', true)->get();
+        $spThresholds = \App\Models\SpThreshold::where('is_active', true)->orderBy('min_points')->get();
 
         // Data untuk calendar: pelanggaran per tanggal di bulan ini
         $calendarData = Violation::selectRaw('DATE(violation_date) as date, COUNT(*) as count')

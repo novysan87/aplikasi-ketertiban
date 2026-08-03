@@ -53,9 +53,7 @@
                                                     style="{{ $t->is_active ? 'background-color: ' . $t->color : '' }}"></div>
                                             </label>
                                         </div>
-                                        <p class="text-xs text-gray-400 mt-0.5">Min {{ $t->min_points }} poin
-                                            @if($t->max_points) – Maks {{ $t->max_points }} poin @else + (tak terbatas) @endif
-                                        </p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Mulai dari {{ $t->min_points }} poin</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 flex-shrink-0">
@@ -73,7 +71,7 @@
                             </div>
 
                             {{-- Fields --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Nama</label>
                                     <input type="text" name="thresholds[{{ $loop->index }}][name]" value="{{ $t->name }}"
@@ -82,11 +80,6 @@
                                 <div>
                                     <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Min Poin</label>
                                     <input type="number" name="thresholds[{{ $loop->index }}][min_points]" value="{{ $t->min_points }}" min="0"
-                                        class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Maks Poin</label>
-                                    <input type="number" name="thresholds[{{ $loop->index }}][max_points]" value="{{ $t->max_points }}" min="0" placeholder="Tak terbatas"
                                         class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 </div>
                                 <div>
@@ -159,17 +152,10 @@
                             <input type="text" name="name" placeholder="SP 4, SP 5, dll" required
                                 class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Minimal Poin <span class="text-red-500">*</span></label>
-                                <input type="number" name="min_points" min="0" value="200" required
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Maksimal Poin</label>
-                                <input type="number" name="max_points" min="0" placeholder="Tak terbatas"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Minimal Poin <span class="text-red-500">*</span></label>
+                            <input type="number" name="min_points" min="0" value="200" required
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
