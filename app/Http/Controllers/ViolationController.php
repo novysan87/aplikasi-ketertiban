@@ -272,6 +272,31 @@ class ViolationController extends Controller
 
     public function destroy(Violation $violation): RedirectResponse
     {
+        abort_unless(auth()->user()->canViewStudent($violation->student_id), 403);
+
+        // Audit log perubahan poin (penghapusan pelanggaran)
+        $student = $violation->student;
+        $before = $student->total_points; // termasuk pelanggaran yang akan dihapus
+        $after = max(0, $before - $violation->points);
+
+        \App\Models\PointAuditLog::log(
+            studentId: $violation->student_id,
+            action: \App\Models\PointAuditLog::ACTION_DELETED,
+            pointsBefore: $before,
+            pointsAfter: $after,
+            description: ($violation->violationType?->name ?? 'Pelanggaran').' (dihapus)',
+            metadata: [
+                'violation_date' => $violation->violation_date?->format('Y-m-d'),
+                'description' => $violation->description,
+                'sanction' => $violation->sanction,
+                'location' => $violation->location,
+                'points' => $violation->points,
+            ],
+            violationId: $violation->id,
+            actorId: auth()->id(),
+            ipAddress: request()->ip(),
+        );
+
         $violation->delete();
 
         return redirect()->route('violations.index')

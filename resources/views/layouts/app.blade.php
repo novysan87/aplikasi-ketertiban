@@ -171,6 +171,10 @@
                 <x-nav-item href="{{ route('reports.violations') }}" icon="file-lines" :active="request()->routeIs('reports.violations*')">Laporan</x-nav-item>
                 @endcanPermission
 
+                @canPermission('view-point-audit')
+                <x-nav-item href="{{ route('point-audit.index') }}" icon="clock-rotate-left" :active="request()->routeIs('point-audit.*')">Riwayat Poin</x-nav-item>
+                @endcanPermission
+
                 @canPermission('categories-manage')
                 <div class="pt-4 mt-4 border-t border-gray-200">
                     <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>

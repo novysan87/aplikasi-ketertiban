@@ -14,6 +14,7 @@ $faIcons = [
     'clipboard-check' => 'fa-solid fa-clipboard-check',
     'document-text' => 'fa-solid fa-file-lines',
     'file-lines' => 'fa-solid fa-file-lines',
+    'clock-rotate-left' => 'fa-solid fa-clock-rotate-left',
     'tag' => 'fa-solid fa-tag',
     'list' => 'fa-solid fa-list',
     'chart-bar' => 'fa-solid fa-chart-simple',

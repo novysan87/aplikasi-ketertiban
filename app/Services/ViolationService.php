@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\ViolationRecorded;
+use App\Models\PointAuditLog;
 use App\Models\SpLetter;
 use App\Models\SpThreshold;
 use App\Models\Student;
@@ -44,6 +45,25 @@ class ViolationService
           ]);
       }
   }
+
+            // Audit log perubahan poin (pencatatan pelanggaran)
+            $after = $violation->student->total_points;
+            PointAuditLog::log(
+                studentId: $violation->student_id,
+                action: PointAuditLog::ACTION_CREATED,
+                pointsBefore: $after - $violation->points,
+                pointsAfter: $after,
+                description: $violation->violationType?->name ?? 'Pelanggaran',
+                metadata: [
+                    'violation_date' => $violation->violation_date?->format('Y-m-d'),
+                    'description' => $violation->description,
+                    'sanction' => $violation->sanction,
+                    'location' => $violation->location,
+                ],
+                violationId: $violation->id,
+                actorId: $userId,
+                ipAddress: request()->ip(),
+            );
 
             return $violation;
         });

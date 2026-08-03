@@ -136,6 +136,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/violations/pdf', [\App\Http\Controllers\Admin\ViolationReportController::class, 'pdf'])->name('reports.violations.pdf');
     });
 
+    Route::middleware('permission:view-point-audit')->group(function () {
+        Route::get('/point-audit', [\App\Http\Controllers\Admin\PointAuditController::class, 'index'])->name('point-audit.index');
+    });
+
     // ===== Administrasi (permission-based) =====
     Route::middleware('permission:settings-manage')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
