@@ -7,13 +7,13 @@
     {{-- Header --}}
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <nav class="flex items-center gap-1.5 text-sm text-gray-400 mb-1">
-                <a href="{{ route('violations.index') }}" class="hover:text-gray-600 transition">Data Pelanggaran</a>
-                <span class="text-gray-300">/</span>
-                <span class="text-gray-700 font-medium">Input Baru</span>
+            <nav class="flex items-center gap-1.5 text-xs text-slate-400 mb-1.5">
+                <a href="{{ route('violations.index') }}" class="hover:text-blue-600 transition font-medium">Data Pelanggaran</a>
+                <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                <span class="text-slate-700 font-semibold">Input Baru</span>
             </nav>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Input Pelanggaran</h1>
-            <p class="text-sm text-gray-500 mt-1">Catat pelanggaran siswa baru</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Input Pelanggaran</h1>
+            <p class="text-sm text-slate-500 mt-1">Catat pelanggaran siswa baru</p>
         </div>
     </div>
 
@@ -22,9 +22,12 @@
         @csrf
 
         {{-- Gradient header --}}
-        <div class="bg-gradient-to-r from-blue-500 via-blue-400 to-sky-300 px-6 py-5">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 px-6 py-5 relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-32 h-32 opacity-10">
+                <i class="fa-solid fa-gavel text-white text-8xl"></i>
+            </div>
+            <div class="relative z-10 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white/20 border border-white/25 flex items-center justify-center backdrop-blur-sm shadow-sm">
                     <i class="fa-solid fa-gavel text-white text-lg"></i>
                 </div>
                 <div>
@@ -41,7 +44,7 @@
                     <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                         <i class="fa-solid fa-user-graduate text-blue-500 text-xs"></i>
                     </div>
-                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Siswa</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Data Siswa</span>
                 </div>
 
                 @if (request()->has('student_id'))
@@ -57,7 +60,7 @@
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                             <input type="text" x-model="searchQuery" @input.debounce="searchStudents"
                                 placeholder="Cari NISN atau Nama siswa..."
-                                class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="input pl-9">
                         </div>
                         <input type="hidden" name="student_id" x-model="selectedStudentId">
 
@@ -104,7 +107,7 @@
                     <div class="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
                         <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>
                     </div>
-                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Detail Pelanggaran</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Detail Pelanggaran</span>
                 </div>
 
                 <div x-data="typeMultiSearch({{ json_encode($typeGroups) }})" class="space-y-4">
@@ -119,7 +122,7 @@
                                 <input type="text" x-model="q" @input="open=true" @focus="open=true"
                                     @click.away="open=false" @keydown.escape="open=false"
                                     placeholder="Ketik nama pelanggaran untuk menambah..."
-                                    class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                    class="input pl-9">
                             </div>
 
                             {{-- Search results --}}
@@ -237,24 +240,24 @@
                     <div class="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center">
                         <i class="fa-solid fa-clock text-teal-500 text-xs"></i>
                     </div>
-                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Waktu & Lokasi</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Waktu & Lokasi</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Tanggal <span class="text-red-500">*</span></label>
                         <input type="date" name="violation_date" value="{{ date('Y-m-d') }}" required
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="input">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Waktu</label>
                         <input type="time" name="violation_time" value="{{ date('H:i') }}"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="input">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Lokasi</label>
                         <input type="text" name="location" placeholder="Depan kelas, Lapangan, dll"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="input">
                     </div>
                 </div>
             </div>
@@ -265,13 +268,13 @@
                     <div class="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
                         <i class="fa-solid fa-note-sticky text-violet-500 text-xs"></i>
                     </div>
-                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Catatan</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Catatan</span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Deskripsi / Catatan Pelanggaran</label>
                     <textarea name="description" rows="3" placeholder="Deskripsi lengkap pelanggaran yang terjadi..."
-                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition resize-none"></textarea>
+                        class="input resize-none"></textarea>
                 </div>
             </div>
 
@@ -281,7 +284,7 @@
                     <div class="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
                         <i class="fa-solid fa-camera text-sky-500 text-xs"></i>
                     </div>
-                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Bukti Foto</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Bukti Foto</span>
                     <span class="text-[10px] text-gray-400 font-medium">(maks. 5 foto)</span>
                 </div>
 
@@ -311,13 +314,13 @@
 
                 <div class="flex items-center gap-2">
                     <button type="button" @click="document.getElementById('evidences').click()"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
-                        <i class="fa-solid fa-image text-gray-400"></i>
+                        class="btn-outline">
+                        <i class="fa-solid fa-image text-xs"></i>
                         Pilih File
                     </button>
                     <button type="button" @click="captureCamera"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
-                        <i class="fa-solid fa-camera text-gray-400"></i>
+                        class="btn-outline">
+                        <i class="fa-solid fa-camera text-xs"></i>
                         Ambil Foto
                     </button>
                 </div>
@@ -326,14 +329,14 @@
         </div>
 
         {{-- Footer --}}
-        <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-100 flex items-center justify-end gap-3">
+        <div class="px-6 py-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-3">
             <a href="{{ route('violations.index') }}"
-                class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-2">
+                class="btn-outline">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 Batal
             </a>
             <button type="submit"
-                class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm inline-flex items-center gap-2">
+                class="btn-primary">
                 <i class="fa-solid fa-floppy-disk text-xs"></i>
                 Simpan Pelanggaran
             </button>
