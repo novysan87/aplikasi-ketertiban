@@ -130,7 +130,7 @@
     <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Overlay --}}
-            <div x-show="modalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"></div>
+            <div x-show="modalOpen" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
 
             {{-- Panel --}}
             <div x-show="modalOpen" 
