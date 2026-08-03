@@ -100,4 +100,26 @@ class UserManagementTest extends TestCase
 
         $this->assertFalse(str_contains(session('error'), 'wa.me'));
     }
+
+    public function test_kirim_akun_via_json_mengembalikan_url_dan_aplikasi_tetap_terbuka(): void
+    {
+        $user = User::factory()->create([
+            'roles' => ['bk'],
+            'phone' => '081234567890',
+            'username' => 'guruwa2',
+            'password' => 'passwordlama',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->post("/users/{$user->id}/send-wa", [], ['Accept' => 'application/json']);
+
+        $response->assertOk()
+            ->assertJsonStructure(['url', 'password', 'username'])
+            ->assertJsonPath('username', 'guruwa2');
+
+        $url = $response->json('url');
+        $this->assertStringStartsWith('https://wa.me/081234567890?text=', $url);
+        $this->assertStringContainsString('guruwa2', urldecode($url));
+        $this->assertStringContainsString($response->json('password'), urldecode($url));
+    }
 }

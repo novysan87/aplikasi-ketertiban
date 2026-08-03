@@ -367,9 +367,45 @@ function sendWaData(userId, userName, hasPhone) {
                 showCancelButton: true,
                 cancelButtonText: 'Batal',
             }).then((result) => {
-                if (result.isConfirmed && form) {
-                    form.submit();
-                }
+                if (!result.isConfirmed || !form) return;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(r => r.json().catch(() => ({ error: 'Respons tidak valid dari server' })))
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: data.error });
+                        return;
+                    }
+                    const msgLines = [
+                        '<b>📲 Akun Aplikasi ' + (data.app_name || '') + '</b>',
+                        'Yth. ' + (data.name || userName) + ',',
+                        'Link: ' + (data.app_url || ''),
+                        'Username: <b>' + (data.username || '') + '</b>',
+                        'Password: <b>' + (data.password || '') + '</b>',
+                        '<span style="color:#6b7280;font-size:12px">Mohon segera ganti password setelah login.</span>',
+                    ].join('<br>');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Akun Siap Dikirim',
+                        html: '<div style="text-align:left;font-size:13px;line-height:1.8">' + msgLines + '</div>' +
+                              '<a href="' + data.url + '" target="_blank" rel="noopener" ' +
+                              'style="display:inline-block;margin-top:16px;padding:11px 26px;background:#25D366;color:#fff;' +
+                              'border-radius:12px;font-weight:700;text-decoration:none;font-size:14px">' +
+                              '<i class="fa-brands fa-whatsapp"></i> Buka WhatsApp</a>' +
+                              '<p style="font-size:11px;color:#9ca3af;margin-top:10px">WhatsApp dibuka di tab baru — aplikasi tetap terbuka.</p>',
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                    });
+                })
+                .catch(() => {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: 'Tidak dapat menghubungi server.' });
+                });
             });
         }
     };

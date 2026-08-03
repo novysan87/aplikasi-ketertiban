@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -128,15 +129,18 @@ class UserController extends Controller
     /**
      * Kirim akun (link + username + password baru) ke nomor HP user via WhatsApp.
      * Password lama tidak bisa dikirim (tersimpan hash) — jadi dibuatkan password baru.
+     *
+     * Jika request AJAX/JSON → kembalikan URL wa.me (aplikasi tetap terbuka,
+     * WhatsApp dibuka di tab baru). Jika tidak → redirect away (fallback).
      */
-    public function sendWa(User $user): RedirectResponse
+    public function sendWa(Request $request, User $user): RedirectResponse|JsonResponse
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Tidak perlu mengirim akun ke diri sendiri.');
+            return $this->waResponse($request, null, 'Tidak perlu mengirim akun ke diri sendiri.');
         }
 
         if (blank($user->phone)) {
-            return back()->with('error', 'Nomor HP belum diisi untuk ' . $user->name . ' — isi dulu di form edit user.');
+            return $this->waResponse($request, null, 'Nomor HP belum diisi untuk ' . $user->name . ' — isi dulu di form edit user.');
         }
 
         // Generate password baru yang mudah dibaca (8 karakter, tanpa karakter ambigu)
@@ -162,6 +166,30 @@ class UserController extends Controller
             'Mohon segera login dan ganti password Anda. Terima kasih.',
         ]);
 
-        return redirect()->away('https://wa.me/'.$user->phone.'?text='.rawurlencode($message));
+        $waUrl = 'https://wa.me/'.$user->phone.'?text='.rawurlencode($message);
+
+        return $this->waResponse($request, $waUrl, null, [
+            'name' => $user->name,
+            'username' => $user->username,
+            'password' => $password,
+            'app_name' => $appName,
+            'app_url' => $appUrl,
+        ]);
+    }
+
+    protected function waResponse(Request $request, ?string $url, ?string $error, array $extra = []): RedirectResponse|JsonResponse
+    {
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(array_merge(
+                $extra,
+                ['url' => $url, 'error' => $error]
+            ), $error ? 422 : 200);
+        }
+
+        if ($error) {
+            return back()->with('error', $error);
+        }
+
+        return redirect()->away($url);
     }
 }
