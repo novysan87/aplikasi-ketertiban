@@ -13,7 +13,7 @@ class User extends Authenticatable
     public const ROLES = ['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim'];
 
     protected $fillable = [
-        'name', 'username', 'email', 'password', 'role', 'roles', 'is_active',
+        'name', 'username', 'email', 'phone', 'password', 'role', 'roles', 'is_active',
     ];
 
     protected $hidden = ['password', 'remember_token'];

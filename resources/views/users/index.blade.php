@@ -77,6 +77,9 @@
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
                                         <p class="text-xs text-gray-400">{{ $user->email }}</p>
+                                        @if ($user->phone)
+                                            <p class="text-xs text-gray-400 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> {{ $user->phone }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -119,7 +122,7 @@
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end space-x-1">
-                                    <button @click="openEdit({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->username }}', '{{ $user->email }}', '{{ implode(',', $user->roleList()) }}', {{ $user->is_active ? 'true' : 'false' }})"
+                                    <button @click="openEdit({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->username }}', '{{ $user->email }}', '{{ addslashes($user->phone ?? '') }}', '{{ implode(',', $user->roleList()) }}', {{ $user->is_active ? 'true' : 'false' }})"
                                         class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </button>
@@ -234,6 +237,16 @@
                                         placeholder="email@sekolah.sch.id">
                                 </div>
                             </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Nomor HP</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                                    <input type="tel" x-model="formPhone" name="phone"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        placeholder="08xxxxxxxxxx">
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1.5">Nomor untuk kontak &amp; notifikasi (opsional)</p>
+                            </div>
                         </div>
 
                         {{-- Password --}}
@@ -331,7 +344,7 @@
 function userManager() {
     return {
         modalOpen: false, isEditing: false, editId: null,
-        formName: '', formUsername: '', formEmail: '', formPassword: '', formRoles: ['bk'], formActive: true,
+        formName: '', formUsername: '', formEmail: '', formPhone: '', formPassword: '', formRoles: ['bk'], formActive: true,
         showPassword: false,
         get roleInfo() {
             const map = {
@@ -349,12 +362,12 @@ function userManager() {
         },
         openCreate() {
             this.isEditing = false; this.editId = null;
-            this.formName = ''; this.formUsername = ''; this.formEmail = ''; this.formPassword = '';
+            this.formName = ''; this.formUsername = ''; this.formEmail = ''; this.formPhone = ''; this.formPassword = '';
             this.formRoles = ['bk']; this.formActive = true; this.showPassword = false; this.modalOpen = true;
         },
-        openEdit(id, name, username, email, rolesCsv, active) {
+        openEdit(id, name, username, email, phone, rolesCsv, active) {
             this.isEditing = true; this.editId = id;
-            this.formName = name; this.formUsername = username; this.formEmail = email;
+            this.formName = name; this.formUsername = username; this.formEmail = email; this.formPhone = phone;
             this.formPassword = '';
             this.formRoles = rolesCsv ? rolesCsv.split(',') : ['bk'];
             this.formActive = active; this.showPassword = false; this.modalOpen = true;

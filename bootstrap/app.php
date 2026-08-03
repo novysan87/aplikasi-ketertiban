@@ -60,6 +60,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof \Illuminate\Auth\AuthenticationException) {
                 return null;
             }
+            // Biarkan default menangani: redirect balik + pesan error validasi
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
             \Illuminate\Support\Facades\Log::error('Unhandled exception: ' . get_class($e) . ' - ' . $e->getMessage() . ' @ ' . $request->path());
             return $htmlView('errors.500', 500, $request);
         });
