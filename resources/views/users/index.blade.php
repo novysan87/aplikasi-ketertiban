@@ -141,7 +141,6 @@
                                             <i class="fa-solid fa-right-from-bracket"></i>
                                         </button>
                                     </form>
-                                    @endif
                                     <form action="{{ route('users.send-wa', $user->id) }}" method="POST" class="inline"
                                           x-data="sendWaData({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->phone ? 'true' : 'false' }})"
                                           x-on:submit.prevent="confirmAndSubmit()">
@@ -153,7 +152,6 @@
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </button>
                                     </form>
-                                    @endif
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
                                         x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus user ini?'})) $el.submit()">
                                         @csrf @method('DELETE')
@@ -162,6 +160,7 @@
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
