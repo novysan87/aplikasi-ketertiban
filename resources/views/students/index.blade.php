@@ -11,9 +11,12 @@
             <p class="text-sm text-gray-500 mt-1">Daftar siswa aktif — sinkron dari Database Kesiswaan</p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-500 font-medium">{{ $students->total() }} siswa</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-full shadow-sm">
+                <i class="fa-solid fa-users text-blue-500 text-[10px]"></i>
+                {{ $students->total() }} siswa
+            </span>
             @if(request()->anyFilled(['search','class_level','class_name','department']))
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 rounded-full shadow-sm">
                     <i class="fa-solid fa-filter text-xs"></i>
                     {{ $students->total() }} ditemukan
                 </span>
@@ -67,13 +70,13 @@
                     </div>
                     <div class="flex items-end gap-2">
                         <button type="submit"
-                            class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm inline-flex items-center justify-center gap-1.5">
+                            class="flex-1 btn-primary justify-center">
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             Cari
                         </button>
                         @if(request()->anyFilled(['search','class_level','class_name','department']))
                             <a href="{{ route('students.index') }}"
-                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-1.5">
+                                class="btn-outline">
                                 <i class="fa-solid fa-xmark"></i>
                                 Reset
                             </a>
@@ -89,24 +92,36 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead>
-                    <tr class="bg-gray-50/80">
-                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Siswa</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">NISN</th>
-                        <th class="px-5 py-3.5 text-left hidden sm:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Kelas</th>
-                        <th class="px-5 py-3.5 text-left hidden lg:table-cell text-xs font-semibold text-gray-400 uppercase tracking-wider">Jurusan</th>
-                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Pelanggaran</th>
-                        <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Poin</th>
-                        <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Aksi</th>
+                    <tr class="bg-slate-50/90">
+                        <th class="px-5 py-3.5 text-left text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Siswa</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">NISN</th>
+                        <th class="px-5 py-3.5 text-left hidden sm:table-cell text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Kelas</th>
+                        <th class="px-5 py-3.5 text-left hidden lg:table-cell text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Jurusan</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Pelanggaran</th>
+                        <th class="px-5 py-3.5 text-center text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Total Poin</th>
+                        <th class="px-5 py-3.5 text-right text-xs font-bold text-slate-400 uppercase tracking-[0.12em]">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-slate-50">
                     @forelse($students as $s)
-                        @php $pts = $s->total_points; @endphp
-                        <tr class="hover:bg-gray-50/50 transition">
+                        @php
+                            $pts = $s->total_points;
+                            // Avatar warna bervariasi per nama (konsisten utk nama yg sama)
+                            $avatarGradients = [
+                                'from-blue-500 to-indigo-600',
+                                'from-emerald-500 to-teal-600',
+                                'from-violet-500 to-purple-600',
+                                'from-rose-500 to-pink-600',
+                                'from-amber-500 to-orange-600',
+                                'from-sky-500 to-cyan-600',
+                            ];
+                            $avatarG = $avatarGradients[ord(strtoupper(substr($s->full_name, 0, 1) ?: 'A')) % count($avatarGradients)];
+                        @endphp
+                        <tr class="hover:bg-slate-50/60 transition">
                             {{-- Siswa --}}
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ $avatarG }} flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0">
                                         {{ strtoupper(substr($s->full_name, 0, 1)) }}
                                     </div>
                                     <div class="min-w-0">
@@ -130,7 +145,11 @@
                             </td>
                             {{-- Jurusan --}}
                             <td class="px-5 py-4 hidden lg:table-cell">
-                                <span class="text-sm text-gray-500">{{ $s->department_code ?? '—' }}</span>
+                                @if($s->department_code)
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold bg-slate-100 text-slate-600 rounded-lg">{{ $s->department_code }}</span>
+                                @else
+                                    <span class="text-sm text-gray-300">—</span>
+                                @endif
                             </td>
                             {{-- Pelanggaran --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap">
@@ -165,11 +184,11 @@
                         <tr>
                             <td colspan="7" class="px-5 py-20 text-center">
                                 <div class="flex flex-col items-center">
-                                    <div class="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
-                                        <i class="fa-solid fa-users-slash text-gray-300 text-xl"></i>
+                                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-100 flex items-center justify-center mb-4 shadow-sm">
+                                        <i class="fa-solid fa-users-slash text-blue-300 text-2xl"></i>
                                     </div>
-                                    <p class="text-sm font-medium text-gray-500 mb-1">Tidak ada siswa ditemukan</p>
-                                    <p class="text-xs text-gray-400">Coba ubah filter atau lakukan sinkronisasi data</p>
+                                    <p class="text-sm font-bold text-slate-600 mb-1">Tidak ada siswa ditemukan</p>
+                                    <p class="text-xs text-slate-400">Coba ubah filter atau lakukan sinkronisasi data</p>
                                 </div>
                             </td>
                         </tr>
