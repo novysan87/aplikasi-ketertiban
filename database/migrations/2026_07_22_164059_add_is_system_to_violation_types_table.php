@@ -13,13 +13,14 @@ return new class extends Migration
         });
 
         // Mark existing alpha & terlambat types as system
+        // (ambil id dulu — MySQL 8 menolak UPDATE..SELECT dari tabel yang sama)
+        $systemIds = DB::table('violation_types')
+            ->where('name', 'like', '%alpha%')
+            ->orWhere('slug', 'terlambat-datang-ke-sekolah-1')
+            ->pluck('id');
+
         DB::table('violation_types')
-            ->whereIn('id', function ($q) {
-                $q->select('id')
-                  ->from('violation_types')
-                  ->where('name', 'like', '%alpha%')
-                  ->orWhere('slug', 'terlambat-datang-ke-sekolah-1');
-            })
+            ->whereIn('id', $systemIds)
             ->update(['is_system' => true]);
 
         // Set clean slugs for system types

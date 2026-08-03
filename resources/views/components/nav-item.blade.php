@@ -13,6 +13,7 @@ $faIcons = [
     'users' => 'fa-solid fa-users',
     'clipboard-check' => 'fa-solid fa-clipboard-check',
     'document-text' => 'fa-solid fa-file-lines',
+    'file-lines' => 'fa-solid fa-file-lines',
     'tag' => 'fa-solid fa-tag',
     'list' => 'fa-solid fa-list',
     'chart-bar' => 'fa-solid fa-chart-simple',

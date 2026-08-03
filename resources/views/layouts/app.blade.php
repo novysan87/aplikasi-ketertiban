@@ -167,6 +167,10 @@
                 <x-nav-item href="{{ route('sp-letters.index') }}" icon="document-text" :active="request()->routeIs('sp-letters.*')">Surat Peringatan</x-nav-item>
                 @endcanPermission
 
+                @canPermission('violations-export')
+                <x-nav-item href="{{ route('reports.violations') }}" icon="file-lines" :active="request()->routeIs('reports.violations*')">Laporan</x-nav-item>
+                @endcanPermission
+
                 @canPermission('categories-manage')
                 <div class="pt-4 mt-4 border-t border-gray-200">
                     <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>

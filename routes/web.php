@@ -132,6 +132,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('permission:violations-export')->group(function () {
         Route::get('/export/violations', [\App\Http\Controllers\Admin\ViolationExportController::class, 'export'])->name('violations.export');
+        Route::get('/reports/violations', [\App\Http\Controllers\Admin\ViolationReportController::class, 'index'])->name('reports.violations');
+        Route::get('/reports/violations/pdf', [\App\Http\Controllers\Admin\ViolationReportController::class, 'pdf'])->name('reports.violations.pdf');
     });
 
     // ===== Administrasi (permission-based) =====
