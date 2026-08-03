@@ -171,17 +171,23 @@
                 <x-nav-item href="{{ route('reports.violations') }}" icon="file-lines" :active="request()->routeIs('reports.violations*')">Laporan</x-nav-item>
                 @endcanPermission
 
-                @canPermission('categories-manage')
+                @canAnyPermission('categories-manage', 'violation-types-manage', 'thresholds-manage', 'face-register')
                 <div class="pt-4 mt-4 border-t border-gray-200">
                     <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>
                 </div>
+                @endcanAnyPermission
                 @canPermission('face-register')
                 <x-nav-item href="{{ route('face.register') }}" icon="user-plus" :active="request()->routeIs('face.register')">Registrasi Wajah</x-nav-item>
                 @endcanPermission
+                @canPermission('categories-manage')
                 <x-nav-item href="{{ route('settings.categories') }}" icon="tag" :active="request()->routeIs('settings.categories*')">Kategori Pelanggaran</x-nav-item>
+                @endcanPermission
+                @canPermission('violation-types-manage')
                 <x-nav-item href="{{ route('settings.violation-types') }}" icon="list" :active="request()->routeIs('settings.violation-types*')">Jenis Pelanggaran</x-nav-item>
                 <x-nav-item href="{{ route('settings.handling-types') }}" icon="hand-holding-heart" :active="request()->routeIs('settings.handling-types*')">Jenis Penanganan</x-nav-item>
                 <x-nav-item href="{{ route('settings.homeroom') }}" icon="chalkboard-user" :active="request()->routeIs('settings.homeroom*')">Wali Kelas</x-nav-item>
+                @endcanPermission
+                @canPermission('thresholds-manage')
                 <x-nav-item href="{{ route('settings.thresholds') }}" icon="chart-bar" :active="request()->routeIs('settings.thresholds*')">Ambang SP</x-nav-item>
                 @endcanPermission
 

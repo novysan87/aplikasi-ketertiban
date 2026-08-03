@@ -52,4 +52,26 @@ class PermissionManagementTest extends TestCase
             ->assertSee('view-point-audit')
             ->assertSee('Khusus Admin');
     }
+
+    public function test_menu_sidebar_mengikuti_permission_role(): void
+    {
+        // Role staff dengan akses dashboard + thresholds-manage SAJA
+        $staff = User::factory()->create(['roles' => ['staff']]);
+        $ids = DB::table('permissions')->whereIn('key', ['access-dashboard', 'thresholds-manage'])->pluck('id');
+        foreach ($ids as $pid) {
+            DB::table('role_permissions')->insert([
+                'role' => 'staff',
+                'permission_id' => $pid,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->actingAs($staff)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Ambang SP')
+            ->assertDontSee('Kategori Pelanggaran')
+            ->assertDontSee('Sinkronisasi');
+    }
 }
