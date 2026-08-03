@@ -67,4 +67,37 @@ class UserManagementTest extends TestCase
 
         $this->assertDatabaseMissing('users', ['username' => 'guruaneh']);
     }
+
+    public function test_kirim_akun_via_whatsapp(): void
+    {
+        $user = User::factory()->create([
+            'roles' => ['bk'],
+            'phone' => '081234567890',
+            'username' => 'guruwa',
+            'password' => 'passwordlama',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->post("/users/{$user->id}/send-wa");
+
+        $response->assertRedirect();
+        $this->assertStringStartsWith('https://wa.me/081234567890?text=', $response->headers->get('Location'));
+        $this->assertStringContainsString('guruwa', $response->headers->get('Location'));
+        $this->assertStringContainsString('password', urldecode($response->headers->get('Location')));
+
+        // Password lama tidak berlaku lagi (digenerate baru)
+        $this->assertFalse(\Illuminate\Support\Facades\Hash::check('passwordlama', $user->refresh()->password));
+    }
+
+    public function test_kirim_akun_tanpa_nomor_hp_ditolak(): void
+    {
+        $user = User::factory()->create(['roles' => ['bk'], 'phone' => null]);
+
+        $this->actingAs($this->admin)
+            ->post("/users/{$user->id}/send-wa")
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $this->assertFalse(str_contains(session('error'), 'wa.me'));
+    }
 }

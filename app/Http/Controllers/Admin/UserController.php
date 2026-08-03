@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -121,5 +123,45 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('success', 'Password untuk ' . $user->name . ' berhasil direset.');
+    }
+
+    /**
+     * Kirim akun (link + username + password baru) ke nomor HP user via WhatsApp.
+     * Password lama tidak bisa dikirim (tersimpan hash) — jadi dibuatkan password baru.
+     */
+    public function sendWa(User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Tidak perlu mengirim akun ke diri sendiri.');
+        }
+
+        if (blank($user->phone)) {
+            return back()->with('error', 'Nomor HP belum diisi untuk ' . $user->name . ' — isi dulu di form edit user.');
+        }
+
+        // Generate password baru yang mudah dibaca (8 karakter, tanpa karakter ambigu)
+        $password = Str::upper(Str::random(4)).rand(10, 99).Str::lower(Str::random(2));
+
+        $user->update([
+            'password' => Hash::make($password),
+        ]);
+
+        $appName = Setting::getValue('app_name', 'Aplikasi');
+        $appUrl = Setting::getValue('app_url', config('app.url', ''));
+
+        $message = implode("\n", [
+            '📲 *Akun Aplikasi '.$appName.'*',
+            '',
+            'Yth. '.$user->name.',',
+            'Berikut akun Anda untuk masuk ke aplikasi:',
+            '',
+            '🔗 Link: '.$appUrl,
+            '👤 Username: '.$user->username,
+            '🔑 Password: '.$password,
+            '',
+            'Mohon segera login dan ganti password Anda. Terima kasih.',
+        ]);
+
+        return redirect()->away('https://wa.me/'.$user->phone.'?text='.rawurlencode($message));
     }
 }

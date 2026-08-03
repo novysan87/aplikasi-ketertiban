@@ -174,6 +174,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/users/{user}/send-wa', [UserController::class, 'sendWa'])->name('users.send-wa');
 
         Route::get('/settings/permissions', [\App\Http\Controllers\Admin\PermissionController::class, 'index'])->name('settings.permissions');
         Route::post('/settings/permissions', [\App\Http\Controllers\Admin\PermissionController::class, 'update'])->name('settings.permissions.update');

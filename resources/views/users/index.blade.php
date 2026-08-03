@@ -131,6 +131,18 @@
                                         <i class="fa-solid fa-key"></i>
                                     </button>
                                     @if($user->id !== auth()->id())
+                                    <form action="{{ route('users.send-wa', $user->id) }}" method="POST" class="inline"
+                                          x-data="sendWaData({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->phone ? 'true' : 'false' }})"
+                                          x-on:submit.prevent="confirmAndSubmit()">
+                                        @csrf
+                                        <button type="submit"
+                                            class="p-2 rounded-lg transition {{ $user->phone ? 'text-emerald-600 hover:bg-emerald-50' : 'text-gray-300 cursor-not-allowed' }}"
+                                            title="{{ $user->phone ? 'Kirim akun via WhatsApp' : 'Isi nomor HP dulu untuk kirim WhatsApp' }}"
+                                            @if(!$user->phone) disabled @endif>
+                                            <i class="fa-brands fa-whatsapp"></i>
+                                        </button>
+                                    </form>
+                                    @endif
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
                                         x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Hapus user ini?'})) $el.submit()">
                                         @csrf @method('DELETE')
@@ -341,6 +353,29 @@
 
 @push('scripts')
 <script>
+function sendWaData(userId, userName, hasPhone) {
+    return {
+        confirmAndSubmit() {
+            if (!hasPhone) return;
+            const form = this.$el.closest('form');
+            Swal.fire({
+                title: 'Kirim Akun via WhatsApp',
+                html: 'Kirim link aplikasi, username, dan <b>password baru</b> ke <b>' + userName + '</b>?' +
+                      '<br><br><span style="font-size:12px;color:#6b7280">Password baru akan dibuat otomatis (password lama tidak bisa dikirim karena tersimpan ter-enkripsi).</span>',
+                icon: 'question',
+                confirmButtonText: '<i class="fa-brands fa-whatsapp"></i> Ya, Kirim',
+                confirmButtonColor: '#25D366',
+                showCancelButton: true,
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed && form) {
+                    form.submit();
+                }
+            });
+        }
+    };
+}
+
 function userManager() {
     return {
         modalOpen: false, isEditing: false, editId: null,
