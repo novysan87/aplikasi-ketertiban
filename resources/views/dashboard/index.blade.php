@@ -130,23 +130,35 @@
         {{-- Calendar --}}
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
             x-data="calendarApp()" x-init="init()">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-                        <i class="fa-solid fa-calendar text-white text-sm"></i>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25">
+                        <i class="fa-solid fa-calendar text-sm"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-semibold text-gray-900">Kalender Pelanggaran</h2>
-                        <p class="text-base font-bold text-gray-700" x-text="monthLabel + ' ' + year"></p>
+                        <h2 class="text-sm font-bold text-slate-900">Kalender Pelanggaran</h2>
+                        <div class="flex items-center gap-2">
+                            <p class="text-base font-extrabold text-slate-700 tracking-tight" x-text="monthLabel + ' ' + year"></p>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[10px] font-bold text-blue-600">
+                                <i class="fa-solid fa-triangle-exclamation text-[8px]"></i>
+                                <span x-text="monthTotal + ' pelanggaran'"></span>
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-1">
-                    <button @click="prevMonth()" class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                <div class="flex items-center gap-1.5">
+                    <button @click="currentMonth()"
+                        class="px-3 py-2 rounded-xl text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                        Hari Ini
                     </button>
-                    <button @click="nextMonth()" class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
+                    <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-100">
+                        <button @click="prevMonth()" class="p-2 rounded-lg hover:bg-white hover:shadow-sm text-slate-500 hover:text-blue-600 transition" title="Bulan sebelumnya">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button @click="nextMonth()" class="p-2 rounded-lg hover:bg-white hover:shadow-sm text-slate-500 hover:text-blue-600 transition" title="Bulan berikutnya">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -154,30 +166,37 @@
                 {{-- Day headers --}}
                 <div class="grid grid-cols-7 mb-2">
                     <template x-for="day in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']">
-                        <div class="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider py-2" x-text="day"></div>
+                        <div class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.12em] py-1.5" x-text="day"></div>
                     </template>
                 </div>
 
                 {{-- Calendar grid --}}
-                <div class="grid grid-cols-7 gap-1">
+                <div class="grid grid-cols-7 gap-1.5">
                     <template x-for="(day, idx) in days" :key="idx">
                         <div
-                            class="relative min-h-[70px] sm:min-h-[80px] rounded-xl border transition-all duration-150 p-1.5"
+                            class="relative min-h-[76px] sm:min-h-[84px] rounded-xl border transition-all duration-150 p-2 group"
                             :class="day.isToday
-                                ? 'border-blue-300 bg-blue-50/50 ring-1 ring-blue-200'
+                                ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-white ring-2 ring-blue-200/70 shadow-sm'
                                 : day.isCurrentMonth
-                                    ? 'border-gray-100 hover:border-slate-200 hover:bg-gray-50'
-                                    : 'border-gray-50 bg-gray-50/30 text-gray-300'">
+                                    ? 'border-slate-100 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 hover:bg-slate-50/50'
+                                    : 'border-slate-50 bg-slate-50/40 text-slate-300'">
                             {{-- Date number --}}
-                            <div class="text-xs font-semibold"
-                                :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-700' : 'text-gray-300')"
+                            <div class="text-xs font-bold"
+                                :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-slate-700' : 'text-slate-300')"
                                 x-text="day.day">
+                            </div>
+                            {{-- Label hari ini --}}
+                            <div x-show="day.isToday" class="mt-0.5">
+                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[9px] font-bold shadow-sm shadow-blue-500/30">
+                                    <i class="fa-solid fa-location-dot text-[7px]"></i> Hari Ini
+                                </span>
                             </div>
                             {{-- Violation badge --}}
                             <template x-if="day.count > 0 && day.isCurrentMonth">
                                 <a :href="'{{ route('violations.index') }}?date_from=' + day.dateStr + '&date_to=' + day.dateStr"
-                                    class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[26px] h-[26px] text-xs font-bold text-white rounded-full shadow-sm"
-                                    :class="day.count >= 3 ? 'bg-red-500' : (day.count >= 2 ? 'bg-orange-400' : 'bg-blue-400')"
+                                    class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[28px] h-[28px] text-xs font-extrabold text-white rounded-full shadow-lg transition-transform hover:scale-110"
+                                    :class="day.count >= 3 ? 'bg-gradient-to-br from-red-500 to-rose-600 shadow-red-500/30' : (day.count >= 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500 shadow-orange-400/30' : 'bg-gradient-to-br from-blue-400 to-blue-500 shadow-blue-400/30')"
+                                    :title="day.count + ' pelanggaran'"
                                     x-text="day.count">
                                 </a>
                             </template>
@@ -187,17 +206,19 @@
             </div>
 
             {{-- Legend --}}
-            <div class="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center gap-4 text-[11px] text-gray-500">
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded bg-blue-400"></span> 1
+            <div class="px-6 py-3 border-t border-slate-100 bg-gradient-to-r from-slate-50/80 to-blue-50/40 flex items-center gap-4 text-[11px] text-slate-500 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 shadow-sm"></span> 1 pelanggaran
                 </span>
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded bg-orange-400"></span> 2
+                <span class="inline-flex items-center gap-1.5 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 shadow-sm"></span> 2 pelanggaran
                 </span>
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded bg-red-500"></span> 3+
+                <span class="inline-flex items-center gap-1.5 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-red-500 to-rose-600 shadow-sm"></span> 3+ pelanggaran
                 </span>
-                <span class="ml-auto text-gray-400">Klik badge untuk lihat detail</span>
+                <span class="ml-auto inline-flex items-center gap-1 text-slate-400">
+                    <i class="fa-solid fa-hand-pointer text-[10px]"></i> Klik badge untuk lihat detail
+                </span>
             </div>
         </div>
 
@@ -320,6 +341,10 @@
                 return months[this.month - 1] || '';
             },
 
+            get monthTotal() {
+                return Object.values(this.violations || {}).reduce((a, b) => a + b, 0);
+            },
+
             init() {
                 this.render();
             },
@@ -402,6 +427,13 @@
                 } else {
                     this.month++;
                 }
+                this.fetchAndRender();
+            },
+
+            currentMonth() {
+                const now = new Date();
+                this.year = now.getFullYear();
+                this.month = now.getMonth() + 1;
                 this.fetchAndRender();
             },
 
