@@ -122,7 +122,7 @@
     <div x-data="notifications()" class="min-h-screen flex bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50/40">
         {{-- Sidebar --}}
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-xl lg:shadow-sm">
-            <div class="flex items-start justify-between px-4 pt-4 pb-4 border-b border-slate-100 bg-gradient-to-b from-slate-50/80 to-transparent">
+            <div class="flex items-start justify-between px-4 pt-4 pb-2 border-b border-slate-100 bg-gradient-to-b from-slate-50/80 to-transparent">
                 <a href="{{ route('dashboard') }}" class="min-w-0 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 overflow-hidden ring-1 ring-white/50">
                         @if($logoPath)
