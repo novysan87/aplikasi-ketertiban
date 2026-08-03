@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-6">
         <div>
             <p class="text-xs text-gray-500 uppercase tracking-wider">No. Surat</p>
             <p class="text-sm font-mono font-medium text-gray-900 mt-1">{{ $spLetter->letter_number }}</p>

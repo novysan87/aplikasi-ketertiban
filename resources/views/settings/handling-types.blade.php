@@ -103,7 +103,7 @@
         }
     </script>
 
-    <div x-data="typeReorder()" class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+    <div x-data="typeReorder()" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 text-xs text-gray-400">
                 <i class="fa-solid fa-grip-vertical text-gray-300"></i>
@@ -164,7 +164,7 @@
                             </td>
                             <td class="px-5 py-4">
                                 <span class="inline-flex items-center gap-2 text-xs font-mono text-gray-500">
-                                    <span class="w-5 h-5 rounded-full border border-gray-200 shadow-sm" :style="'background-color: ' + type.color"></span>
+                                    <span class="w-5 h-5 rounded-full border border-slate-200 shadow-sm" :style="'background-color: ' + type.color"></span>
                                     <span x-text="type.color"></span>
                                 </span>
                             </td>
@@ -224,7 +224,7 @@
     </div>
 
     {{-- Peran Penanganan --}}
-    <div class="mt-6 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="mt-6 bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center shadow-sm">
@@ -240,7 +240,7 @@
             <form action="{{ route('settings.handling-roles.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3 mb-5">
                 @csrf
                 <input type="text" name="role" required maxlength="100" placeholder="Tambah peran baru..."
-                    class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
+                    class="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
                 <button type="submit"
                     class="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl shadow-md shadow-orange-200 hover:brightness-105 transition active:scale-95">
                     <i class="fa-solid fa-plus"></i> Tambah Peran
@@ -312,7 +312,7 @@
                             @dragenter.prevent
                             @drop.prevent="drop(i)"
                             @dragend="dragEnd()"
-                            class="flex items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 cursor-grab active:cursor-grabbing transition"
+                            class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gray-50/60 px-4 py-3 cursor-grab active:cursor-grabbing transition"
                             :class="dragIndex === i ? 'opacity-40 bg-amber-50/40' : (dropTarget === i && dragIndex !== null ? 'ring-2 ring-inset ring-amber-300 bg-amber-50/30' : 'hover:bg-gray-50')">
                             <i class="fa-solid fa-grip-vertical text-gray-300"></i>
                             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white shadow-sm shrink-0">
@@ -344,7 +344,7 @@
         class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-4">
             <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
-            <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-sm">
@@ -372,7 +372,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Jenis <span class="text-red-500">*</span></label>
                             <input type="text" x-model="formName" name="name" required maxlength="255"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
                                 placeholder="contoh: Surat Panggilan">
                         </div>
 
@@ -385,14 +385,14 @@
                                     <i :class="'fa-solid ' + formIcon" class="text-white text-sm"></i>
                                 </div>
                                 <input type="text" x-model="formIcon" name="icon" required
-                                    class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                                    class="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-mono bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
                                     placeholder="fa-clipboard-list">
                             </div>
                             <div class="flex flex-wrap gap-1.5">
                                 <template x-for="ic in icons" :key="ic">
                                     <button type="button" @click="formIcon = ic"
                                         class="w-9 h-9 rounded-lg flex items-center justify-center border transition"
-                                        :class="formIcon === ic ? 'border-amber-400 bg-amber-50 text-amber-600 shadow-sm' : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600'">
+                                        :class="formIcon === ic ? 'border-amber-400 bg-amber-50 text-amber-600 shadow-sm' : 'border-slate-200 text-gray-400 hover:border-gray-300 hover:text-gray-600'">
                                         <i :class="'fa-solid ' + ic" class="text-sm"></i>
                                     </button>
                                 </template>
@@ -404,7 +404,7 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Warna <span class="text-red-500">*</span></label>
                             <div class="flex items-center gap-3">
                                 <input type="color" x-model="formColor" name="color" required
-                                    class="w-12 h-10 rounded-xl border border-gray-200 cursor-pointer bg-white p-1">
+                                    class="w-12 h-10 rounded-xl border border-slate-200 cursor-pointer bg-white p-1">
                                 <div class="flex flex-wrap gap-1.5">
                                     <template x-for="c in colors" :key="c">
                                         <button type="button" @click="formColor = c"
@@ -421,14 +421,14 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Urutan</label>
                             <input type="number" x-model="formSort" name="sort_order" min="0" max="999"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
                             <p class="mt-1 text-[11px] text-gray-400">Angka kecil tampil lebih dulu di dropdown</p>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
                         <button type="button" @click="showModal = false"
-                            class="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            class="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"

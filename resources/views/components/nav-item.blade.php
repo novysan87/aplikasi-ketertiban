@@ -3,8 +3,8 @@
 @php
 $isActive = $active ?? request()->fullUrlIs($href) || request()->is(trim(parse_url($href, PHP_URL_PATH) ?? '', '/'));
 $classes = $isActive
-    ? 'bg-gradient-to-r from-blue-50 to-white text-blue-700 border-l-[3px] border-blue-500 shadow-sm'
-    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70 border-l-[3px] border-transparent';
+    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 font-semibold'
+    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80';
 
 $faIcons = [
     'home' => 'fa-solid fa-house',
@@ -54,10 +54,13 @@ $iconColors = [
     'chalkboard-user' => ['active' => 'text-emerald-600', 'inactive' => 'text-emerald-400/60 group-hover:text-emerald-500'],
 ];
 $ic = $iconColors[$icon] ?? ['active' => 'text-blue-600', 'inactive' => 'text-gray-400 group-hover:text-gray-600'];
-$iconClass = $isActive ? $ic['active'] : $ic['inactive'];
+$iconClass = $isActive ? 'text-white' : $ic['inactive'];
 @endphp
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 ' . $classes]) }}>
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-150 ' . $classes]) }}>
     <i class="{{ $faClass }} mr-3 w-5 text-center text-sm flex-shrink-0 {{ $iconClass }} transition-colors duration-150"></i>
     {{ $slot }}
+    @if($isActive)
+        <i class="fa-solid fa-chevron-right ml-auto text-[10px] text-white/60"></i>
+    @endif
 </a>

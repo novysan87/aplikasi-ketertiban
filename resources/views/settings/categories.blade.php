@@ -23,7 +23,7 @@
             @php
                 $typeCount = $cat->violationTypes()->count();
             @endphp
-            <div class="group bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 @if(!$cat->is_active) opacity-60 @endif">
+            <div class="group bg-white rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition-all duration-200 @if(!$cat->is_active) opacity-60 @endif">
                 {{-- Color bar --}}
                 <div class="h-2 rounded-t-xl" style="background-color: {{ $cat->color }}"></div>
 
@@ -64,7 +64,7 @@
                     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
                         <div class="flex space-x-2">
                             <button @click="openEdit({{ $cat->id }}, '{{ $cat->name }}', '{{ $cat->color }}', '{{ $cat->description }}', {{ $cat->sort_order }}, {{ json_encode(!$cat->is_active) }})"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition">
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-slate-200 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition">
                                 <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
@@ -118,7 +118,7 @@
             </div>
         @empty
             <div class="col-span-full">
-                <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
+                <div class="text-center py-12 bg-white rounded-xl border border-slate-200">
                     <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                     </svg>
@@ -139,7 +139,7 @@
 
             {{-- Panel --}}
             <div x-show="modalOpen" 
-                class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
+                class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-slate-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
                 {{-- Header --}}
                 <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
@@ -184,7 +184,7 @@
                             <input type="text" x-model="formColor" name="color"
                                 class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                                 placeholder="#22c55e">
-                            <div class="flex-shrink-0 w-12 h-12 rounded-xl border border-gray-200"
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl border border-slate-200"
                                 :style="{ backgroundColor: formColor }"></div>
                         </div>
                     </div>
@@ -220,7 +220,7 @@
                     {{-- Preview --}}
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-xs font-medium text-gray-500 mb-2">Pratinjau</p>
-                        <div class="flex items-center space-x-2 p-2.5 bg-white rounded-lg border border-gray-200">
+                        <div class="flex items-center space-x-2 p-2.5 bg-white rounded-lg border border-slate-200">
                             <span class="w-3 h-3 rounded-full flex-shrink-0" :style="{ backgroundColor: formColor }"></span>
                             <span class="text-sm font-medium text-gray-900" x-text="formName || 'Nama Kategori'"></span>
                             <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-full font-medium"

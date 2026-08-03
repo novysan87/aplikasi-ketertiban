@@ -27,8 +27,8 @@
     </div>
 
     {{-- Tabs --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
-        <div class="flex border-b border-gray-200">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6 overflow-hidden">
+        <div class="flex border-b border-slate-200">
             <a href="{{ route('attendances.recap', ['type' => 'daily', 'class_name' => $className, 'date' => request('date', now()->toDateString())]) }}"
                 class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $type == 'daily' ? 'text-blue-600 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700' }}">
                 <i class="fa-solid fa-clock mr-1.5"></i> Harian
@@ -52,19 +52,19 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
                         <input type="date" name="date" value="{{ $date ?? now()->toDateString() }}"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     @elseif($type == 'weekly')
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Awal Minggu</label>
                         <input type="date" name="week_start" value="{{ $start ? $start->toDateString() : now()->startOfWeek()->toDateString() }}"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     @else
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bulan</label>
                         <select name="month"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             @foreach(range(1, 12) as $m)
                                 <option value="{{ $m }}" @selected(($month ?? now()->month) == $m)>{{ \Carbon\Carbon::create()->month($m)->format('F') }}</option>
                             @endforeach
@@ -73,7 +73,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tahun</label>
                         <select name="year"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             @foreach(range(now()->year, now()->year - 2, -1) as $y)
                                 <option value="{{ $y }}" @selected(($year ?? now()->year) == $y)>{{ $y }}</option>
                             @endforeach
@@ -84,7 +84,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelas</label>
                         <select name="class_name"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Kelas</option>
                             @foreach($classNames as $cn)
                                 <option value="{{ $cn }}" @selected($className == $cn)>{{ $cn }}</option>
@@ -105,7 +105,7 @@
 
     {{-- ===== REKAP HARIAN ===== --}}
     @if($type == 'daily')
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-sm">
@@ -189,7 +189,7 @@
 
     {{-- ===== REKAP MINGGUAN ===== --}}
     @elseif($type == 'weekly')
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -221,12 +221,12 @@
                                 @php
                                     $sep = !$loop->last ? 'border-r-2 border-gray-300' : '';
                                 @endphp
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 {{ $sep }}">
+                                <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-slate-200 {{ $sep }}">
                                     {{ $row['label'] }}<br>
                                     <span class="text-[10px] text-gray-400 font-normal">{{ \Carbon\Carbon::parse($row['date'])->format('d/m') }}</span>
                                 </th>
                             @endforeach
-                            <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-b border-gray-200 border-l-2 border-gray-400 bg-gray-100/80">
+                            <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-b border-slate-200 border-l-2 border-gray-400 bg-gray-100/80">
                                 TOTAL<br>
                                 <span class="text-[10px] text-gray-500 font-normal">Hari</span>
                             </th>
@@ -250,13 +250,13 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($students as $student)
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white border-r-2 border-gray-200 z-10">
+                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white border-r-2 border-slate-200 z-10">
                                     <p class="text-sm font-semibold text-gray-900">{{ $student->full_name }}</p>
                                 </td>
                                 @foreach($recap as $row)
                                     @php
                                         $s = $row['students'][$student->id] ?? null;
-                                        $sep = !$loop->last ? 'border-r-2 border-gray-200' : '';
+                                        $sep = !$loop->last ? 'border-r-2 border-slate-200' : '';
                                     @endphp
                                     @if($s)
                                         <td class="px-2 py-2.5 text-center text-xs font-bold text-emerald-600">{{ $s['hadir'] }}</td>
@@ -302,7 +302,7 @@
 
     {{-- ===== REKAP BULANAN ===== --}}
     @else
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -334,12 +334,12 @@
                                 @php
                                     $sep = !$loop->last ? 'border-r-2 border-gray-300' : '';
                                 @endphp
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 {{ $sep }}">
+                                <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-slate-200 {{ $sep }}">
                                     {{ $row['label'] }}<br>
                                     <span class="text-[10px] text-gray-400 font-normal">{{ \Carbon\Carbon::parse($row['start'])->format('d/m') }}-{{ \Carbon\Carbon::parse($row['end'])->format('d/m') }}</span>
                                 </th>
                             @endforeach
-                            <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-b border-gray-200 border-l-2 border-gray-400 bg-gray-100/80">
+                            <th colspan="4" class="px-3 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-b border-slate-200 border-l-2 border-gray-400 bg-gray-100/80">
                                 TOTAL<br>
                                 <span class="text-[10px] text-gray-500 font-normal">Hari</span>
                             </th>
@@ -363,13 +363,13 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($students as $student)
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white border-r-2 border-gray-200 z-10">
+                                <td class="px-4 py-2.5 whitespace-nowrap sticky left-0 bg-white border-r-2 border-slate-200 z-10">
                                     <p class="text-sm font-semibold text-gray-900">{{ $student->full_name }}</p>
                                 </td>
                                 @foreach($recap as $row)
                                     @php
                                         $s = $row['students'][$student->id] ?? null;
-                                        $sep = !$loop->last ? 'border-r-2 border-gray-200' : '';
+                                        $sep = !$loop->last ? 'border-r-2 border-slate-200' : '';
                                     @endphp
                                     @if($s)
                                         <td class="px-2 py-2.5 text-center text-xs font-bold text-emerald-600">{{ $s['hadir'] }}</td>

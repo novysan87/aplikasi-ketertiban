@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import '@fortawesome/fontawesome-free/css/fontawesome.css';
 @import '@fortawesome/fontawesome-free/css/brands.css';
@@ -7,14 +8,52 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 /* Custom styles for Aplikasi Ketertiban */
 [x-cloak] { display: none !important; }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+html { scroll-behavior: smooth; }
+
+/* Seleksi teks premium */
+::selection { background: #2563eb; color: #fff; }
+
+/* Scrollbar halus & premium */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+/* Kartu standar premium — dipakai konsisten di semua halaman */
+.card {
+    @apply bg-white rounded-2xl border border-slate-200/80 shadow-sm;
+}
+
+/* Tombol aksi primer */
+.btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200;
+}
+
+/* Tombol aksi sekunder (outline lembut) */
+.btn-outline {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/50 transition-all duration-200;
+}
+
+/* Input premium seragam */
+.input {
+    @apply w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition;
+}
 
 /* Print styles */
 @media print {

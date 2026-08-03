@@ -22,7 +22,7 @@
     </div>
 
     {{-- Filter Card --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6">
         <form method="GET">
             <div class="p-5 space-y-4">
                 {{-- Search --}}
@@ -30,7 +30,7 @@
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari NISN, NIS, atau Nama siswa..."
-                        class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
 
                 {{-- Dropdowns: Jurusan → Tingkat Kelas → Kelas --}}
@@ -38,7 +38,7 @@
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Jurusan</label>
                         <select name="department"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Jurusan</option>
                             @foreach($departments as $code => $name)
                                 <option value="{{ $code }}" @selected(request('department') == $code)>{{ $name }}</option>
@@ -48,7 +48,7 @@
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tingkat Kelas</label>
                         <select name="class_level"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Tingkat</option>
                             @foreach($classLevels as $level)
                                 <option value="{{ $level }}" @selected(request('class_level') == $level)>Kelas {{ $level }}</option>
@@ -58,7 +58,7 @@
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Kelas</label>
                         <select name="class_name" id="filter-class-name"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Kelas</option>
                             @foreach($classNames as $cn)
                                 <option value="{{ $cn }}" @selected(request('class_name') == $cn)>{{ $cn }}</option>
@@ -73,7 +73,7 @@
                         </button>
                         @if(request()->anyFilled(['search','class_level','class_name','department']))
                             <a href="{{ route('students.index') }}"
-                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-1.5">
+                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-1.5">
                                 <i class="fa-solid fa-xmark"></i>
                                 Reset
                             </a>
@@ -85,7 +85,7 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead>
@@ -135,7 +135,7 @@
                             {{-- Pelanggaran --}}
                             <td class="px-5 py-4 text-center whitespace-nowrap">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full
-                                    {{ $s->violations_count > 3 ? 'bg-red-50 text-red-700 border border-red-200' : ($s->violations_count > 0 ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-gray-50 text-gray-400 border border-gray-200') }}">
+                                    {{ $s->violations_count > 3 ? 'bg-red-50 text-red-700 border border-red-200' : ($s->violations_count > 0 ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-gray-50 text-gray-400 border border-slate-200') }}">
                                     <i class="fa-solid {{ $s->violations_count > 0 ? 'fa-exclamation' : 'fa-check' }} text-[10px]"></i>
                                     {{ $s->violations_count }}x
                                 </span>

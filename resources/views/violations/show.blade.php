@@ -117,7 +117,7 @@
         </div>
         <div class="p-5 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400">
+                <div class="w-11 h-11 rounded-2xl bg-gray-50 border border-slate-200 flex items-center justify-center text-gray-400">
                     <i class="fa-solid fa-phone"></i>
                 </div>
                 <div>
@@ -196,7 +196,7 @@
             </div>
 
             {{-- ===== PENANGANAN (fitur utama) ===== --}}
-            <div x-data="{ showHandlingModal: false }" class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div x-data="{ showHandlingModal: false }" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 {{-- Header kartu --}}
                 <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-orange-600 px-6 py-5 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3.5">
@@ -285,7 +285,7 @@
                                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Yang Menangani</p>
                                         <div class="flex flex-wrap gap-2">
                                             @foreach($h->participants as $p)
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] bg-white border border-gray-200 rounded-full shadow-sm">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] bg-white border border-slate-200 rounded-full shadow-sm">
                                                     <span class="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center flex-shrink-0">
                                                         <span class="text-[7px] font-bold text-white">{{ strtoupper(substr($p->user->name ?? '?', 0, 1)) }}</span>
                                                     </span>
@@ -400,7 +400,7 @@
                                                 <i :class="'fa-solid ' + (selectedMeta ? selectedMeta.icon : 'fa-hand-holding-heart')" class="text-white text-lg"></i>
                                             </div>
                                             <select name="handling_type" x-model="selectedType" required
-                                                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
+                                                class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
                                                 <option value="">— Pilih jenis penanganan —</option>
                                                 @foreach($handlingTypes as $htOpt)
                                                     <option value="{{ $htOpt->name }}">{{ $htOpt->name }}</option>
@@ -417,7 +417,7 @@
                                             <div class="relative">
                                                 <i class="fa-solid fa-calendar-day absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                                 <input type="date" name="handling_date" value="{{ date('Y-m-d') }}" required
-                                                    class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
+                                                    class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
                                             </div>
                                         </div>
                                         <div>
@@ -425,7 +425,7 @@
                                             <div class="relative">
                                                 <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                                 <input type="text" name="location" placeholder="Ruang BK, Ruang Guru, dll"
-                                                    class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
+                                                    class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition">
                                             </div>
                                         </div>
                                     </div>
@@ -434,14 +434,14 @@
                                     <div>
                                         <label class="block text-sm font-bold text-gray-700 mb-2">Catatan / Deskripsi</label>
                                         <textarea name="description" rows="4" placeholder="Tuliskan detail penanganan yang dilakukan..."
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition resize-none"></textarea>
+                                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500 transition resize-none"></textarea>
                                     </div>
 
                                     {{-- Bukti --}}
                                     <div>
                                         <label class="block text-sm font-bold text-gray-700 mb-2">Bukti Pendukung <span class="font-normal text-gray-400">(opsional)</span></label>
                                         <label class="flex flex-col items-center justify-center gap-2 px-6 py-7 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/50 cursor-pointer hover:border-amber-400 hover:bg-amber-50/40 transition group">
-                                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
                                                 <i class="fa-solid fa-cloud-arrow-up text-amber-500 text-lg"></i>
                                             </div>
                                             <p class="text-sm font-bold text-gray-600" x-text="evidenceName || 'Klik untuk unggah bukti'"></p>
@@ -462,19 +462,19 @@
                                         </div>
                                         <div class="space-y-2.5">
                                             <template x-for="(p, i) in participants" :key="i">
-                                                <div class="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-2.5">
+                                                <div class="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-gray-50/50 p-2.5">
                                                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white shrink-0">
                                                         <i class="fa-solid fa-user text-xs"></i>
                                                     </div>
                                                     <select :name="'participants['+i+'][user_id]'" x-model="p.user_id"
-                                                        class="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
+                                                        class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
                                                         <option value="">Pilih petugas...</option>
                                                         @foreach($users as $user)
                                                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role }})</option>
                                                         @endforeach
                                                     </select>
                                                     <select :name="'participants['+i+'][role]'" x-model="p.role"
-                                                        class="w-[130px] px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
+                                                        class="w-[130px] px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition">
                                                         <option value="">Peran</option>
                                                         @foreach($handlingRoles as $roleOpt)
                                                             <option value="{{ $roleOpt }}">{{ $roleOpt }}</option>
@@ -496,7 +496,7 @@
                                 {{-- Footer --}}
                                 <div class="flex items-center justify-end gap-3 mt-8 pt-5 border-t border-gray-100">
                                     <button type="button" @click="showHandlingModal = false"
-                                        class="px-6 py-3 text-sm font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition">
+                                        class="px-6 py-3 text-sm font-bold text-gray-600 bg-white border-2 border-slate-200 rounded-2xl hover:bg-gray-50 transition">
                                         Batal
                                     </button>
                                     <button type="submit"
@@ -513,7 +513,7 @@
             </div>
 
             {{-- Detail Info Card --}}
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 {{-- Header --}}
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
@@ -618,7 +618,7 @@
 
             {{-- Deskripsi --}}
             @if($violation->description)
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-2.5">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center shadow-sm">
@@ -640,7 +640,7 @@
         <div class="space-y-5">
 
             {{-- Status Card --}}
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
@@ -722,7 +722,7 @@
 
             {{-- Evidence Photos --}}
             @if($violation->evidences->count() > 0)
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center flex-shrink-0">
@@ -739,7 +739,7 @@
                     <div class="evidence-grid grid grid-cols-2 gap-2.5">
                         @foreach($violation->evidences as $evidence)
                             <a href="{{ $evidence->url }}" target="_blank" rel="noopener noreferrer"
-                                class="group relative block aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm">
+                                class="group relative block aspect-square rounded-xl overflow-hidden border border-slate-200 bg-gray-50 shadow-sm">
                                 <img src="{{ $evidence->url }}"
                                     class="w-full h-full object-cover"
                                     alt="{{ $evidence->original_name }}">
@@ -776,7 +776,7 @@
 
             {{-- Back to List --}}
             <a href="{{ route('violations.index') }}"
-                class="flex items-center justify-center gap-2 p-3.5 text-sm font-semibold text-gray-500 bg-white border border-gray-200 rounded-3xl hover:bg-gray-50 hover:text-gray-700 transition group">
+                class="flex items-center justify-center gap-2 p-3.5 text-sm font-semibold text-gray-500 bg-white border border-slate-200 rounded-3xl hover:bg-gray-50 hover:text-gray-700 transition group">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 Kembali ke Data Pelanggaran
             </a>

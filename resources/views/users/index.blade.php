@@ -18,7 +18,7 @@
     </div>
 
     {{-- Filter --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 mb-6">
         <form method="GET" class="p-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div class="relative">
@@ -54,7 +54,7 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -233,7 +233,7 @@
                             <div class="relative">
                                 <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                 <input type="text" x-model="formName" name="name" required
-                                    class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                    class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
                                     placeholder="Nama lengkap">
                             </div>
                         </div>
@@ -245,7 +245,7 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-at absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                     <input type="text" x-model="formUsername" name="username" required
-                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
                                         placeholder="username">
                                 </div>
                             </div>
@@ -254,7 +254,7 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                     <input type="email" x-model="formEmail" name="email" required
-                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
                                         placeholder="email@sekolah.sch.id">
                                 </div>
                             </div>
@@ -263,7 +263,7 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                     <input type="tel" x-model="formPhone" name="phone"
-                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
                                         placeholder="08xxxxxxxxxx">
                                 </div>
                                 <p class="text-xs text-gray-400 mt-1.5">Nomor untuk kontak &amp; notifikasi (opsional)</p>
@@ -279,7 +279,7 @@
                             <div class="relative">
                                 <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                 <input :type="showPassword ? 'text' : 'password'" x-model="formPassword" name="password" :required="!isEditing" minlength="6"
-                                    class="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
+                                    class="w-full pl-11 pr-12 py-3 border-2 border-slate-200 rounded-2xl text-sm font-semibold bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition"
                                     placeholder="Min. 6 karakter">
                                 <button type="button" @click="showPassword = !showPassword"
                                     class="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition">
@@ -303,11 +303,11 @@
                                     { v: 'other', label: 'Other', desc: 'Guest / Terbatas', icon: 'fa-user', color: '#64748b' },
                                 ]" :key="r.v">
                                     <label class="flex items-center gap-3 rounded-2xl border-2 p-3 cursor-pointer transition-all duration-150 active:scale-[0.98]"
-                                        :class="formRoles.includes(r.v) ? 'border-transparent text-white shadow-md ring-2' : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'"
+                                        :class="formRoles.includes(r.v) ? 'border-transparent text-white shadow-md ring-2' : 'border-slate-200 bg-gray-50/50 hover:border-gray-300'"
                                         :style="formRoles.includes(r.v) ? 'background: linear-gradient(135deg, ' + r.color + ', ' + r.color + 'bb);' : ''">
                                         <input type="checkbox" :name="'roles[]'" :value="r.v" x-model="formRoles" class="sr-only">
                                         <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                            :class="formRoles.includes(r.v) ? 'bg-white/20' : 'bg-white shadow-sm border border-gray-200'">
+                                            :class="formRoles.includes(r.v) ? 'bg-white/20' : 'bg-white shadow-sm border border-slate-200'">
                                             <i :class="'fa-solid ' + r.icon" class="text-sm" :class="formRoles.includes(r.v) ? 'text-white' : 'text-gray-400'"></i>
                                         </div>
                                         <div class="min-w-0">
@@ -324,7 +324,7 @@
                         {{-- Aktif (edit) --}}
                         <div x-show="isEditing" x-transition class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
                             <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-white shadow-sm border border-gray-200 flex items-center justify-center">
+                                <div class="w-9 h-9 rounded-xl bg-white shadow-sm border border-slate-200 flex items-center justify-center">
                                     <i class="fa-solid fa-power-off text-emerald-500 text-xs"></i>
                                 </div>
                                 <div>
@@ -344,7 +344,7 @@
                     {{-- Footer --}}
                     <div class="flex items-center justify-end gap-3 mt-7 pt-5 border-t border-gray-100">
                         <button type="button" @click="modalOpen = false"
-                            class="px-6 py-3 text-sm font-bold text-gray-600 bg-white border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition">
+                            class="px-6 py-3 text-sm font-bold text-gray-600 bg-white border-2 border-slate-200 rounded-2xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"

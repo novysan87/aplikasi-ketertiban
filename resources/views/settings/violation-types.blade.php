@@ -12,12 +12,12 @@
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('settings.import.template') }}"
-                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
                 <i class="fa-solid fa-file-import text-xs"></i>
                 <span class="hidden sm:inline">Download Template</span>
             </a>
             <a href="{{ route('settings.export.violation-types') }}"
-                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
                 <i class="fa-solid fa-file-export text-xs"></i>
                 <span class="hidden sm:inline">Export Excel</span>
             </a>
@@ -35,17 +35,17 @@
     </div>
 
     {{-- Filter & Search --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6">
         <form method="GET" class="p-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari jenis pelanggaran..."
-                        class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
                 <select name="category_id"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" @selected(request('category_id') == $cat->id)>
@@ -60,7 +60,7 @@
                     </button>
                     @if(request()->anyFilled(['search','category_id']))
                         <a href="{{ route('settings.violation-types') }}"
-                            class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                             <i class="fa-solid fa-xmark mr-1"></i>Reset
                         </a>
                     @endif
@@ -70,7 +70,7 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead>
@@ -120,7 +120,7 @@
                                         Aktif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200 rounded-full">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-500 border border-slate-200 rounded-full">
                                         <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
                                         Nonaktif
                                     </span>
@@ -215,7 +215,7 @@
             <div x-show="modalOpen" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
 
             <div x-show="modalOpen"
-                class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-gray-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-xl sm:w-full">
+                class="relative inline-block align-bottom bg-white rounded-2xl shadow-xl border border-slate-200 text-left overflow-hidden transform transition-all sm:align-middle sm:max-w-xl sm:w-full">
                 {{-- Header --}}
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -244,7 +244,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
                             <select x-model="formCategory" @change="updateCategoryColor(formCategory)" name="category_id" required
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -255,7 +255,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Pelanggaran <span class="text-red-500">*</span></label>
                             <input type="text" x-model="formName" name="name" required
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                                 placeholder="Contoh: Terlambat datang ke sekolah">
                         </div>
                     </div>
@@ -265,14 +265,14 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Poin <span class="text-red-500">*</span></label>
                             <input type="number" x-model="formPoints" name="points" required min="0" max="500"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <p class="text-xs text-gray-400 mt-1">Poin pelanggaran (1–500)</p>
                         </div>
                         {{-- Sanksi --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Sanksi Default</label>
                             <input type="text" x-model="formSanction" name="default_sanction"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                                 placeholder="Contoh: Teguran lisan">
                             <p class="text-xs text-gray-400 mt-1">Sanksi yang muncul saat input pelanggaran</p>
                         </div>
@@ -293,7 +293,7 @@
                     {{-- Preview --}}
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pratinjau</p>
-                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
                             <div class="flex items-center gap-2.5 min-w-0">
                                 <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ backgroundColor: categoryColor }"></span>
                                 <span class="text-sm font-medium text-gray-900 truncate" x-text="formName || 'Nama Pelanggaran'"></span>
@@ -306,7 +306,7 @@
                     {{-- Buttons --}}
                     <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
                         <button type="button" @click="modalOpen = false"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"
@@ -324,7 +324,7 @@
     <div id="import-modal" style="display: none;"
         class="fixed inset-0 z-50 flex-col items-center justify-center bg-gray-900/40 backdrop-blur-sm"
         tabindex="0">
-        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg mx-4 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -348,7 +348,7 @@
                     <p class="text-xs text-gray-400">Format kolom: <strong>Kategori</strong> • <strong>Nama Pelanggaran</strong> • <strong>Poin</strong> • <strong>Sanksi Default</strong> • <strong>Deskripsi</strong></p>
                 </div>
 
-                <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition"
+                <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition"
                     x-data="{ fileName: '' }"
                     @dragover.prevent="$el.classList.add('border-blue-400', 'bg-blue-50/50')"
                     @dragleave.prevent="$el.classList.remove('border-blue-400', 'bg-blue-50/50')"
@@ -380,7 +380,7 @@
                     </a>
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="document.getElementById('import-modal').style.display='none'"
-                            class="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                            class="px-4 py-2 text-sm font-medium text-gray-600 border border-slate-200 rounded-lg hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"

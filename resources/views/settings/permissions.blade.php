@@ -38,7 +38,7 @@
                     ];
                     $gl = $groupLabels[$group] ?? [ucfirst($group), 'fa-circle', 'gray'];
                 @endphp
-                <div class="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                <div class="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                     {{-- Group header --}}
                     <div class="px-5 py-3.5 bg-gradient-to-r from-{{ $gl[2] }}-50 to-white border-b border-gray-100">
                         <div class="flex items-center gap-2.5">
@@ -142,7 +142,7 @@
         </div>
 
         {{-- Bottom bar --}}
-        <div class="mt-8 rounded-2xl bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 shadow-sm p-5">
+        <div class="mt-8 rounded-2xl bg-gradient-to-br from-white to-gray-50/50 border border-slate-200 shadow-sm p-5">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-3 text-xs text-gray-400">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center">

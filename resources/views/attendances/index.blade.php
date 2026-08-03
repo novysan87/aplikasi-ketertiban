@@ -19,7 +19,7 @@
 
     {{-- Stats Hari Ini --}}
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
             <div class="flex items-center gap-2 text-sm text-gray-500">
                 <i class="fa-regular fa-calendar-check"></i>
                 <span>Siswa Hari Ini</span>
@@ -33,7 +33,7 @@
             </div>
             <div class="mt-2 text-3xl font-bold text-red-600">{{ $todayAlphaStudents }}</div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
             <div class="flex items-center gap-2 text-sm text-gray-500">
                 <i class="fa-regular fa-calendar-alt"></i>
                 <span>Siswa Bulan Ini</span>
@@ -50,7 +50,7 @@
     </div>
 
     {{-- Kalender Presensi --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
         x-data="attendanceCalendar({{ json_encode($calendarData) }})" x-init="init">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -89,7 +89,7 @@
                                 : day.isCurrentMonth && day.total > 0
                                     ? 'border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50'
                                     : day.isCurrentMonth
-                                        ? 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                        ? 'border-gray-100 hover:border-slate-200 hover:bg-gray-50'
                                         : 'border-gray-50 bg-gray-50/30 text-gray-300',
                             day.total > 0 && day.isCurrentMonth ? 'cursor-pointer' : 'cursor-default'
                         ]">

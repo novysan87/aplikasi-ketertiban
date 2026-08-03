@@ -18,7 +18,7 @@
     </div>
 
     <form action="{{ route('violations.store') }}" method="POST" enctype="multipart/form-data"
-        class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         @csrf
 
         {{-- Gradient header --}}
@@ -57,13 +57,13 @@
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                             <input type="text" x-model="searchQuery" @input.debounce="searchStudents"
                                 placeholder="Cari NISN atau Nama siswa..."
-                                class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <input type="hidden" name="student_id" x-model="selectedStudentId">
 
                         {{-- Search results dropdown --}}
                         <div x-show="results.length > 0 && !selectedStudentId"
-                            class="absolute z-10 mt-1 w-full bg-white shadow-lg border border-gray-200 rounded-xl max-h-48 overflow-y-auto">
+                            class="absolute z-10 mt-1 w-full bg-white shadow-lg border border-slate-200 rounded-xl max-h-48 overflow-y-auto">
                             <template x-for="s in results" :key="s.id">
                                 <div @click="selectStudent(s)"
                                     class="px-4 py-2.5 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0 flex items-center justify-between">
@@ -119,12 +119,12 @@
                                 <input type="text" x-model="q" @input="open=true" @focus="open=true"
                                     @click.away="open=false" @keydown.escape="open=false"
                                     placeholder="Ketik nama pelanggaran untuk menambah..."
-                                    class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                    class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             </div>
 
                             {{-- Search results --}}
                             <div x-show="open && filtered.length > 0"
-                                class="absolute z-20 mt-1 w-full bg-white shadow-lg border border-gray-200 rounded-xl max-h-72 overflow-y-auto">
+                                class="absolute z-20 mt-1 w-full bg-white shadow-lg border border-slate-200 rounded-xl max-h-72 overflow-y-auto">
                                 <template x-for="(group, gi) in filtered" :key="gi">
                                     <div>
                                         <div class="sticky top-0 px-4 py-1.5 text-xs font-bold uppercase tracking-wider border-b flex items-center gap-1.5 z-10"
@@ -160,7 +160,7 @@
 
                             {{-- No results --}}
                             <div x-show="open && filtered.length === 0 && q.length > 0"
-                                class="absolute z-20 mt-1 w-full bg-white shadow-lg border border-gray-200 rounded-xl p-5 text-center">
+                                class="absolute z-20 mt-1 w-full bg-white shadow-lg border border-slate-200 rounded-xl p-5 text-center">
                                 <p class="text-sm text-gray-500">Tidak ditemukan untuk "<span x-text="q" class="font-medium"></span>"</p>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
 
                     {{-- Empty state --}}
                     <template x-if="selected.length === 0">
-                        <div class="flex items-center gap-2 p-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+                        <div class="flex items-center gap-2 p-3 rounded-xl border border-dashed border-slate-200 bg-gray-50/50">
                             <i class="fa-solid fa-circle-plus text-gray-300"></i>
                             <span class="text-xs text-gray-400">Gunakan pencarian di atas untuk memilih pelanggaran</span>
                         </div>
@@ -244,17 +244,17 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Tanggal <span class="text-red-500">*</span></label>
                         <input type="date" name="violation_date" value="{{ date('Y-m-d') }}" required
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Waktu</label>
                         <input type="time" name="violation_time" value="{{ date('H:i') }}"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Lokasi</label>
                         <input type="text" name="location" placeholder="Depan kelas, Lapangan, dll"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                 </div>
             </div>
@@ -271,7 +271,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Deskripsi / Catatan Pelanggaran</label>
                     <textarea name="description" rows="3" placeholder="Deskripsi lengkap pelanggaran yang terjadi..."
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition resize-none"></textarea>
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition resize-none"></textarea>
                 </div>
             </div>
 
@@ -289,7 +289,7 @@
 
                 <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-3">
                     <template x-for="(file, index) in files" :key="index">
-                        <div class="relative aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group shadow-sm">
+                        <div class="relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-gray-50 group shadow-sm">
                             <img :src="file.url" class="w-full h-full object-cover">
                             <button type="button" @click="removeFile(index)"
                                 class="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition opacity-0 group-hover:opacity-100 shadow-lg">
@@ -302,7 +302,7 @@
                     {{-- Upload placeholder --}}
                     <template x-if="files.length < 5">
                         <div @click="document.getElementById('evidences').click()"
-                            class="aspect-square rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-300 bg-gray-50/50 flex flex-col items-center justify-center cursor-pointer transition hover:bg-blue-50/30 group">
+                            class="aspect-square rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 bg-gray-50/50 flex flex-col items-center justify-center cursor-pointer transition hover:bg-blue-50/30 group">
                             <i class="fa-solid fa-camera text-gray-300 text-2xl mb-1 group-hover:text-blue-400 transition"></i>
                             <span class="text-xs text-gray-400 group-hover:text-blue-500 transition font-medium">Tambah Foto</span>
                         </div>
@@ -311,12 +311,12 @@
 
                 <div class="flex items-center gap-2">
                     <button type="button" @click="document.getElementById('evidences').click()"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
                         <i class="fa-solid fa-image text-gray-400"></i>
                         Pilih File
                     </button>
                     <button type="button" @click="captureCamera"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition shadow-sm">
                         <i class="fa-solid fa-camera text-gray-400"></i>
                         Ambil Foto
                     </button>
@@ -328,7 +328,7 @@
         {{-- Footer --}}
         <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-100 flex items-center justify-end gap-3">
             <a href="{{ route('violations.index') }}"
-                class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-2">
+                class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition inline-flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 Batal
             </a>

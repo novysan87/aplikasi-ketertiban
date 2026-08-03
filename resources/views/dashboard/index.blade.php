@@ -56,7 +56,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     {{-- Grafik Tren Pelanggaran --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" x-data="trendToggle()">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" x-data="trendToggle()">
         <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white shadow-sm">
@@ -98,7 +98,7 @@
     </div>
 
     {{-- Grafik Jenis Pelanggaran --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white shadow-sm">
@@ -128,7 +128,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Calendar --}}
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
             x-data="calendarApp()" x-init="init()">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -166,7 +166,7 @@
                             :class="day.isToday
                                 ? 'border-blue-300 bg-blue-50/50 ring-1 ring-blue-200'
                                 : day.isCurrentMonth
-                                    ? 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                    ? 'border-gray-100 hover:border-slate-200 hover:bg-gray-50'
                                     : 'border-gray-50 bg-gray-50/30 text-gray-300'">
                             {{-- Date number --}}
                             <div class="text-xs font-semibold"
@@ -205,7 +205,7 @@
         <div class="space-y-6">
             {{-- SP Thresholds --}}
             @if($spThresholds->count() > 0)
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-sm">
@@ -255,7 +255,7 @@
             @endif
 
             {{-- Top 5 Students --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-sm">

@@ -32,7 +32,7 @@
             <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Profil Siswa</h1>
         </div>
         <a href="{{ route('students.index') }}"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition shadow-sm">
             <i class="fa-solid fa-arrow-left text-xs"></i>
             Kembali
         </a>
@@ -144,7 +144,7 @@
             $lastMin = $spThresholds->last()->min_points;
             $progressPercent = min(100, ($totalPoints / $lastMin) * 100);
         @endphp
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-6">
         {{-- Header --}}
         <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
@@ -237,7 +237,7 @@
     @endif
 
     {{-- ===== VIOLATIONS TIMELINE ===== --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
         <div class="relative overflow-hidden bg-gradient-to-r from-orange-500 via-red-500 to-red-600 px-6 py-5 flex flex-wrap items-center justify-between gap-3">
             <div class="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl"></div>
             <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -341,12 +341,12 @@
                         <div class="flex gap-2">
                             @foreach($v->evidences->take(3) as $ev)
                                 <a href="{{ Storage::url($ev->file_path) }}" target="_blank"
-                                    class="w-10 h-10 rounded-lg border border-gray-200 overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all flex-shrink-0">
+                                    class="w-10 h-10 rounded-lg border border-slate-200 overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all flex-shrink-0">
                                     <img src="{{ Storage::url($ev->file_path) }}" class="w-full h-full object-cover" alt="Bukti">
                                 </a>
                             @endforeach
                             @if($v->evidences->count() > 3)
-                                <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-[10px] text-gray-400 font-medium flex-shrink-0">
+                                <div class="w-10 h-10 rounded-lg bg-gray-50 border border-slate-200 flex items-center justify-center text-[10px] text-gray-400 font-medium flex-shrink-0">
                                     +{{ $v->evidences->count() - 3 }}
                                 </div>
                             @endif
@@ -407,7 +407,7 @@
 
     {{-- ===== SP LETTERS ===== --}}
     @if($student->spLetters->count() > 0)
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-sm">
@@ -441,7 +441,7 @@
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
                         <a href="{{ route('sp-letters.show', $sp->id) }}"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-slate-200 rounded-lg hover:bg-gray-50 transition">
                             <i class="fa-solid fa-eye"></i>
                             <span class="hidden sm:inline">Lihat</span>
                         </a>
@@ -459,7 +459,7 @@
 
     {{-- ===== INFO DETAILS ===== --}}
     <div x-data="{ showEditModal: false }">
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-4">
             <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm flex-shrink-0">
@@ -638,7 +638,7 @@
         class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-4">
             <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
-            <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 px-7 py-6 sticky top-0 z-10">
                     <div class="pointer-events-none absolute -top-10 -right-10 w-44 h-44 rounded-full bg-white/10 blur-2xl"></div>
                     <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -667,22 +667,22 @@
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                             <input type="text" name="full_name" value="{{ $student->full_name }}" required
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">NISN</label>
                             <input type="text" name="nisn" value="{{ $student->nisn }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">NIS</label>
                             <input type="text" name="student_number" value="{{ $student->student_number }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
                             <select name="gender"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 <option value="">—</option>
                                 <option value="L" @selected($student->gender === 'L')>Laki-laki</option>
                                 <option value="P" @selected($student->gender === 'P')>Perempuan</option>
@@ -691,58 +691,58 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
                             <input type="text" name="place_of_birth" value="{{ $student->place_of_birth }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
                             <input type="date" name="date_of_birth" value="{{ $student->date_of_birth ? $student->date_of_birth->format('Y-m-d') : '' }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
                             <textarea name="address" rows="2"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">{{ $student->address }}</textarea>
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">{{ $student->address }}</textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
                             <input type="text" name="phone_number" value="{{ $student->phone_number }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">No. HP Orang Tua/Wali</label>
                             <input type="text" name="parent_phone" value="{{ $student->parent_phone }}" placeholder="08xxxxxxxxxx"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                             <input type="email" name="email" value="{{ $student->email }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
                             <input type="text" name="class_name" value="{{ $student->class_name }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tingkat Kelas</label>
                             <input type="text" name="class_level" value="{{ $student->class_level }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kode Jurusan</label>
                             <input type="text" name="department_code" value="{{ $student->department_code }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jurusan</label>
                             <input type="text" name="department_name" value="{{ $student->department_name }}"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
                         <button type="button" @click="showEditModal = false"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"

@@ -115,7 +115,7 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4">
-                                <span class="inline-flex items-center px-2.5 py-1 text-[11px] font-semibold bg-gray-100 text-gray-600 rounded-lg border border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-1 text-[11px] font-semibold bg-gray-100 text-gray-600 rounded-lg border border-slate-200">
                                     {{ $class->department_name ?? '-' }}
                                 </span>
                             </td>
@@ -128,7 +128,7 @@
                                         <div class="relative flex-1 min-w-[220px]">
                                             <i class="fa-solid fa-chalkboard-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                                             <select name="teacher_id" x-model="teacherId"
-                                                class="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition appearance-none shadow-sm">
+                                                class="w-full pl-9 pr-8 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition appearance-none shadow-sm">
                                                 <option value="">— Belum ada —</option>
                                                 @foreach($teachers as $t)
                                                     <option value="{{ $t->id }}" @selected($class->homeroom_teacher_id === $t->id)>{{ $t->name }}</option>
@@ -195,7 +195,7 @@
                         <div class="relative">
                             <i class="fa-solid fa-chalkboard-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                             <select name="teacher_id" x-model="teacherId"
-                                class="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition appearance-none shadow-sm">
+                                class="w-full pl-9 pr-8 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition appearance-none shadow-sm">
                                 <option value="">— Belum ada —</option>
                                 @foreach($teachers as $t)
                                     <option value="{{ $t->id }}" @selected($class->homeroom_teacher_id === $t->id)>{{ $t->name }}</option>

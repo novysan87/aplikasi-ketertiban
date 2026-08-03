@@ -8,7 +8,7 @@
     <p class="text-sm text-gray-500">Daftar surat peringatan siswa</p>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

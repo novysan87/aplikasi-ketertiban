@@ -18,7 +18,7 @@
     </div>
 
     {{-- Pilih Kelas + Tanggal --}}
-    <div class="rounded-2xl bg-gradient-to-br from-white to-gray-50/80 border border-gray-200 shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
+    <div class="rounded-2xl bg-gradient-to-br from-white to-gray-50/80 border border-slate-200 shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
         <form method="GET" x-data="attendanceLink()" class="p-6">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
@@ -26,14 +26,14 @@
                         <i class="fa-solid fa-calendar text-gray-400 mr-1"></i> Tanggal <span class="text-red-500">*</span>
                     </label>
                     <input type="date" name="date" value="{{ $date }}" x-model="date" @change="refreshStatus($event)"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                         <i class="fa-solid fa-school text-gray-400 mr-1"></i> Kelas <span class="text-red-500">*</span>
                     </label>
                     <select name="class_name" required x-model="sel"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
                         <option value="">Pilih kelas...</option>
                         <template x-for="cn in classList" :key="cn">
                             <option :value="cn" x-text="label(cn)"></option>
@@ -85,7 +85,7 @@
             <input type="hidden" name="auto_violation" value="1">
 
             {{-- Info bar --}}
-            <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-gray-200 shadow-sm overflow-hidden mb-5 transition-all duration-200 hover:shadow-md">
+            <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-sm overflow-hidden mb-5 transition-all duration-200 hover:shadow-md">
                 <div class="px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
@@ -109,7 +109,7 @@
             </div>
 
             {{-- Grid table --}}
-            <div class="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+            <div class="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead>
@@ -219,7 +219,7 @@
             {{-- Bottom actions --}}
             <div class="mt-6 space-y-4">
                 {{-- Legend + Submit --}}
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gradient-to-br from-white to-gray-50/50 border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-gray-500">
                         @php
                             $legends = [

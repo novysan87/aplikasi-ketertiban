@@ -25,7 +25,7 @@
     </div>
 
     {{-- Filter Card --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6">
         <form method="GET">
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -33,12 +33,12 @@
                     <div class="sm:col-span-2 lg:col-span-1 relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                         <input type="text" name="search" placeholder="Cari NISN/Nama..." value="{{ request('search') }}"
-                            class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     {{-- Kategori --}}
                     <div>
                         <select name="handling_status"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Status</option>
                             <option value="unhandled" @selected(request('handling_status') === 'unhandled')>Belum Ditangani</option>
                             <option value="in_progress" @selected(request('handling_status') === 'in_progress')>Dalam Proses</option>
@@ -48,7 +48,7 @@
                     {{-- Kategori --}}
                     <div>
                         <select name="category_id"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="">Semua Kategori</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}" @selected(request('category_id') == $cat->id)>{{ $cat->name }}</option>
@@ -58,12 +58,12 @@
                     {{-- Tanggal Dari --}}
                     <div>
                         <input type="date" name="date_from" value="{{ request('date_from') }}" placeholder="Dari tanggal"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     {{-- Tanggal Sampai --}}
                     <div>
                         <input type="date" name="date_to" value="{{ request('date_to') }}" placeholder="Sampai tanggal"
-                            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     {{-- Actions --}}
                     <div class="flex items-center gap-2">
@@ -73,7 +73,7 @@
                         </button>
                         @if(request()->anyFilled(['search','handling_status','category_id','date_from','date_to']))
                             <a href="{{ route('violations.index') }}"
-                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                                class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                                 <i class="fa-solid fa-xmark"></i>
                             </a>
                         @endif
@@ -84,7 +84,7 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead>
@@ -143,7 +143,7 @@
                                     <div class="min-w-0">
                                         <p class="text-sm font-semibold text-gray-900 truncate max-w-[180px]">{{ $v->student->full_name ?? '-' }}</p>
                                         <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-medium bg-gray-100 text-gray-600 rounded-full border border-gray-200">{{ $v->student->nisn ?? '—' }}</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-medium bg-gray-100 text-gray-600 rounded-full border border-slate-200">{{ $v->student->nisn ?? '—' }}</span>
                                             <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 rounded-full border border-blue-200">{{ $v->student->class_name ?? '—' }}</span>
                                         </div>
                                         <div class="mt-1.5 lg:hidden">

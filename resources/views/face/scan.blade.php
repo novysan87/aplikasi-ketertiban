@@ -179,7 +179,7 @@
         <template x-if="preview && !loading">
             <div class="flex items-center justify-center gap-3">
                 <button type="button" @click="captureAgain()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 active:scale-95 transition shadow-sm">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-slate-200 rounded-2xl hover:bg-gray-50 active:scale-95 transition shadow-sm">
                     <i class="fa-solid fa-rotate text-gray-400"></i> Ambil Ulang
                 </button>
                 <button type="button" @click="scan()"
@@ -239,7 +239,7 @@
                     <div class="space-y-3">
                         <template x-for="c in result.candidates" :key="c.id">
                             <div class="rounded-2xl p-4 transition-all duration-200 cursor-pointer border-2"
-                                :class="c.id === chosenId ? 'border-emerald-400 bg-emerald-50/50 shadow-lg shadow-emerald-500/10' : 'border-gray-100 bg-white hover:border-gray-200'"
+                                :class="c.id === chosenId ? 'border-emerald-400 bg-emerald-50/50 shadow-lg shadow-emerald-500/10' : 'border-gray-100 bg-white hover:border-slate-200'"
                                 @click="result.candidates.length > 1 && (chosenId = c.id)">
                                 <div class="flex items-center gap-4">
                                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 text-white flex items-center justify-center font-extrabold text-lg shadow-md shrink-0"
@@ -312,7 +312,7 @@
                             <i class="fa-solid fa-plus"></i> Tambah Pelanggaran
                         </a>
                         <button type="button" @click="reset()"
-                            class="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 active:scale-[0.98] transition">
+                            class="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-semibold text-gray-600 bg-white border border-slate-200 rounded-2xl hover:bg-gray-50 active:scale-[0.98] transition">
                             <i class="fa-solid fa-rotate text-gray-400"></i> Scan Lagi
                         </button>
                     </div>
@@ -350,7 +350,7 @@
                     <template x-if="!regDone">
                         <div class="rounded-2xl border border-gray-100 p-4 mb-4">
                             <div class="flex items-center gap-3 mb-3">
-                                <img :src="lastScanPreview" class="w-14 h-14 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                <img :src="lastScanPreview" class="w-14 h-14 rounded-xl object-cover border border-slate-200 shadow-sm">
                                 <div>
                                     <p class="text-sm font-bold text-gray-700">Simpan foto ini atas nama siswa:</p>
                                     <p class="text-xs text-gray-400">Foto hasil scan akan dipakai sebagai referensi wajah</p>
@@ -359,9 +359,9 @@
                             <div class="relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                                 <input type="text" x-model="regQuery" @input.debounce="searchStudent" placeholder="Cari NISN / nama siswa..."
-                                    class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition">
+                                    class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition">
                             </div>
-                            <div x-show="regResults.length > 0" class="mt-1.5 max-h-44 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
+                            <div x-show="regResults.length > 0" class="mt-1.5 max-h-44 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
                                 <template x-for="s in regResults" :key="s.id">
                                     <button type="button" @click="selectRegStudent(s)"
                                         class="w-full text-left px-3.5 py-2.5 hover:bg-amber-50 transition flex items-center gap-2.5 border-b border-gray-50 last:border-0">

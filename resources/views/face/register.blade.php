@@ -50,7 +50,7 @@
                 <div class="relative flex-1">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="text" name="q" value="{{ $q }}" placeholder="Cari NISN / nomor / nama siswa..."
-                        class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition shadow-sm">
+                        class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-2xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition shadow-sm">
                 </div>
                 <button class="px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl hover:from-indigo-600 hover:to-violet-600 active:scale-95 transition shadow-lg shadow-indigo-500/25 inline-flex items-center gap-2">
                     <i class="fa-solid fa-magnifying-glass"></i> Cari
@@ -255,10 +255,10 @@
                                 </button>
                             </template>
                             <button type="button" x-show="cameraOn" @click="stopCamera()"
-                                class="inline-flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                                class="inline-flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-500 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                                 <i class="fa-solid fa-xmark"></i> Tutup
                             </button>
-                            <label class="inline-flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer">
+                            <label class="inline-flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition cursor-pointer">
                                 <i class="fa-solid fa-folder-open"></i> Galeri
                                 <input type="file" class="hidden" accept="image/*" @change="onGalleryAlt">
                             </label>
@@ -270,7 +270,7 @@
                             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Foto Diambil (1–3)</p>
                             <div class="grid grid-cols-3 gap-2.5">
                                 <template x-for="(shot, i) in shots" :key="i">
-                                    <div class="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group shadow-sm">
+                                    <div class="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group shadow-sm">
                                         <img :src="shot.url" class="w-full h-full object-cover">
                                         <button type="button" @click="removeShot(i)" title="Hapus foto ini"
                                             class="absolute top-1.5 right-1.5 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 active:scale-90 transition shadow-md md:opacity-0 md:group-hover:opacity-100">
@@ -280,12 +280,12 @@
                                     </div>
                                 </template>
                                 <template x-for="n in (3 - shots.length)" :key="'ph' + n">
-                                    <div class="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300 bg-gray-50/50">
+                                    <div class="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center text-gray-300 bg-gray-50/50">
                                         <i class="fa-solid fa-image text-xl"></i>
                                     </div>
                                 </template>
                                 <template x-if="!shots.length">
-                                    <div class="col-span-3 py-6 text-center text-xs text-gray-400 rounded-xl border border-dashed border-gray-200">
+                                    <div class="col-span-3 py-6 text-center text-xs text-gray-400 rounded-xl border border-dashed border-slate-200">
                                         <i class="fa-solid fa-camera-retro text-2xl mb-2 block text-gray-300"></i>
                                         Belum ada foto — ambil dari kamera atau galeri
                                     </div>

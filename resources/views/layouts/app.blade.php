@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-gray-50">
+<html lang="id" class="h-full bg-slate-100">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -119,32 +119,30 @@
     @stack('styles')
 </head>
 <body class="h-full antialiased">
-    <div x-data="notifications()" class="min-h-screen flex">
+    <div x-data="notifications()" class="min-h-screen flex bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50/40">
         {{-- Sidebar --}}
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-lg lg:shadow-sm">
-            <div class="flex items-start justify-between h-auto px-4 pt-4 pb-3 border-b border-gray-200">
-                <a href="{{ route('dashboard') }}" class="min-w-0">
-                    <div class="flex items-center gap-2.5 mb-2">
-                        <div class="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">
-                            @if($logoPath)
-                                <img src="{{ asset('storage/' . $logoPath) }}" alt="Logo" class="w-full h-full object-contain p-0.5">
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-shield-halved"></i>
-                                </div>
-                            @endif
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-gray-800 leading-tight truncate max-w-[140px]">{{ $appName }}</p>
-                        </div>
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out flex flex-col shadow-xl lg:shadow-sm">
+            <div class="flex items-start justify-between px-4 pt-4 pb-4 border-b border-slate-100 bg-gradient-to-b from-slate-50/80 to-transparent">
+                <a href="{{ route('dashboard') }}" class="min-w-0 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 overflow-hidden ring-1 ring-white/50">
+                        @if($logoPath)
+                            <img src="{{ asset('storage/' . $logoPath) }}" alt="Logo" class="w-full h-full object-contain p-1">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center text-white">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                        @endif
                     </div>
-
+                    <div class="min-w-0">
+                        <p class="text-[15px] font-extrabold text-slate-900 leading-tight truncate max-w-[150px] tracking-tight">{{ $appName }}</p>
+                        <p class="text-[10px] font-semibold text-slate-400 truncate max-w-[150px] mt-0.5">{{ $schoolName }}</p>
+                    </div>
                 </a>
-                <button @click="sidebarOpen = false" class="lg:hidden text-gray-500 hover:text-gray-700 flex-shrink-0 ml-2 mt-0.5">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+                <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-slate-600 flex-shrink-0 ml-2 mt-0.5 hover:bg-slate-100 rounded-lg p-1.5 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <nav class="mt-2 px-2 space-y-1 flex-1 overflow-y-auto overscroll-contain" style="scrollbar-width:thin;">
+            <nav class="mt-3 px-3 space-y-0.5 flex-1 overflow-y-auto overscroll-contain" style="scrollbar-width:thin;">
                 @canPermission('access-dashboard')
                 <x-nav-item href="{{ route('dashboard') }}" icon="home" :active="request()->routeIs('dashboard')">Dashboard</x-nav-item>
                 @endcanPermission
@@ -172,8 +170,8 @@
                 @endcanPermission
 
                 @canAnyPermission('categories-manage', 'violation-types-manage', 'thresholds-manage', 'face-register')
-                <div class="pt-4 mt-4 border-t border-gray-200">
-                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Master Data</p>
+                <div class="pt-4 mt-4 border-t border-slate-100">
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.14em]">Master Data</p>
                 </div>
                 @endcanAnyPermission
                 @canPermission('face-register')
@@ -192,8 +190,8 @@
                 @endcanPermission
 
                 @canPermission('settings-manage')
-                <div class="pt-4 mt-4 border-t border-gray-200">
-                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administrasi</p>
+                <div class="pt-4 mt-4 border-t border-slate-100">
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.14em]">Administrasi</p>
                 </div>
                 @endcanPermission
                 @canPermission('view-point-audit')
@@ -218,12 +216,12 @@
             </nav>
 
             {{-- Footer --}}
-            <div class="mt-auto px-4 py-3 border-t border-gray-100">
-                <div class="text-center">
-                    <p class="text-[10px] text-gray-400">Developed by</p>
+            <div class="mt-auto px-3 py-3 border-t border-slate-100">
+                <div class="rounded-xl bg-slate-50/90 border border-slate-100 px-3 py-2.5 text-center">
+                    <p class="text-[10px] font-medium text-slate-400">Developed by</p>
                     <a href="https://noctkj.net/" target="_blank" rel="noopener noreferrer"
-                        class="text-xs font-bold text-blue-500 hover:text-blue-700 transition block mt-0.5">
-                        NOCTKJ.net
+                        class="text-xs font-extrabold text-blue-600 hover:text-blue-800 transition block mt-0.5 tracking-tight">
+                        <i class="fa-solid fa-code mr-1 text-[10px]"></i>NOCTKJ.net
                     </a>
                 </div>
             </div>
@@ -235,8 +233,8 @@
         {{-- Main Content --}}
         <div class="flex-1 flex flex-col min-w-0">
             {{-- Topbar --}}
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
-                <button @click="sidebarOpen = true" class="lg:hidden text-gray-500 hover:text-gray-700">
+            <header class="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200/80 flex items-center justify-between px-4 lg:px-6">
+                <button @click="sidebarOpen = true" class="lg:hidden text-slate-500 hover:text-slate-700 p-2 -ml-2 rounded-lg hover:bg-slate-100 transition">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
@@ -251,7 +249,7 @@
                         </button>
 
                         {{-- Dropdown --}}
-                        <div x-show="showNotif" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50" style="display: none;">
+                        <div x-show="showNotif" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50" style="display: none;">
                             <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                                 <h3 class="text-sm font-semibold text-gray-900">Notifikasi</h3>
                                 <button @click="markAllRead" class="text-xs text-blue-600 hover:text-blue-800">Tandai semua dibaca</button>
@@ -302,7 +300,7 @@
                             x-transition:leave="transition ease-in duration-100"
                             x-transition:leave-start="opacity-100 scale-100"
                             x-transition:leave-end="opacity-0 scale-95"
-                            class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden z-50" style="display: none;">
+                            class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden z-50" style="display: none;">
                             <div class="px-4 py-3 border-b border-gray-100">
                                 <p class="text-sm font-semibold text-gray-900">{{ auth()->user()?->name ?? '' }}</p>
                                 <p class="text-xs text-gray-400 capitalize">{{ auth()->user()?->role ?? '' }}</p>

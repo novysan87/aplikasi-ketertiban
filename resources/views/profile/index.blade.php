@@ -15,7 +15,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Profile Info Sidebar --}}
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 text-center">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
                 <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-3xl font-bold shadow-sm mx-auto mb-4">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
@@ -42,7 +42,7 @@
 
         {{-- Form --}}
         <div class="lg:col-span-2">
-            <form method="POST" action="{{ route('profile.update') }}" class="bg-white rounded-2xl shadow-sm border border-gray-200">
+            <form method="POST" action="{{ route('profile.update') }}" class="bg-white rounded-2xl shadow-sm border border-slate-200">
                 @csrf
 
                 {{-- Ubah Profil --}}

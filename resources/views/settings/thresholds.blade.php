@@ -29,7 +29,7 @@
 
             @foreach($thresholds as $t)
                 <input type="hidden" name="thresholds[{{ $loop->index }}][id]" value="{{ $t->id }}">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden transition hover:shadow-md">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition hover:shadow-md">
                     <div class="flex items-stretch">
                         {{-- Left color bar --}}
                         <div class="w-[5px] flex-shrink-0" style="background-color: {{ $t->color }}"></div>
@@ -75,17 +75,17 @@
                                 <div>
                                     <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Nama</label>
                                     <input type="text" name="thresholds[{{ $loop->index }}][name]" value="{{ $t->name }}"
-                                        class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Min Poin</label>
                                     <input type="number" name="thresholds[{{ $loop->index }}][min_points]" value="{{ $t->min_points }}" min="0"
-                                        class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Deskripsi</label>
                                     <input type="text" name="thresholds[{{ $loop->index }}][default_description]" value="{{ $t->default_description }}"
-                                        class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                                 </div>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
         </form>
     @else
         {{-- Empty state --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 py-12 text-center">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 py-12 text-center">
             <div class="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-4">
                 <i class="fa-solid fa-chart-bar text-gray-300 text-2xl"></i>
             </div>
@@ -128,7 +128,7 @@
         class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-4">
             <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
-            <div class="relative bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-lg mx-4">
+            <div class="relative bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg mx-4">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
@@ -150,30 +150,30 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Threshold <span class="text-red-500">*</span></label>
                             <input type="text" name="name" placeholder="SP 4, SP 5, dll" required
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Minimal Poin <span class="text-red-500">*</span></label>
                             <input type="number" name="min_points" min="0" value="200" required
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
                             <input type="text" name="default_description" placeholder="Contoh: SP 4 — poin mencapai 200"
-                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Warna</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" name="color" value="#8b5cf6"
-                                    class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5">
+                                    class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5">
                                 <span class="text-xs text-gray-400">Pilih warna identitas threshold</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
                         <button type="button" @click="open = false"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                            class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
                             Batal
                         </button>
                         <button type="submit"

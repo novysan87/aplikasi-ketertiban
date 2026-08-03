@@ -24,21 +24,21 @@
 
     {{-- Ringkasan --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
             <div>
                 <div class="text-2xl font-bold text-gray-900">{{ number_format($summary['total']) }}</div>
                 <div class="text-xs text-gray-400 uppercase tracking-wider font-medium mt-0.5">Total Catatan</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fa-solid fa-list text-slate-400"></i></div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
             <div>
                 <div class="text-2xl font-bold text-emerald-600">{{ number_format($summary['penambahan']) }}</div>
                 <div class="text-xs text-gray-400 uppercase tracking-wider font-medium mt-0.5">Penambahan Poin</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center"><i class="fa-solid fa-plus text-emerald-500"></i></div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
             <div>
                 <div class="text-2xl font-bold text-rose-600">{{ number_format($summary['pengurangan']) }}</div>
                 <div class="text-xs text-gray-400 uppercase tracking-wider font-medium mt-0.5">Penghapusan Poin</div>
@@ -48,27 +48,27 @@
     </div>
 
     {{-- Filter --}}
-    <form method="GET" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+    <form method="GET" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div class="sm:col-span-2 relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari NISN / Nama siswa..."
-                    class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
             </div>
             <div class="relative">
                 <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                 <input type="date" name="date_from" value="{{ request('date_from') }}"
-                    class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
             </div>
             <div class="relative">
                 <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                 <input type="date" name="date_to" value="{{ request('date_to') }}"
-                    class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
             </div>
             <div class="relative">
                 <i class="fa-solid fa-filter absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                 <select name="action"
-                    class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
+                    class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
                     <option value="">Semua Aksi</option>
                     <option value="created" @selected(request('action') === 'created')>Pencatatan (+)</option>
                     <option value="deleted" @selected(request('action') === 'deleted')>Penghapusan (−)</option>
@@ -91,7 +91,7 @@
     </form>
 
     {{-- Tabel Log --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50/70">

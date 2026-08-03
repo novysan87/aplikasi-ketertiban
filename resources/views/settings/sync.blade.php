@@ -10,7 +10,7 @@
     </div>
 
     {{-- Sync Database Kesiswaan --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80">
         <form action="{{ route('settings.sync.run') }}" method="POST" class="p-6 space-y-5">
             @csrf
 
@@ -34,7 +34,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Token Sinkronisasi</label>
                 @if($hasToken)
                     <div class="flex items-center gap-2" id="kesiswaan-token-row">
-                        <code class="flex-1 block bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono text-gray-800 select-all" id="kesiswaanTokenDisplay">{{ $savedToken }}</code>
+                        <code class="flex-1 block bg-gray-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-mono text-gray-800 select-all" id="kesiswaanTokenDisplay">{{ $savedToken }}</code>
                         <button type="button" onclick="copyKesiswaanToken()"
                             class="shrink-0 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
                             <i class="fa-regular fa-copy"></i> Salin
@@ -114,7 +114,7 @@
 
     {{-- E-Jurnal Sync Token --}}
     <div class="mt-8"></div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mt-4">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 mt-4">
         <div class="p-6 space-y-5">
             <div>
                 <h2 class="text-lg font-semibold text-gray-900">Sinkronisasi Presensi E-Jurnal</h2>

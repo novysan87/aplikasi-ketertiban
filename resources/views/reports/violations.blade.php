@@ -45,14 +45,14 @@
 
     {{-- ===== Filter Bar ===== --}}
     <form method="GET" action="{{ route('reports.violations') }}" id="filter-form"
-          class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+          class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
                 <div class="relative">
                     <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="date" name="date_from" value="{{ $filters['date_from'] }}" x-model="dateFrom"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
             </div>
             <div>
@@ -60,7 +60,7 @@
                 <div class="relative">
                     <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input type="date" name="date_to" value="{{ $filters['date_to'] }}" x-model="dateTo"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
             </div>
             <div>
@@ -68,7 +68,7 @@
                 <div class="relative">
                     <i class="fa-solid fa-users absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <select name="class_id" x-model="classId"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
+                        class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
                         <option value="">— Semua Kelas —</option>
                         @foreach ($classes as $class)
                             <option value="{{ $class->id }}" @selected($filters['class_id'] == $class->id)>{{ $class->name }}</option>
@@ -162,7 +162,7 @@
     {{-- ===== Rekap: per Jenis & per Kelas ===== --}}
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {{-- Per Jenis --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="text-base font-bold text-gray-900 flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-tag text-sm"></i></span>
@@ -195,7 +195,7 @@
         </div>
 
         {{-- Per Kelas --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="text-base font-bold text-gray-900 flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-building-columns text-sm"></i></span>
@@ -245,7 +245,7 @@
     </div>
 
     {{-- ===== Rincian Terbaru ===== --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-6 py-5 flex items-center justify-between border-b border-gray-100">
             <h3 class="text-base font-bold text-gray-900 flex items-center gap-2.5">
                 <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-list-check text-sm"></i></span>
