@@ -142,7 +142,7 @@
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <nav class="mt-3 px-3 space-y-0.5 flex-1 overflow-y-auto overscroll-contain" style="scrollbar-width:thin;">
+            <nav class="mt-3 px-3 space-y-0.5 flex-1 overflow-y-auto" style="scrollbar-width:thin;">
                 @canPermission('access-dashboard')
                 <x-nav-item href="{{ route('dashboard') }}" icon="home" :active="request()->routeIs('dashboard')">Dashboard</x-nav-item>
                 @endcanPermission
