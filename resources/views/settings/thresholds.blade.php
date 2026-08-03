@@ -59,13 +59,15 @@
                             </div>
 
                             <div class="flex items-center gap-1.5 flex-shrink-0">
-                                {{-- Toggle aktif --}}
-                                <label class="relative inline-flex items-center cursor-pointer p-1.5" title="{{ $t->is_active ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan' }}">
+                                {{-- Toggle aktif (iOS-style + glow) --}}
+                                <label x-data="{ on: {{ $t->is_active ? 'true' : 'false' }} }" class="relative inline-flex items-center cursor-pointer p-1.5 select-none" title="{{ $t->is_active ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan' }}">
                                     <input type="checkbox" name="thresholds[{{ $loop->index }}][is_active]" value="1"
-                                        {{ $t->is_active ? 'checked' : '' }}
-                                        class="sr-only peer">
-                                    <div class="w-9 h-5 bg-slate-200 rounded-full peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:border-transparent"
-                                        style="{{ $t->is_active ? 'background-color: ' . $t->color : '' }}"></div>
+                                        {{ $t->is_active ? 'checked' : '' }} x-model="on" class="sr-only peer">
+                                    <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                        :style="on ? 'background: linear-gradient(135deg, {{ $t->color }}, {{ $t->color }}cc); box-shadow: 0 0 14px 2px {{ $t->color }}4d;' : 'background-color: #e2e8f0; box-shadow: inset 0 1px 3px rgba(15,23,42,0.1);'">
+                                        <div class="absolute top-[2px] left-[2px] h-5 w-5 bg-white rounded-full shadow-md transition-all duration-300"
+                                            :class="on ? 'translate-x-5' : ''"></div>
+                                    </div>
                                 </label>
 
                                 {{-- Hapus --}}
