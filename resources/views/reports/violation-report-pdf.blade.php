@@ -6,11 +6,15 @@
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 9px; color: #1a1a1a; margin: 0; padding: 0; }
-        .kop { display: flex; align-items: center; gap: 12px; border-bottom: 3px double #1e3a8a; padding-bottom: 10px; margin-bottom: 14px; }
-        .kop img { width: 62px; height: 62px; object-fit: contain; }
-        .kop .nama-sekolah { font-size: 15px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px; }
-        .kop .alamat { font-size: 8px; color: #444; margin-top: 2px; }
-        .kop .sub { font-size: 8px; color: #666; }
+        .kop { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+        .kop td { border: none; padding: 0; }
+        .kop-logo { width: 96px; text-align: center; vertical-align: middle; }
+        .kop-logo img { height: 72px; width: auto; max-width: 88px; object-fit: contain; }
+        .kop-text { text-align: center; vertical-align: middle; }
+        .kop-1, .kop-2 { font-size: 12px; font-weight: bold; color: #000; }
+        .kop-3 { font-size: 14.5px; font-weight: bold; color: #000; margin: 2px 0; }
+        .kop-4, .kop-5, .kop-6 { font-size: 8.5px; color: #000; }
+        .kop-line { border-bottom: 2.5px solid #000; margin: 8px 0 14px; }
         .judul { text-align: center; margin: 12px 0 4px; }
         .judul h2 { font-size: 13px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         .judul p { font-size: 9px; margin: 3px 0 0; color: #444; }
@@ -39,17 +43,27 @@
 </head>
 <body>
 
-    {{-- Kop Sekolah --}}
-    <div class="kop">
-        @if (! empty($school['logo']) && file_exists(public_path('storage/'.$school['logo'])))
-            <img src="{{ public_path('storage/'.$school['logo']) }}" alt="logo">
-        @endif
-        <div>
-            <div class="nama-sekolah">{{ $school['name'] }}</div>
-            <div class="alamat">{{ $school['address'] }}</div>
-            <div class="sub">Telp. {{ $school['phone'] }}</div>
-        </div>
-    </div>
+    {{-- Kop Surat (format resmi: logo kiri + teks tengah + garis tebal) --}}
+    <table class="kop">
+        <tr>
+            <td class="kop-logo">
+                @if (! empty($school['kop_logo']) && file_exists(public_path('storage/'.$school['kop_logo'])))
+                    <img src="{{ public_path('storage/'.$school['kop_logo']) }}" alt="logo">
+                @elseif (! empty($school['logo']) && file_exists(public_path('storage/'.$school['logo'])))
+                    <img src="{{ public_path('storage/'.$school['logo']) }}" alt="logo">
+                @endif
+            </td>
+            <td class="kop-text">
+                <div class="kop-1">{{ $school['government'] }}</div>
+                <div class="kop-2">{{ $school['agency'] }}</div>
+                <div class="kop-3">{{ $school['full_name'] }}</div>
+                <div class="kop-4">{{ $school['address_detail'] }}</div>
+                <div class="kop-5">{{ $school['website_email'] }}</div>
+                <div class="kop-6">{{ $school['postal'] }}</div>
+            </td>
+        </tr>
+    </table>
+    <div class="kop-line"></div>
 
     {{-- Judul --}}
     <div class="judul">

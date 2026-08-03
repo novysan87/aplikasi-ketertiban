@@ -72,6 +72,13 @@ class ViolationReportController extends Controller
             'address' => Setting::getValue('school_address', ''),
             'phone' => Setting::getValue('school_phone', ''),
             'logo' => Setting::getValue('school_logo', ''),
+            'kop_logo' => Setting::getValue('kop_logo', ''),
+            'government' => Setting::getValue('school_government', 'PEMERINTAH PROVINSI JAWA TIMUR'),
+            'agency' => Setting::getValue('school_agency', 'DINAS PENDIDIKAN'),
+            'full_name' => Setting::getValue('school_full_name', Setting::getValue('school_name', 'SMK')),
+            'address_detail' => Setting::getValue('school_address_detail', ''),
+            'website_email' => Setting::getValue('school_website_email', ''),
+            'postal' => Setting::getValue('school_postal', ''),
             'kepala_sekolah' => Setting::getValue('kepala_sekolah_name', ''),
             'kepala_sekolah_nip' => Setting::getValue('kepala_sekolah_nip', ''),
         ];

@@ -28,6 +28,13 @@ class SettingsController extends Controller
             'kepala_sekolah_nip' => ['nullable', 'string', 'max:50'],
             'bk_koordinator_name' => ['nullable', 'string', 'max:255'],
             'wa_notification_template' => ['nullable', 'string', 'max:3000'],
+            // Kop surat
+            'school_government' => ['nullable', 'string', 'max:255'],
+            'school_agency' => ['nullable', 'string', 'max:255'],
+            'school_full_name' => ['nullable', 'string', 'max:255'],
+            'school_address_detail' => ['nullable', 'string', 'max:500'],
+            'school_website_email' => ['nullable', 'string', 'max:500'],
+            'school_postal' => ['nullable', 'string', 'max:20'],
         ]);
 
         foreach ($validated as $key => $value) {
@@ -37,6 +44,11 @@ class SettingsController extends Controller
         if ($request->hasFile('school_logo')) {
             $path = $request->file('school_logo')->store('school', 'public');
             Setting::setValue('school_logo', $path, 'school', 'Logo sekolah');
+        }
+
+        if ($request->hasFile('kop_logo')) {
+            $path = $request->file('kop_logo')->store('school', 'public');
+            Setting::setValue('kop_logo', $path, 'school', 'Logo kop surat');
         }
 
         if ($request->hasFile('login_background')) {
