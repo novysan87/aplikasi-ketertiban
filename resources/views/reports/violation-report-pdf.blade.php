@@ -146,7 +146,12 @@
                     <td>{{ $v->student?->nisn }}</td>
                     <td>{{ $v->student?->full_name }}</td>
                     <td>{{ $v->student?->class?->name }}</td>
-                    <td>{{ $v->violationType?->name }} ({{ $v->violationType?->category?->name ?? '-' }})</td>
+                    <td>
+                    <div>{{ $v->violationType?->name }} <span style="color:#666">({{ $v->violationType?->category?->name ?? '-' }})</span></div>
+                    @if ($v->description)
+                        <div style="font-size:7.5px; color:#555; margin-top:1px;">{{ $v->description }}</div>
+                    @endif
+                </td>
                     <td class="center">{{ $v->points }}</td>
                     <td class="center"><span class="badge {{ $badge }}">{{ $status }}</span></td>
                 </tr>

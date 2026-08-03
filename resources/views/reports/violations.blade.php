@@ -277,7 +277,12 @@
                             <td class="px-4 py-3">
                                 <span class="inline-flex px-2 py-0.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-600">{{ $v->student?->class?->name }}</span>
                             </td>
-                            <td class="px-4 py-3 text-gray-600">{{ $v->violationType?->name }}</td>
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-gray-700">{{ $v->violationType?->name }}</div>
+                                @if ($v->description)
+                                    <div class="text-xs text-gray-400 line-clamp-2 max-w-xs mt-0.5" title="{{ $v->description }}">{{ $v->description }}</div>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-center">
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold {{ $v->points >= 10 ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-700' }}">{{ $v->points }}</span>
                             </td>
