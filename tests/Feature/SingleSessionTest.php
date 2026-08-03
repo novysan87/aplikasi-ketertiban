@@ -138,4 +138,39 @@ class SingleSessionTest extends TestCase
         $this->assertTrue($user->refresh()->sessionTokenIsAlive());
         @unlink($file);
     }
+
+    public function test_admin_boleh_login_kedua_kali(): void
+    {
+        $admin = User::factory()->create([
+            'roles' => ['admin'],
+            'username' => 'adminsession',
+            'password' => 'rahasia123',
+        ]);
+        $admin->forceFill(['active_session_token' => 'sesi-perangkat-lain'])->save();
+
+        // Admin dgn token aktif di perangkat lain → login tetap DITERIMA
+        $this->post('/login', [
+            'username' => 'adminsession',
+            'password' => 'rahasia123',
+        ])->assertRedirect();
+
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_admin_tidak_ditendang_middleware(): void
+    {
+        $admin = User::factory()->create([
+            'roles' => ['admin'],
+            'username' => 'adminsession2',
+            'password' => 'rahasia123',
+        ]);
+        $admin->forceFill(['active_session_token' => 'sesi-perangkat-lain'])->save();
+
+        // Sesi berbeda dari token aktif → admin tetap boleh masuk dashboard
+        $this->actingAs($admin)
+            ->get('/dashboard')
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($admin);
+    }
 }

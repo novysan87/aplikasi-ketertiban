@@ -25,8 +25,10 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::user();
 
-            // Single session: tolak login bila akun masih aktif di perangkat lain
-            if ($user->sessionTokenIsAlive()) {
+            // Single session: tolak login bila akun masih aktif di perangkat lain.
+            // Admin dikecualikan (bisa multi-sesi) — kalau admin ikut terkunci,
+            // tidak ada yang bisa menyelamatkan akun lain lewat Paksa Logout.
+            if (! $user->isAdmin() && $user->sessionTokenIsAlive()) {
                 Auth::logout();
 
                 return back()->withErrors([

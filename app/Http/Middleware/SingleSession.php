@@ -24,6 +24,12 @@ class SingleSession
             return $next($request);
         }
 
+        // Admin dikecualikan dari aturan satu-sesi — boleh login di banyak
+        // perangkat sekaligus (pengaman: admin tidak boleh ikut terkunci).
+        if ($user->isAdmin()) {
+            return $next($request);
+        }
+
         $token = $user->active_session_token;
 
         if ($token && $token !== Session::getId()) {
