@@ -12,8 +12,8 @@
 
     {{-- Gradient Stats Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 p-5 shadow-sm stat-card-glow transition-all duration-200">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10">
+        <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 p-5 shadow-sm stat-card-glow transition-all duration-200">
+            <div class="absolute right-0 top-0 w-20 h-20 opacity-10 transition-all duration-500 ease-out group-hover:scale-150 group-hover:opacity-25">
                 <i class="fa-solid fa-triangle-exclamation text-white text-6xl"></i>
             </div>
             <div class="relative z-10">
@@ -22,8 +22,8 @@
                 <p class="text-[10px] text-white/50 mt-0.5">data terbaru</p>
             </div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10">
+        <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
+            <div class="absolute right-0 top-0 w-20 h-20 opacity-10 transition-all duration-500 ease-out group-hover:scale-150 group-hover:opacity-25">
                 <i class="fa-solid fa-list-check text-white text-6xl"></i>
             </div>
             <div class="relative z-10">
@@ -32,8 +32,8 @@
                 <p class="text-[10px] text-white/50 mt-0.5">semua waktu</p>
             </div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10">
+        <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
+            <div class="absolute right-0 top-0 w-20 h-20 opacity-10 transition-all duration-500 ease-out group-hover:scale-150 group-hover:opacity-25">
                 <i class="fa-solid fa-users text-white text-6xl"></i>
             </div>
             <div class="relative z-10">
@@ -42,8 +42,8 @@
                 <p class="text-[10px] text-white/50 mt-0.5">terdata</p>
             </div>
         </div>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
-            <div class="absolute right-0 top-0 w-20 h-20 opacity-10">
+        <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 p-5 shadow-sm stat-card-glow transition-all duration-200">
+            <div class="absolute right-0 top-0 w-20 h-20 opacity-10 transition-all duration-500 ease-out group-hover:scale-150 group-hover:opacity-25">
                 <i class="fa-solid fa-file-lines text-white text-6xl"></i>
             </div>
             <div class="relative z-10">
