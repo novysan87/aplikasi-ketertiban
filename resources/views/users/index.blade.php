@@ -131,6 +131,17 @@
                                         <i class="fa-solid fa-key"></i>
                                     </button>
                                     @if($user->id !== auth()->id())
+                                    <form action="{{ route('users.force-logout', $user->id) }}" method="POST" class="inline"
+                                          x-data x-on:submit.prevent="if(await window.confirmSwal({text:'Akhiri sesi login ' + '{{ addslashes($user->name) }}' + '? User harus login ulang.'})) $el.submit()">
+                                        @csrf
+                                        <button type="submit"
+                                            class="p-2 rounded-lg transition {{ $user->active_session_token ? 'text-slate-500 hover:bg-slate-100' : 'text-gray-300 cursor-not-allowed' }}"
+                                            title="{{ $user->active_session_token ? 'Paksa logout (akhiri sesi aktif)' : 'Tidak ada sesi aktif' }}"
+                                            @if(!$user->active_session_token) disabled @endif>
+                                            <i class="fa-solid fa-right-from-bracket"></i>
+                                        </button>
+                                    </form>
+                                    @endif
                                     <form action="{{ route('users.send-wa', $user->id) }}" method="POST" class="inline"
                                           x-data="sendWaData({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->phone ? 'true' : 'false' }})"
                                           x-on:submit.prevent="confirmAndSubmit()">

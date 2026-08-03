@@ -23,10 +23,22 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            // Single session: tolak login bila akun masih aktif di perangkat lain
+            if ($user->sessionTokenIsAlive()) {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'username' => 'Akun ini sedang digunakan di perangkat lain. Silakan logout dari perangkat tersebut terlebih dahulu.',
+                ])->onlyInput('username');
+            }
+
             $request->session()->regenerate();
+            $user->forceFill(['active_session_token' => $request->session()->getId()])->save();
 
             // Role 'other' langsung ke presensi, bukan dashboard
-            if (Auth::user()->role === 'other') {
+            if ($user->role === 'other') {
                 return redirect()->route('attendances.index');
             }
 
@@ -40,6 +52,12 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+
+        if ($user && $user->active_session_token === $request->session()->getId()) {
+            $user->forceFill(['active_session_token' => null])->save();
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

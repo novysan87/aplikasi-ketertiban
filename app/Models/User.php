@@ -13,7 +13,7 @@ class User extends Authenticatable
     public const ROLES = ['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim'];
 
     protected $fillable = [
-        'name', 'username', 'email', 'phone', 'password', 'role', 'roles', 'is_active',
+        'name', 'username', 'email', 'phone', 'password', 'role', 'roles', 'is_active', 'active_session_token',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -149,5 +149,25 @@ class User extends Authenticatable
     public function createdHandlings()
     {
         return $this->hasMany(ViolationHandling::class, 'created_by');
+    }
+
+    /**
+     * Cek apakah token sesi aktif masih "hidup" (session file/DB masih ada).
+     * Driver array/lain → dianggap hidup (aman, tolak login ganda).
+     */
+    public function sessionTokenIsAlive(): bool
+    {
+        $token = $this->active_session_token;
+        if (! $token) {
+            return false;
+        }
+
+        return match (config('session.driver')) {
+            'file' => file_exists(storage_path('framework/sessions/'.$token)),
+            'database' => \Illuminate\Support\Facades\DB::table(config('session.table', 'sessions'))
+                ->where('id', $token)
+                ->exists(),
+            default => true,
+        };
     }
 }

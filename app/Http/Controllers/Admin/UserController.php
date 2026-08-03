@@ -127,6 +127,26 @@ class UserController extends Controller
     }
 
     /**
+     * Akhiri sesi aktif user (single session) — user harus login ulang.
+     */
+    public function forceLogout(User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Tidak bisa memaksa logout diri sendiri.');
+        }
+
+        $token = $user->active_session_token;
+        $user->forceFill(['active_session_token' => null])->save();
+
+        // Hapus session file lama agar perangkat lama benar-benar terlempar
+        if ($token && config('session.driver') === 'file') {
+            @unlink(storage_path('framework/sessions/'.$token));
+        }
+
+        return back()->with('success', 'Sesi '.$user->name.' diakhiri — akun bisa login kembali.');
+    }
+
+    /**
      * Kirim akun (link + username + password baru) ke nomor HP user via WhatsApp.
      * Password lama tidak bisa dikirim (tersimpan hash) — jadi dibuatkan password baru.
      *

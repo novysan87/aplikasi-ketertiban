@@ -175,6 +175,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::post('/users/{user}/send-wa', [UserController::class, 'sendWa'])->name('users.send-wa');
+        Route::post('/users/{user}/force-logout', [UserController::class, 'forceLogout'])->name('users.force-logout');
 
         Route::get('/settings/permissions', [\App\Http\Controllers\Admin\PermissionController::class, 'index'])->name('settings.permissions');
         Route::post('/settings/permissions', [\App\Http\Controllers\Admin\PermissionController::class, 'update'])->name('settings.permissions.update');
