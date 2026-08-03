@@ -120,12 +120,18 @@ class PointAuditTest extends TestCase
             'violation_date' => '2026-08-01',
         ], $this->bk->id);
 
-        $this->actingAs($this->bk)
+        // Riwayat Poin khusus admin
+        $this->actingAs(User::factory()->create(['roles' => ['admin']]))
             ->get('/point-audit')
             ->assertOk()
             ->assertSee('Riwayat Perubahan Poin')
             ->assertSee('Siswa Audit')
             ->assertSee('Pencatatan')
             ->assertSee('Terlambat 15 menit');
+    }
+
+    public function test_bk_tidak_bisa_membuka_riwayat_poin(): void
+    {
+        $this->actingAs($this->bk)->get('/point-audit')->assertForbidden();
     }
 }
