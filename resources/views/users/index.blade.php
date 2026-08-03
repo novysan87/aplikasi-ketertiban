@@ -151,7 +151,6 @@
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     </form>
-                                    @endif
                                 </div>
                             </td>
                         </tr>
