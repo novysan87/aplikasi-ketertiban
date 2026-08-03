@@ -196,7 +196,7 @@
                                 <a :href="'{{ route('violations.index') }}?date_from=' + day.dateStr + '&date_to=' + day.dateStr"
                                     class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[28px] h-[28px] text-xs font-extrabold text-white rounded-full shadow-lg transition-transform hover:scale-110"
                                     :class="day.count >= 3 ? 'bg-gradient-to-br from-red-500 to-rose-600 shadow-red-500/30' : (day.count >= 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500 shadow-orange-400/30' : 'bg-gradient-to-br from-blue-400 to-blue-500 shadow-blue-400/30')"
-                                    :title="day.count + ' pelanggaran'"
+                                    x-tooltip="day.count + ' pelanggaran'"
                                     x-text="day.count">
                                 </a>
                             </template>

@@ -132,7 +132,7 @@
                         <template x-if="day.total > 0 && day.isCurrentMonth">
                             <span class="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center min-w-[28px] h-[28px] text-xs font-extrabold text-white rounded-full shadow-lg transition-transform hover:scale-110"
                                 :class="day.alpha > 0 ? 'bg-gradient-to-br from-red-500 to-rose-600 shadow-red-500/30' : 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/30'"
-                                :title="day.total + ' siswa, ' + day.alpha + ' alpha'"
+                                x-tooltip="day.total + ' siswa, ' + day.alpha + ' alpha'"
                                 x-text="day.total">
                             </span>
                         </template>
