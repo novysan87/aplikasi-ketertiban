@@ -8,8 +8,8 @@
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 9px; color: #1a1a1a; margin: 0; padding: 0; }
         .kop { width: 100%; border-collapse: collapse; margin-bottom: 0; }
         .kop td { border: none; padding: 0; }
-        .kop-logo { width: 96px; text-align: center; vertical-align: middle; }
-        .kop-logo img { height: 72px; width: auto; max-width: 88px; object-fit: contain; }
+        .kop-logo { width: 118px; text-align: center; vertical-align: middle; }
+        .kop-logo img { height: 88px; width: auto; max-width: 106px; object-fit: contain; }
         .kop-text { text-align: center; vertical-align: middle; }
         .kop-1, .kop-2 { font-size: 12px; font-weight: bold; color: #000; }
         .kop-3 { font-size: 14.5px; font-weight: bold; color: #000; margin: 2px 0; }
