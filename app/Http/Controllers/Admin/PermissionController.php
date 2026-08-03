@@ -11,6 +11,13 @@ use Illuminate\View\View;
 
 class PermissionController extends Controller
 {
+    /**
+     * Permission yang TIDAK bisa diubah via halaman ini — khusus admin.
+     */
+    public const ADMIN_ONLY_PERMISSIONS = [
+        'view-point-audit',
+    ];
+
     public function index(): View
     {
         $permissions = DB::table('permissions')
@@ -29,7 +36,9 @@ class PermissionController extends Controller
                 ->toArray();
         }
 
-        return view('settings.permissions', compact('permissions', 'roles', 'rolePermissions'));
+        $adminOnlyKeys = self::ADMIN_ONLY_PERMISSIONS;
+
+        return view('settings.permissions', compact('permissions', 'roles', 'rolePermissions', 'adminOnlyKeys'));
     }
 
     public function update(Request $request): RedirectResponse
@@ -46,10 +55,27 @@ class PermissionController extends Controller
 
         if (! empty($data['permissions'])) {
             foreach ($data['permissions'] as $role => $permissionIds) {
+                // Permission khusus admin tidak boleh diberikan ke role lain
+                if ($role !== 'admin') {
+                    $permissionIds = array_filter($permissionIds, function ($pid) {
+                        $pid = (int) $pid;
+                        if (! $pid) {
+                            return false;
+                        }
+                        $key = DB::table('permissions')->where('id', $pid)->value('key');
+
+                        return ! in_array($key, self::ADMIN_ONLY_PERMISSIONS, true);
+                    });
+                }
+
                 foreach ($permissionIds as $permissionId) {
+                    $permissionId = (int) $permissionId;
+                    if (! $permissionId) {
+                        continue;
+                    }
                     DB::table('role_permissions')->insert([
                         'role' => $role,
-                        'permission_id' => (int) $permissionId,
+                        'permission_id' => $permissionId,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ]);

@@ -96,11 +96,18 @@
                                     <tr class="hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-white transition-all duration-100 group">
                                         <td class="px-5 py-3.5">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition-all duration-200">
-                                                    <i class="fa-solid fa-check text-xs text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                                                <div class="w-8 h-8 rounded-lg {{ in_array($perm->key, $adminOnlyKeys) ? 'bg-amber-50' : 'bg-gray-100' }} flex items-center justify-center group-hover:bg-blue-100 transition-all duration-200">
+                                                    <i class="fa-solid {{ in_array($perm->key, $adminOnlyKeys) ? 'fa-crown text-amber-500' : 'fa-check text-xs text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
                                                 </div>
                                                 <div>
-                                                    <div class="text-sm font-semibold text-gray-800">{{ $perm->label }}</div>
+                                                    <div class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                                                        {{ $perm->label }}
+                                                        @if (in_array($perm->key, $adminOnlyKeys))
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                                <i class="fa-solid fa-lock text-[9px]"></i> Khusus Admin
+                                                            </span>
+                                                        @endif
+                                                    </div>
                                                     <div class="text-[10px] text-gray-400 font-mono mt-0.5">{{ $perm->key }}</div>
                                                 </div>
                                             </div>
@@ -109,11 +116,12 @@
                                             @php
                                                 $checked = in_array($perm->id, $rolePermissions[$role] ?? []);
                                                 $disabled = ($role === 'admin');
+                                                $adminOnly = in_array($perm->key, $adminOnlyKeys);
                                             @endphp
                                             <td class="text-center px-3 py-3.5">
-                                                @if($disabled)
-                                                    <div class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-50 border border-blue-200">
-                                                        <i class="fa-solid fa-lock text-xs text-blue-400"></i>
+                                                @if($disabled || $adminOnly)
+                                                    <div class="inline-flex items-center justify-center w-9 h-9 rounded-lg {{ $adminOnly ? 'bg-amber-50 border border-amber-200' : 'bg-blue-50 border border-blue-200' }}">
+                                                        <i class="fa-solid {{ $adminOnly ? 'fa-crown' : 'fa-lock' }} text-xs {{ $adminOnly ? 'text-amber-500' : 'text-blue-400' }}"></i>
                                                     </div>
                                                 @else
                                                     <input type="checkbox"
