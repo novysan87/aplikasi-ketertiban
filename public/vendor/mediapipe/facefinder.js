@@ -1,6 +1,6 @@
 /**
  * facefinder.js — Live face detection + LIVENESS multi-sinyal overlay.
- * Self-hosted penuh (tanpa CDN): vision_bundle.mjs + wasm/ + blaze_face_short_range.tflite
+ * Self-hosted penuh (tanpa CDN): vision_bundle.mjs + wasm/ + blaze_face_full_range.tflite
  * + face_landmarker.task (blendshape senyum + kedalaman 3D + kedipan).
  *
  * Sinyal liveness (PASIF, cukup 1 lolos):
@@ -70,7 +70,7 @@ async function loadDetector() {
     const { FilesetResolver, FaceDetector } = await import(`${VENDOR}/vision_bundle.mjs`);
     const fileset = await FilesetResolver.forVisionTasks(`${VENDOR}/wasm`);
     return FaceDetector.createFromOptions(fileset, {
-        baseOptions: { modelAssetPath: `${VENDOR}/blaze_face_short_range.tflite`, delegate: 'CPU' },
+        baseOptions: { modelAssetPath: `${VENDOR}/blaze_face_full_range.tflite`, delegate: 'CPU' },
         runningMode: 'VIDEO',
         minDetectionConfidence: 0.35, // dilonggarkan — lebih sensitif di kamera HP / cahaya kurang
         numFaces: 1,
