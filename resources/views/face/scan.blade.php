@@ -3,6 +3,12 @@
 @section('title', 'Scan Wajah')
 
 @section('content')
+<style>
+    /* Viewfinder: lebih lega di HP (potret 3:4), desktop 4:3 — pakai CSS manual
+       karena Tailwind v4 tidak generate arbitrary aspect-[3/4] (slash diabaikan). */
+    .face-viewfinder { aspect-ratio: 3 / 4; }
+    @media (min-width: 640px) { .face-viewfinder { aspect-ratio: 4 / 3; } }
+</style>
 <div class="max-w-3xl mx-auto pb-10">
     {{-- ===== HEADER PREMIUM ===== --}}
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 shadow-xl shadow-blue-500/20 px-6 py-6 mb-6">
@@ -46,7 +52,7 @@
     <div class="space-y-6" x-data="faceScan()">
         {{-- ===== VIEWFINDER KAMERA ===== --}}
         <div class="relative">
-            <div class="relative aspect-[3/4] sm:aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 shadow-2xl shadow-gray-900/30 ring-1 ring-gray-800/60"
+            <div class="face-viewfinder relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 shadow-2xl shadow-gray-900/30 ring-1 ring-gray-800/60"
                 :class="autoScanning ? 'ring-2 ring-cyan-400/70 shadow-cyan-500/10' : ''">
                 {{-- Grid rule-of-thirds --}}
                 <div class="absolute inset-0 pointer-events-none opacity-20">
