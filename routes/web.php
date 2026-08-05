@@ -146,6 +146,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/parents/verification/{link}/reject', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'reject'])->name('parents.verification.reject');
     });
 
+    Route::middleware('permission:manage-school-info')->group(function () {
+        Route::get('/settings/school-info', [\App\Http\Controllers\Admin\SchoolInformationController::class, 'index'])->name('settings.school-info');
+        Route::post('/settings/school-info', [\App\Http\Controllers\Admin\SchoolInformationController::class, 'store'])->name('settings.school-info.store');
+        Route::put('/settings/school-info/{info}', [\App\Http\Controllers\Admin\SchoolInformationController::class, 'update'])->name('settings.school-info.update');
+        Route::delete('/settings/school-info/{info}', [\App\Http\Controllers\Admin\SchoolInformationController::class, 'destroy'])->name('settings.school-info.destroy');
+    });
+
     // ===== Administrasi (permission-based) =====
     Route::middleware('permission:settings-manage')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

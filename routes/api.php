@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ParentAuthController;
 use App\Http\Controllers\Api\ParentNotificationController;
+use App\Http\Controllers\Api\ParentSchoolInformationController;
 use App\Http\Controllers\Api\ParentStudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,5 +38,6 @@ Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
 
     // Notifikasi & perangkat
     Route::get('/notifications', [ParentNotificationController::class, 'index'])->name('api.parent.notifications');
+    Route::get('/school-informations', [ParentSchoolInformationController::class, 'index'])->name('api.parent.school-informations');
     Route::post('/devices', [ParentNotificationController::class, 'registerDevice'])->name('api.parent.devices');
 });

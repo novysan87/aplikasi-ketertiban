@@ -200,6 +200,9 @@
                 @canPermission('parents-verify')
                 <x-nav-item href="{{ route('parents.verification') }}" icon="user-check" :active="request()->routeIs('parents.verification')">Verifikasi Wali</x-nav-item>
                 @endcanPermission
+                @canPermission('manage-school-info')
+                <x-nav-item href="{{ route('settings.school-info') }}" icon="bullhorn" :active="request()->routeIs('settings.school-info*')">Informasi Sekolah</x-nav-item>
+                @endcanPermission
                 @canPermission('sync-data')
                 <x-nav-item href="{{ route('settings.sync') }}" icon="refresh" :active="request()->routeIs('settings.sync*')">Sinkronisasi</x-nav-item>
                 @endcanPermission
