@@ -204,8 +204,18 @@ class ParentAuthController extends Controller
                         ->orderByDesc('created_at')
                         ->first();
 
+                    // Kehadiran hari ini: status di jam pelajaran pertama yang tercatat
+                    $todayAtt = $student->attendances()
+                        ->whereDate('date', today())
+                        ->orderBy('lesson_hour')
+                        ->first();
+
                     $payload['summary'] = [
                         'total_points' => $student->total_points,
+                        'attendance' => [
+                            'today_status' => $todayAtt?->status,
+                            'school_start' => '07:00', // jam masuk sekolah (e-jurnal time_slots)
+                        ],
                         'latest_sp' => $latestSp ? [
                             'letter_number' => $latestSp->letter_number,
                             'title' => $latestSp->title,

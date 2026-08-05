@@ -31,6 +31,11 @@ class Student extends Model
         return $this->hasMany(Violation::class);
     }
 
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
     public function spLetters(): HasMany
     {
         return $this->hasMany(SpLetter::class);
