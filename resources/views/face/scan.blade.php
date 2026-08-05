@@ -46,7 +46,7 @@
     <div class="space-y-6" x-data="faceScan()">
         {{-- ===== VIEWFINDER KAMERA ===== --}}
         <div class="relative">
-            <div class="relative aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 shadow-2xl shadow-gray-900/30 ring-1 ring-gray-800/60"
+            <div class="relative aspect-[3/4] sm:aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 shadow-2xl shadow-gray-900/30 ring-1 ring-gray-800/60"
                 :class="autoScanning ? 'ring-2 ring-cyan-400/70 shadow-cyan-500/10' : ''">
                 {{-- Grid rule-of-thirds --}}
                 <div class="absolute inset-0 pointer-events-none opacity-20">
