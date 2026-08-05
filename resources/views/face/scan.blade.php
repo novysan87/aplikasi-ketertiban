@@ -146,22 +146,6 @@
                 </template>
             </div>
 
-            {{-- Tracker sinyal liveness live --}}
-            <div x-show="cameraOn && !preview" class="flex items-center justify-center gap-2 mt-3 flex-wrap">
-                <span class="text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full transition-all duration-300" :class="signalsLive.blink ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'">
-                    <i class="fa-solid fa-eye mr-1"></i>Kedip <span x-show="signalsLive.blink">✓</span>
-                </span>
-                <span class="text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full transition-all duration-300" :class="signalsLive.smile ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'">
-                    <i class="fa-solid fa-face-smile mr-1"></i>Senyum <span x-show="signalsLive.smile">✓</span>
-                </span>
-                <span class="text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full transition-all duration-300" :class="signalsLive.depth ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'">
-                    <i class="fa-solid fa-cube mr-1"></i>3D <span x-show="signalsLive.depth">✓</span>
-                </span>
-                <span class="text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full transition-all duration-300" :class="signalsLive.motion ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'">
-                    <i class="fa-solid fa-wind mr-1"></i>Gerak <span x-show="signalsLive.motion">✓</span>
-                </span>
-            </div>
-
             {{-- Petunjuk kecil --}}
             <div class="flex items-center justify-center gap-2 mt-3 text-[11px] text-gray-400 min-h-[18px]">
                 <i class="fa-solid fa-lightbulb text-amber-400"></i>
@@ -169,8 +153,6 @@
                 <span x-show="!preview && !autoScanning && !autoNoMatch && !needBlink && !nudge && engineOk">Scan otomatis aktif — arahkan kamera ke wajah, hasil muncul sendiri</span>
                 <span x-show="autoScanning" class="text-cyan-500 font-semibold"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Mencocokkan dengan database…</span>
                 <span x-show="autoNoMatch && !autoScanning && !preview && !result" class="text-amber-500 font-semibold"><i class="fa-solid fa-eye-slash mr-1"></i>Belum dikenali — posisikan wajah lebih jelas</span>
-                <span x-show="needBlink && !autoScanning && !preview && !result" class="text-cyan-500 font-semibold"><i class="fa-solid fa-eye mr-1"></i>Kedipkan mata / tersenyum / gerakkan kepala sebentar…</span>
-                <span x-show="nudge && !autoScanning && !preview && !result" class="text-cyan-600 font-bold animate-pulse"><i class="fa-solid fa-hand mr-1"></i>Silakan berkedip / tersenyum / gelengkan kepala</span>
                 <span x-show="preview && !result">Foto diambil — sentuh <b class="text-gray-500">Scan Lagi</b> untuk mengambil ulang</span>
             </div>
         </div>
