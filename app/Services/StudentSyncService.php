@@ -45,6 +45,13 @@ class StudentSyncService
                         continue;
                     }
 
+                    // Data wali/orang tua: pilih kontak utama (guardian > father > mother)
+                    $parents = collect($item['parents'] ?? []);
+                    $primaryParent = $parents->first(fn ($p) => ($p['relation'] ?? '') === 'guardian')
+                        ?? $parents->first(fn ($p) => ($p['relation'] ?? '') === 'father')
+                        ?? $parents->first(fn ($p) => ($p['relation'] ?? '') === 'mother')
+                        ?? $parents->first();
+
                     // Use NISN as primary key, fallback to student_number if NISN is null
                     $nisn = $item['nisn'] ?? null;
                     if (!$nisn) {
@@ -89,6 +96,8 @@ class StudentSyncService
                             'date_of_birth' => $item['date_of_birth'] ?: null,
                             'address' => $item['address'],
                             'phone_number' => $item['phone_number'],
+                            'parent_name' => $primaryParent ? trim((string) $primaryParent['name']) : null,
+                            'parent_phone' => $primaryParent ? ($primaryParent['phone_number'] ?: null) : null,
                             'email' => $item['email'],
                             'class_name' => $className,
                             'class_level' => $classData['level'] ?? $item['class_level'] ?? 'X',

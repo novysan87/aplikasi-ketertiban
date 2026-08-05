@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    public const ROLES = ['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim'];
+    public const ROLES = ['admin', 'bk', 'wali_kelas', 'staff', 'other', 'kepala_sekolah', 'waka_kesiswaan', 'ketua_tim', 'parent'];
 
     protected $fillable = [
         'name', 'username', 'email', 'phone', 'password', 'role', 'roles', 'is_active', 'active_session_token',
@@ -66,6 +67,7 @@ class User extends Authenticatable
     public function isKepalaSekolah(): bool { return $this->hasRole('kepala_sekolah'); }
     public function isWakaKesiswaan(): bool { return $this->hasRole('waka_kesiswaan'); }
     public function isKetuaTim(): bool { return $this->hasRole('ketua_tim'); }
+    public function isParent(): bool { return $this->hasRole('parent'); }
 
     /**
      * Role dengan visibilitas data GLOBAL (semua kelas/siswa).
@@ -134,6 +136,25 @@ class User extends Authenticatable
     public function recordedViolations()
     {
         return $this->hasMany(Violation::class, 'recorded_by');
+    }
+
+    /**
+     * Relasi akun wali murid → anak (pivot parent_students).
+     */
+    public function parentStudents()
+    {
+        return $this->hasMany(\App\Models\ParentStudent::class, 'user_id');
+    }
+
+    /**
+     * Anak-anak (siswa) milik akun wali, hanya yang statusnya aktif.
+     */
+    public function children()
+    {
+        return $this->belongsToMany(\App\Models\Student::class, 'parent_students', 'user_id', 'student_id')
+            ->withPivot(['relation', 'status', 'verified_at'])
+            ->withTimestamps()
+            ->wherePivot('status', 'active');
     }
 
     public function appNotifications()

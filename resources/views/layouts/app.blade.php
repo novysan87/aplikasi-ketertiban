@@ -197,6 +197,9 @@
                 @canPermission('view-point-audit')
                 <x-nav-item href="{{ route('point-audit.index') }}" icon="clock-rotate-left" :active="request()->routeIs('point-audit.*')">Riwayat Poin</x-nav-item>
                 @endcanPermission
+                @canPermission('parents-verify')
+                <x-nav-item href="{{ route('parents.verification') }}" icon="user-check" :active="request()->routeIs('parents.verification')">Verifikasi Wali</x-nav-item>
+                @endcanPermission
                 @canPermission('sync-data')
                 <x-nav-item href="{{ route('settings.sync') }}" icon="refresh" :active="request()->routeIs('settings.sync*')">Sinkronisasi</x-nav-item>
                 @endcanPermission

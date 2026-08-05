@@ -140,6 +140,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/point-audit', [\App\Http\Controllers\Admin\PointAuditController::class, 'index'])->name('point-audit.index');
     });
 
+    Route::middleware('permission:parents-verify')->group(function () {
+        Route::get('/parents/verification', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'index'])->name('parents.verification');
+        Route::post('/parents/verification/{link}/approve', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'approve'])->name('parents.verification.approve');
+        Route::post('/parents/verification/{link}/reject', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'reject'])->name('parents.verification.reject');
+    });
+
     // ===== Administrasi (permission-based) =====
     Route::middleware('permission:settings-manage')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

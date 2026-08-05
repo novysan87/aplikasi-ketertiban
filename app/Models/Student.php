@@ -10,7 +10,7 @@ class Student extends Model
     protected $fillable = [
         'source_id', 'nisn', 'student_number', 'full_name',
         'gender', 'place_of_birth', 'date_of_birth', 'address',
-        'phone_number', 'parent_phone', 'email', 'class_name', 'class_level',
+        'phone_number', 'parent_phone', 'parent_name', 'email', 'class_name', 'class_level',
         'department_code', 'department_name', 'academic_year_name',
         'status', 'photo_path', 'class_id', 'is_active',
         'metadata', 'synced_at',
@@ -39,6 +39,11 @@ class Student extends Model
     public function class()
     {
         return $this->belongsTo(Classes::class, 'class_id');
+    }
+
+    public function parentLinks()
+    {
+        return $this->hasMany(\App\Models\ParentStudent::class, 'student_id');
     }
 
     public function getTotalPointsAttribute(): int
