@@ -440,7 +440,7 @@ function faceScan() {
             }
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: this.facing, width: { ideal: 1280 } },
+                    video: { facingMode: this.facing, width: { ideal: 960 } },
                     audio: false,
                 });
                 this.$refs.video.srcObject = stream;

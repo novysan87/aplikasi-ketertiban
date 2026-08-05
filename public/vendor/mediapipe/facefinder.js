@@ -72,7 +72,7 @@ async function loadDetector() {
     return FaceDetector.createFromOptions(fileset, {
         baseOptions: { modelAssetPath: `${VENDOR}/blaze_face_short_range.tflite`, delegate: 'CPU' },
         runningMode: 'VIDEO',
-        minDetectionConfidence: 0.5,
+        minDetectionConfidence: 0.35, // dilonggarkan — lebih sensitif di kamera HP / cahaya kurang
         numFaces: 1,
     });
 }
