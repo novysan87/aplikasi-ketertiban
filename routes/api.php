@@ -26,6 +26,7 @@ Route::post('/parent/login', [ParentAuthController::class, 'login'])
 Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
     // Akun
     Route::get('/me', [ParentAuthController::class, 'me'])->name('api.parent.me');
+    Route::get('/school-info', [ParentAuthController::class, 'schoolInfo'])->name('api.parent.school-info');
     Route::post('/logout', [ParentAuthController::class, 'logout'])->name('api.parent.logout');
 
     // Anak (wali)

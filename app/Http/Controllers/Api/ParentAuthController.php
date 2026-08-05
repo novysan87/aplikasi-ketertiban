@@ -150,6 +150,26 @@ class ParentAuthController extends Controller
         ]);
     }
 
+    /**
+     * Informasi sekolah (dinamis dari pengaturan).
+     */
+    public function schoolInfo(): JsonResponse
+    {
+        return response()->json([
+            'school' => [
+                'name' => \App\Models\Setting::getValue('school_name', 'SMKN 1 WONOREJO'),
+                'full_name' => \App\Models\Setting::getValue('school_full_name', ''),
+                'address' => \App\Models\Setting::getValue('school_address', ''),
+                'phone' => \App\Models\Setting::getValue('school_phone', ''),
+                'postal_code' => \App\Models\Setting::getValue('school_postal', ''),
+                'website_email' => \App\Models\Setting::getValue('school_website_email', ''),
+                'principal_name' => \App\Models\Setting::getValue('kepala_sekolah_name', ''),
+                'academic_year' => \App\Models\Student::where('is_active', true)->max('academic_year_name') ?? '',
+                'start_time' => '07:00',
+            ],
+        ]);
+    }
+
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
