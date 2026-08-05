@@ -600,27 +600,9 @@ function faceScan() {
 
         _maybeFinishAuto(d) {
             const loop = window.__faceLoop;
-            // Penerimaan: kedip / senyum / gerak (sinyal apa pun yang lolos — gerak
-            // ikut menerima agar praktis di kamera HP; foto diam tetap tertolak).
-            if (loop && loop.signalCount > 0) {
-                this._finishAuto(d);
-                return;
-            }
-            // Mesin liveness tidak aktif & tanpa sinyal → wajib konfirmasi staff
-            if (loop && !loop.livenessAvailable) {
-                this.livenessWarn = true;
-                this._finishAuto(d);
-                return;
-            }
-            // Wajah cocok tapi belum ada sinyal → minta gerakan dulu (anti foto diam)
-            this.needBlink = true;
-            this.noBlinkTicks++;
-            if (this.noBlinkTicks >= 3) this.nudge = true;
-            if (this.noBlinkTicks >= 6) {
-                // Terlalu lama tanpa liveness → tampilkan dengan peringatan + konfirmasi staff
-                this.livenessWarn = true;
-                this._finishAuto(d);
-            }
+            // MODE TANPA LIVENESS (sesuai permintaan): wajah cocok → langsung selesai.
+            // Anti-foto tetap ada di lapisan lain (deteksi wajah hidup).
+            this._finishAuto(d);
         },
 
         _finishAuto(d) {
