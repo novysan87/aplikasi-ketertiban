@@ -231,11 +231,11 @@ function processMotion(box) {
     prevFaceGray = gray;
 }
 
-/** Jumlah sinyal PENGGUNA UNTUK PENERIMAAN (strong signals): kedip + senyum.
- *  Depth & motion TIDAK dipakai menerima (foto yang dipegang ikut bergerak;
- *  ambang depth perlu kalibrasi lapangan) — hanya info di tracker. */
+/** Jumlah sinyal PENGGUNA UNTUK PENERIMAAN: kedip + senyum + gerak.
+ *  Motion ikut menerima — praktis utk kamera HP (landmarker kadang lambat/off).
+ *  Foto DIAM tetap tertolak (tidak ada motion). */
 function signalCount() {
-    return [blinks > 0, smileSeen].filter(Boolean).length;
+    return [blinks > 0, smileSeen, motionSeen].filter(Boolean).length;
 }
 
 async function tick(detector) {

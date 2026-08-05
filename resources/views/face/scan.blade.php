@@ -600,12 +600,13 @@ function faceScan() {
 
         _maybeFinishAuto(d) {
             const loop = window.__faceLoop;
-            // Penerimaan: kedip / senyum (sinyal kuat). Depth & motion hanya info (foto dipegang ikut bergerak)
-            if (loop && loop.livenessAvailable && loop.signalCount > 0) {
+            // Penerimaan: kedip / senyum / gerak (sinyal apa pun yang lolos — gerak
+            // ikut menerima agar praktis di kamera HP; foto diam tetap tertolak).
+            if (loop && loop.signalCount > 0) {
                 this._finishAuto(d);
                 return;
             }
-            // Mesin liveness tidak aktif → jangan auto-accept; wajib konfirmasi staff
+            // Mesin liveness tidak aktif & tanpa sinyal → wajib konfirmasi staff
             if (loop && !loop.livenessAvailable) {
                 this.livenessWarn = true;
                 this._finishAuto(d);
