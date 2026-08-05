@@ -71,6 +71,15 @@ class FaceIdController extends Controller
             ];
         }
 
+        // Tampilkan HANYA kandidat yang benar-benar cocok (skor >= ambang microservice).
+        // Microservice mengirim top-3 termasuk skor rendah — buang yang di bawah ambang
+        // supaya yang muncul hanya siswa yang dikenali (kecuali kasus kembar/ambigu).
+        $matchThreshold = 0.45; // sinkron config.THRESHOLD microservice (FACEID_THRESHOLD)
+        $candidates = array_values(array_filter(
+            $candidates,
+            fn (array $c) => $c['score'] >= $matchThreshold
+        ));
+
         return response()->json([
             'ok' => true,
             'matched' => $data['matched'] ?? false,
