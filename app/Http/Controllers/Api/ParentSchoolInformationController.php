@@ -15,6 +15,7 @@ class ParentSchoolInformationController extends Controller
     {
         $items = SchoolInformation::query()
             ->where('is_published', true)
+            ->whereDate('event_date', today()) // hanya yang tanggalnya hari ini
             ->orderByDesc('event_date')
             ->orderByDesc('created_at')
             ->limit(50)
