@@ -43,9 +43,9 @@ let prevFaceGray = null;
 let livenessAvailable = false;
 
 // Ambang (soft — salah kalibrasi tidak memblokir karena logika ANY-of)
-const EAR_CLOSED = 0.20;        // mata dianggap tertutup
-const SMILE_MIN = 0.35;         // skor blendshape senyum
-const DEPTH_MIN = 0.03;         // rentang z landmark
+const EAR_CLOSED = 0.24;        // mata dianggap tertutup (dilonggarkan utk kamera HP: wajah kecil)
+const SMILE_MIN = 0.25;         // skor blendshape senyum (dilonggarkan: senyum tipis sudah cukup)
+const DEPTH_MIN = 0.02;         // rentang z landmark
 const MOTION_MIN = 2.0;         // selisih rata-rata piksel (skala 0-255)
 
 // Throttle beban (HP kelas menengah ke bawah)
