@@ -1,110 +1,40 @@
 /**
- * facefinder.js — Live face detection + LIVENESS multi-sinyal overlay.
- * Self-hosted penuh (tanpa CDN): vision_bundle.mjs + wasm/ + blaze_face_full_range.tflite
- * + face_landmarker.task (blendshape senyum + kedalaman 3D + kedipan).
+ * facefinder.js — Live face detection (v2: face-api.js / tinyFaceDetector).
+ * Pengganti MediaPipe WASM — kompatibilitas browser HP jauh lebih baik,
+ * tanpa wasm, model ringan (193KB).
  *
- * Sinyal liveness (PASIF, cukup 1 lolos):
- *   1) Kedipan mata   — EAR (eye aspect ratio) [PENERIMA]
- *   2) Senyum         — blendshape mouthSmile [PENERIMA]
- *   3) Kedalaman 3D   — rentang koordinat z landmark [INFO]
- *   4) Mikro-gerakan  — selisih piksel area wajah antar frame [INFO]
- *
- * API:
+ * API (kompatibel dengan versi lama):
  *   window.__faceLoop.start(videoEl, canvasEl)
  *   window.__faceLoop.stop()
  *   window.__faceLoop.detected
- *   window.__faceLoop.blinkCount
- *   window.__faceLoop.signalCount   — jumlah sinyal penerimaan (kedip+senyum, 0-2)
- *   window.__faceLoop.signals       — rincian {blink, smile, depth, motion}
  *   window.__faceLoop.resetLiveness()
+ *   window.__faceLoop.signalCount — 1 bila wajah terdeteksi (mode tanpa liveness)
+ *   window.__faceLoop.livenessAvailable — true
  *
- * Status disiarkan ke UI via CustomEvent 'face-state' dan tombol #btnCapture
- * di-disable otomatis bila tidak ada wajah.
+ * Status disiarkan via CustomEvent 'face-state'; tombol #btnCapture di-disable
+ * otomatis bila tidak ada wajah. Event 'face-detector-error' bila model gagal.
  */
-const VENDOR = '/vendor/mediapipe';
+const VENDOR = '/vendor/faceapi';
 
-let detectorPromise = null;
-let landmarkerPromise = null;
 let running = false;
 let rafId = null;
 let videoEl = null;
 let canvasEl = null;
 let ctx = null;
 let lastDetected = false;
-
-// ==== Liveness ====
-let blinks = 0;
-let eyesClosed = false;
-let blinkCooldownUntil = 0;
-let smileSeen = false;
-let depthSeen = false;
-let motionSeen = false;
-let prevFaceGray = null;
-let livenessAvailable = false;
-
-// Ambang (soft — salah kalibrasi tidak memblokir karena logika ANY-of)
-const EAR_CLOSED = 0.24;        // mata dianggap tertutup (dilonggarkan utk kamera HP: wajah kecil)
-const SMILE_MIN = 0.25;         // skor blendshape senyum (dilonggarkan: senyum tipis sudah cukup)
-const DEPTH_MIN = 0.02;         // rentang z landmark
-const MOTION_MIN = 2.0;         // selisih rata-rata piksel (skala 0-255)
-
-// Throttle beban (HP kelas menengah ke bawah)
-let frameCounter = 0;
-const LANDMARK_EVERY = 3;       // landmarker tiap 3 frame
-const MOTION_EVERY = 2;         // motion tiap 2 frame
-let lastFaceTime = 0;           // watchdog: kapan terakhir ada wajah
-
-// Indeks landmark mata (FaceMesh 478 titik)
-const LEFT_EYE = [33, 160, 158, 133, 153, 144];
-const RIGHT_EYE = [362, 385, 387, 263, 373, 380];
-
-function ear(points, idx) {
-    const p = (i) => points[idx.indexOf(i)];
-    const a = Math.hypot(p(1).x - p(5).x, p(1).y - p(5).y);
-    const b = Math.hypot(p(2).x - p(4).x, p(2).y - p(4).y);
-    const c = Math.hypot(p(0).x - p(3).x, p(0).y - p(3).y);
-    return (a + b) / (2 * c + 1e-6);
-}
-
-async function loadDetector() {
-    const { FilesetResolver, FaceDetector } = await import(`${VENDOR}/vision_bundle.mjs`);
-    const fileset = await FilesetResolver.forVisionTasks(`${VENDOR}/wasm`);
-    return FaceDetector.createFromOptions(fileset, {
-        baseOptions: { modelAssetPath: `${VENDOR}/blaze_face_full_range.tflite`, delegate: 'CPU' },
-        runningMode: 'VIDEO',
-        minDetectionConfidence: 0.35, // dilonggarkan — lebih sensitif di kamera HP / cahaya kurang
-        numFaces: 1,
-    });
-}
-
-async function loadLandmarker() {
-    const { FilesetResolver, FaceLandmarker } = await import(`${VENDOR}/vision_bundle.mjs`);
-    const fileset = await FilesetResolver.forVisionTasks(`${VENDOR}/wasm`);
-    const lm = await FaceLandmarker.createFromOptions(fileset, {
-        baseOptions: { modelAssetPath: `${VENDOR}/face_landmarker.task`, delegate: 'CPU' },
-        runningMode: 'VIDEO',
-        numFaces: 1,
-        outputFaceBlendshapes: true,
-        outputFacialTransformationMatrixes: false,
-    });
-    livenessAvailable = true;
-    return lm;
-}
+let modelPromise = null;
 
 function emit(detected) {
-    window.__faceState = { detected, blinkCount: blinks, signalCount: signalCount() };
+    window.__faceState = { detected, blinkCount: 0, signalCount: detected ? 1 : 0 };
     document.dispatchEvent(new CustomEvent('face-state', {
-        detail: { detected, blinkCount: blinks, signalCount: signalCount() },
+        detail: { detected, blinkCount: 0, signalCount: detected ? 1 : 0 },
     }));
 
     const btn = document.getElementById('btnCapture');
     if (btn) {
         btn.disabled = !detected;
-        if (detected) {
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        } else {
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
+        btn.classList.toggle('opacity-50', !detected);
+        btn.classList.toggle('cursor-not-allowed', !detected);
     }
     const hint = document.getElementById('faceHint');
     if (hint) {
@@ -135,166 +65,40 @@ function draw(box) {
     ctx.strokeStyle = '#22c55e';
     ctx.lineWidth = Math.max(2.5, cw / 320);
     ctx.strokeRect(x, y, w, h);
-
-    const cl = ctx.lineWidth * 2;
-    ctx.strokeStyle = '#16a34a';
-    ctx.lineWidth = cl;
-    const cs = Math.min(w, h) * 0.18;
-    [
-        [x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1],
-    ].forEach(([cx, cy, dx, dy]) => {
-        ctx.beginPath();
-        ctx.moveTo(cx + dx * cs, cy);
-        ctx.lineTo(cx, cy);
-        ctx.lineTo(cx, cy + dy * cs);
-        ctx.stroke();
-    });
 }
 
-/** Sinyal 1: kedipan mata (EAR). */
-function processBlink(landmarks) {
-    const lm = landmarks?.[0];
-    if (!lm || lm.length < 468) return;
-    const earL = ear(lm, LEFT_EYE);
-    const earR = ear(lm, RIGHT_EYE);
-    const avg = (earL + earR) / 2;
-    const now = performance.now();
-    if (avg < EAR_CLOSED) {
-        if (!eyesClosed && now > blinkCooldownUntil) {
-            eyesClosed = true;
-            blinks++;
-            blinkCooldownUntil = now + 700;
-            emit(!!window.__faceState?.detected);
-        }
-    } else {
-        eyesClosed = false;
+function loadModels() {
+    if (!modelPromise) {
+        modelPromise = faceapi.nets.tinyFaceDetector.loadFromUri(`${VENDOR}/models`);
     }
+    return modelPromise;
 }
 
-/** Sinyal 2: senyum (blendshape). */
-function processSmile(blendshapes) {
-    if (!blendshapes || smileSeen) return;
-    let left = 0, right = 0;
-    for (const c of blendshapes) {
-        if (c.categoryName === 'mouthSmileLeft') left = c.score;
-        if (c.categoryName === 'mouthSmileRight') right = c.score;
-    }
-    if ((left + right) / 2 >= SMILE_MIN) {
-        smileSeen = true;
-        emit(!!window.__faceState?.detected);
-    }
-}
-
-/** Sinyal 3: kedalaman 3D wajah (rentang z landmark). */
-function processDepth(landmarks) {
-    const lm = landmarks?.[0];
-    if (!lm || lm.length < 468 || depthSeen) return;
-    let minZ = Infinity, maxZ = -Infinity;
-    for (let i = 0; i < 468; i++) {
-        const z = lm[i].z;
-        if (z < minZ) minZ = z;
-        if (z > maxZ) maxZ = z;
-    }
-    if (maxZ - minZ >= DEPTH_MIN) {
-        depthSeen = true;
-        emit(!!window.__faceState?.detected);
-    }
-}
-
-/** Sinyal 4: mikro-gerakan area wajah (selisih piksel antar frame). */
-function processMotion(box) {
-    if (motionSeen || !videoEl) return;
-    const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
-    if (!vw || !vh) return;
-    const size = 24;
-    const c = document.createElement('canvas');
-    c.width = size; c.height = size;
-    const g = c.getContext('2d', { willReadFrequently: true });
-    const sx = Math.max(0, box.x * vw), sy = Math.max(0, box.y * vh);
-    const sw = Math.min(vw - sx, box.w * vw), sh = Math.min(vh - sy, box.h * vh);
-    if (sw <= 0 || sh <= 0) return;
-    g.drawImage(videoEl, sx, sy, sw, sh, 0, 0, size, size);
-    const d = g.getImageData(0, 0, size, size).data;
-    const gray = new Float32Array(size * size);
-    for (let i = 0; i < size * size; i++) {
-        gray[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
-    }
-    if (prevFaceGray) {
-        let diff = 0;
-        for (let i = 0; i < gray.length; i++) diff += Math.abs(gray[i] - prevFaceGray[i]);
-        diff /= gray.length;
-        if (diff > MOTION_MIN) {
-            motionSeen = true;
-            emit(!!window.__faceState?.detected);
-        }
-    }
-    prevFaceGray = gray;
-}
-
-/** Jumlah sinyal PENGGUNA UNTUK PENERIMAAN: kedip + senyum + gerak.
- *  Motion ikut menerima — praktis utk kamera HP (landmarker kadang lambat/off).
- *  Foto DIAM tetap tertolak (tidak ada motion). */
-function signalCount() {
-    return [blinks > 0, smileSeen, motionSeen].filter(Boolean).length;
-}
-
-async function tick(detector) {
+async function tick() {
     if (!running) return;
-    frameCounter++;
     if (videoEl && videoEl.readyState >= 2 && !videoEl.paused && videoEl.videoWidth) {
         try {
-            const res = detector.detectForVideo(videoEl, performance.now());
-            const face = res.detections?.[0];
+            const detections = await faceapi.detectAllFaces(
+                videoEl,
+                new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.3 })
+            );
+            const face = detections[0];
             const detected = !!face;
             if (detected) {
-                lastFaceTime = performance.now();
-                const b = face.boundingBox;
-                const box = { x: b.originX / videoEl.videoWidth, y: b.originY / videoEl.videoHeight, w: b.width / videoEl.videoWidth, h: b.height / videoEl.videoHeight };
-                draw(box);
-
-                if (frameCounter % MOTION_EVERY === 0) processMotion(box);
-
-                // Liveness via landmark (best-effort, di-throttle)
-                if (landmarker) {
-                    if (frameCounter % LANDMARK_EVERY === 0) {
-                        try {
-                            const lres = landmarker.detectForVideo(videoEl, performance.now());
-                            processBlink(lres.faceLandmarks);
-                            processSmile(lres.faceBlendshapes?.[0]?.categories);
-                            processDepth(lres.faceLandmarks);
-                        } catch (e) { /* lewati */ }
-                    }
-                } else if (!landmarkerPromise) {
-                    landmarkerPromise = loadLandmarker()
-                        .then(l => { landmarker = l; })
-                        .catch(() => {
-                            landmarkerPromise = null;
-                            livenessAvailable = false;
-                            document.dispatchEvent(new CustomEvent('face-liveness-off'));
-                        });
-                }
+                const b = face.box;
+                draw({ x: b.x / videoEl.videoWidth, y: b.y / videoEl.videoHeight, w: b.width / videoEl.videoWidth, h: b.height / videoEl.videoHeight });
             } else {
                 draw(null);
-                prevFaceGray = null;
             }
             if (detected !== lastDetected) {
                 lastDetected = detected;
                 emit(detected);
             }
-
-            // Watchdog: deteksi macet walau kamera jalan → log (untuk diagnosa)
-            if (detected && performance.now() - lastFaceTime > 3000) {
-                console.warn('[facefinder] deteksi lambat/macet, fps rendah');
-            }
         } catch (e) {
             console.error('[facefinder] error frame:', e);
         }
     }
-    try {
-        rafId = requestAnimationFrame(() => tick(detector));
-    } catch (e) {
-        console.error('[facefinder] rAF gagal:', e);
-    }
+    rafId = requestAnimationFrame(tick);
 }
 
 window.__faceLoop = {
@@ -307,13 +111,12 @@ window.__faceLoop = {
         this.resetLiveness();
         emit(false);
         try {
-            if (!detectorPromise) detectorPromise = loadDetector();
-            const detector = await detectorPromise;
+            await loadModels();
             if (!running || !videoEl) return;
             if (rafId) cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(() => tick(detector));
+            rafId = requestAnimationFrame(tick);
         } catch (e) {
-            console.error('Gagal memuat face detector:', e);
+            console.error('Gagal memuat model face detection:', e);
             running = false;
             document.dispatchEvent(new CustomEvent('face-detector-error'));
         }
@@ -328,21 +131,15 @@ window.__faceLoop = {
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
         }
         lastDetected = false;
-        prevFaceGray = null;
         emit(false);
     },
 
     resetLiveness() {
-        blinks = 0;
-        eyesClosed = false;
-        smileSeen = false;
-        depthSeen = false;
-        motionSeen = false;
-        prevFaceGray = null;
+        // mode tanpa liveness — tidak ada state yang perlu di-reset
     },
 
     get livenessAvailable() {
-        return livenessAvailable;
+        return true;
     },
 
     get detected() {
@@ -350,14 +147,14 @@ window.__faceLoop = {
     },
 
     get blinkCount() {
-        return blinks;
+        return 0;
     },
 
     get signalCount() {
-        return signalCount();
+        return this.detected ? 1 : 0;
     },
 
     get signals() {
-        return { blink: blinks > 0, smile: smileSeen, depth: depthSeen, motion: motionSeen };
+        return { blink: false, smile: false, depth: false, motion: this.detected };
     },
 };

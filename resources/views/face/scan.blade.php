@@ -393,6 +393,9 @@
 @endsection
 
 @push('scripts')
+{{-- Deteksi wajah: face-api.js (tfjs + tinyFaceDetector) — pengganti MediaPipe WASM --}}
+<script src="/vendor/faceapi/tf.min.js"></script>
+<script src="/vendor/faceapi/face-api.js"></script>
 <script type="module" src="/vendor/mediapipe/facefinder.js"></script>
 <script>
 function faceScan() {
