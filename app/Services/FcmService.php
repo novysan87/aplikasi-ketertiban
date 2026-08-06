@@ -83,6 +83,17 @@ class FcmService
             if (! $response->successful()) {
                 Log::error('FCM send failed: '.$response->status().' '.$response->body());
 
+                // Token mati/tercabut (mis. SW browser diganti) → hapus dari database
+                // supaya tidak dipakai lagi; aplikasi akan daftarkan token baru saat login berikutnya.
+                if ($response->status() === 404) {
+                    $body = $response->json();
+                    $code = $body['error']['details'][0]['errorCode'] ?? null;
+                    if ($code === 'UNREGISTERED') {
+                        \App\Models\ParentDevice::where('fcm_token', $token)->delete();
+                        Log::error('FCM device unregistered — token dihapus dari database');
+                    }
+                }
+
                 return false;
             }
 
