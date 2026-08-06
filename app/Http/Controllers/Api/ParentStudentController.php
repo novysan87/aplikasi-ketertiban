@@ -267,6 +267,80 @@ class ParentStudentController extends Controller
     }
 
     /**
+     * Statistik pelanggaran putra/putri (per kategori, jenis, tren bulanan).
+     */
+    public function violationsStats(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        $violations = $student->violations()
+            ->with('violationType.category')
+            ->get();
+
+        $totalCount = $violations->count();
+        $totalPoints = (int) $student->total_points;
+
+        // Per kategori (Ringan/Sedang/Berat)
+        $categories = $violations
+            ->groupBy(fn ($v) => $v->violationType?->category?->id ?? 0)
+            ->map(function ($items, $catId) {
+                $cat = $items->first()->violationType?->category;
+
+                return [
+                    'name' => $cat?->name ?? 'Lainnya',
+                    'color' => $cat?->color ?? '#94a3b8',
+                    'count' => $items->count(),
+                    'points' => (int) $items->sum('points'),
+                ];
+            })
+            ->values()
+            ->sortByDesc('count')
+            ->values();
+
+        // Jenis pelanggaran teratas
+        $topTypes = $violations
+            ->groupBy(fn ($v) => $v->violation_type_id)
+            ->map(function ($items) {
+                return [
+                    'name' => $items->first()->violationType?->name ?? 'Lainnya',
+                    'count' => $items->count(),
+                    'points' => (int) $items->sum('points'),
+                ];
+            })
+            ->values()
+            ->sortByDesc('count')
+            ->take(5)
+            ->values();
+
+        // Tren 6 bulan terakhir
+        $monthly = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i);
+            $key = $m->format('Y-m');
+            $monthly[] = [
+                'month' => $key,
+                'month_number' => (int) $m->format('n'),
+                'count' => $violations
+                    ->filter(fn ($v) => $v->violation_date?->format('Y-m') === $key)
+                    ->count(),
+            ];
+        }
+
+        return response()->json([
+            'total_count' => $totalCount,
+            'total_points' => $totalPoints,
+            'categories' => $categories,
+            'top_types' => $topTypes,
+            'monthly' => $monthly,
+        ]);
+    }
+
+    /**
      * Tautkan anak tambahan (kakak/adik) ke akun wali.
      */
     public function link(Request $request): JsonResponse
