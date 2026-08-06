@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\ParentDevice;
+use App\Models\ParentStudent;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\ViolationNotification;
 use App\Models\ViolationType;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AttendanceSyncController extends Controller
@@ -196,10 +201,160 @@ class AttendanceSyncController extends Controller
             $results['errors'][] = 'Violation type "Alpha" not found. Create a violation type with slug "alpha".';
         }
 
+        // ===== Notifikasi kehadiran ke wali (hadir/izin/sakit — alpha sudah via violation) =====
+        try {
+            $this->notifyAttendanceToParents($attendances, $studentMap, $classNameMap);
+        } catch (\Throwable $e) {
+            Log::error('Notifikasi kehadiran wali gagal: '.$e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => "Sync completed: {$results['created']} created, {$results['updated']} updated, {$results['skipped']} skipped, {$results['violations']} violations.",
             'results' => $results,
         ]);
+    }
+
+    /**
+     * Kirim notifikasi kehadiran per sesi ke wali yang tertaut aktif.
+     * Dedup: satu notifikasi per (siswa, tanggal, status) per hari.
+     */
+    protected function notifyAttendanceToParents(array $attendances, $studentMap, $classNameMap): void
+    {
+        // Kelompokkan item dalam batch ini: (student_id, date, status) → jam pertama/terakhir
+        $groups = [];
+        foreach ($attendances as $item) {
+            $sourceId = $item['source_student_id'];
+            if (! isset($studentMap[$sourceId])) {
+                continue;
+            }
+            $localId = $studentMap[$sourceId];
+            $status = $item['status'];
+            if ($status === 'absent') {
+                continue; // alpha sudah dinotifikasi lewat alur violation
+            }
+            $key = $localId.'|'.$item['date'].'|'.$status;
+            if (! isset($groups[$key])) {
+                $groups[$key] = [
+                    'student_id' => $localId,
+                    'date' => $item['date'],
+                    'status' => $status,
+                    'hours' => [],
+                ];
+            }
+            $groups[$key]['hours'][] = (int) $item['lesson_hour'];
+        }
+
+        $statusLabel = ['present' => 'hadir', 'sick' => 'sakit', 'permission' => 'izin'];
+        $statusLocal = ['present' => 'hadir', 'sick' => 'sakit', 'permission' => 'izin'];
+
+        foreach ($groups as $g) {
+            $student = Student::find($g['student_id']);
+            if (! $student) {
+                continue;
+            }
+
+            $links = ParentStudent::where('student_id', $student->id)
+                ->where('status', 'active')
+                ->get();
+            if ($links->isEmpty()) {
+                continue;
+            }
+
+            // Konteks: mapel + rentang waktu dari e-jurnal
+            $ctx = $this->attendanceContext($student->class_name, $g['date']);
+            $label = $statusLabel[$g['status']] ?? $g['status'];
+            $subject = $ctx['subject'] ?? 'pembelajaran';
+            $time = $ctx['start'] && $ctx['end'] ? " ({$ctx['start']}-{$ctx['end']})" : '';
+            $message = 'Kehadiran: '.$student->full_name.' — '.$label.' di '.$subject.$time;
+
+            // Dedup: cek notifikasi serupa hari ini
+            $exists = ViolationNotification::where('student_id', $student->id)
+                ->where('channel', 'attendance')
+                ->where('message', $message)
+                ->whereDate('created_at', today())
+                ->exists();
+            if ($exists) {
+                continue;
+            }
+
+            $data = [
+                'student_name' => $student->full_name,
+                'status' => $label,
+                'type' => 'attendance_'.$label,
+            ];
+
+            foreach ($links as $link) {
+                ViolationNotification::create([
+                    'student_id' => $student->id,
+                    'channel' => 'attendance',
+                    'recipient' => $link->user?->name ?? 'Wali',
+                    'message' => $message,
+                    'status' => 'sent',
+                    'user_id' => $link->user_id,
+                    'created_at' => now(),
+                ]);
+
+                $tokens = ParentDevice::where('user_id', $link->user_id)->pluck('fcm_token');
+                foreach ($tokens as $token) {
+                    app(FcmService::class)->sendToToken($token, [
+                        'title' => 'Kehadiran: '.$student->full_name,
+                        'body' => $label.' di '.$subject.$time,
+                    ], $data);
+                }
+            }
+        }
+    }
+
+    /**
+     * Mapel + rentang waktu untuk kelas & tanggal tertentu (dari e-jurnal).
+     */
+    protected function attendanceContext(?string $className, string $date): array
+    {
+        try {
+            $db = DB::connection('ejurnal');
+            $yearId = $db->table('academic_years')->where('is_active', 1)->value('id');
+            $semesterId = $db->table('semesters')->where('is_active', 1)->value('id');
+            $dayKey = strtolower(date('l', strtotime($date)));
+
+            $subject = $db->table('schedules as s')
+                ->join('classes as c', 'c.id', '=', 's.class_id')
+                ->join('subjects as sub', 'sub.id', '=', 's.subject_id')
+                ->where('c.name', $className)
+                ->where('s.day_of_week', $dayKey)
+                ->where('s.academic_year_id', $yearId)
+                ->where('s.semester_id', $semesterId)
+                ->where('s.is_active', 1)
+                ->value('sub.name');
+
+            $start = $db->table('schedules as s')
+                ->join('classes as c', 'c.id', '=', 's.class_id')
+                ->where('c.name', $className)
+                ->where('s.day_of_week', $dayKey)
+                ->where('s.academic_year_id', $yearId)
+                ->where('s.semester_id', $semesterId)
+                ->where('s.is_active', 1)
+                ->orderBy('s.start_time')
+                ->value('s.start_time');
+            $end = $db->table('schedules as s')
+                ->join('classes as c', 'c.id', '=', 's.class_id')
+                ->where('c.name', $className)
+                ->where('s.day_of_week', $dayKey)
+                ->where('s.academic_year_id', $yearId)
+                ->where('s.semester_id', $semesterId)
+                ->where('s.is_active', 1)
+                ->orderByDesc('s.end_time')
+                ->value('s.end_time');
+
+            return [
+                'subject' => $subject,
+                'start' => $start ? substr($start, 0, 5) : null,
+                'end' => $end ? substr($end, 0, 5) : null,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('attendanceContext gagal: '.$e->getMessage());
+
+            return ['subject' => null, 'start' => null, 'end' => null];
+        }
     }
 }
