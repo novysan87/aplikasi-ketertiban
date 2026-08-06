@@ -191,7 +191,7 @@ class ParentAuthController extends Controller
     /**
      * Daftar anak + status tautan (active/pending) + ringkasan poin & SP.
      */
-    protected function studentPayloads(User $user): array
+    public function studentPayloads(User $user): array
     {
         return $user->parentStudents()
             ->with('student.class')
