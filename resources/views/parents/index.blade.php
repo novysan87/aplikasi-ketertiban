@@ -168,9 +168,24 @@
                                         @endif
                                     </p>
                                     <p class="text-[11px] text-slate-400 font-mono">{{ $user->username }}</p>
-                                    <span class="inline-flex items-center gap-1 mt-0.5 text-[10px] {{ $user->is_active ? 'text-emerald-500' : 'text-red-400' }}">
-                                        <span class="w-1.5 h-1.5 rounded-full {{ $user->is_active ? 'bg-emerald-500' : 'bg-red-400' }}"></span>
-                                        {{ $user->is_active ? 'Akun aktif' : 'Akun nonaktif' }}
+                                    @php
+                                        $linkStatuses = $user->parentStudents->pluck('status');
+                                        $verifStatus = $user->is_active
+                                            ? ($linkStatuses->contains('active') ? 'active'
+                                                : ($linkStatuses->contains('pending') ? 'pending'
+                                                    : ($linkStatuses->contains('rejected') ? 'rejected' : 'none')))
+                                            : 'nonaktif';
+                                        $verifBadge = [
+                                            'active' => ['Akun aktif', 'text-emerald-500', 'bg-emerald-500'],
+                                            'pending' => ['Menunggu verifikasi', 'text-amber-500', 'bg-amber-500'],
+                                            'rejected' => ['Tautan ditolak', 'text-red-500', 'bg-red-500'],
+                                            'none' => ['Belum ada tautan', 'text-slate-400', 'bg-slate-400'],
+                                            'nonaktif' => ['Akun nonaktif', 'text-red-400', 'bg-red-400'],
+                                        ][$verifStatus];
+                                    @endphp
+                                    <span class="inline-flex items-center gap-1 mt-0.5 text-[10px] {{ $verifBadge[0] ? $verifBadge[1] : '' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $verifBadge[2] }} {{ $verifStatus === 'pending' ? 'animate-pulse' : '' }}"></span>
+                                        {{ $verifBadge[0] }}
                                     </span>
                                 </div>
                             </div>
