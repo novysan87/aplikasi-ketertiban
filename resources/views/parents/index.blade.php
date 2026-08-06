@@ -255,6 +255,11 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
+                                <button onclick="forceLogoutWali({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-red-200 hover:text-red-600 transition-all"
+                                    title="Logout akun di semua perangkat">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                                </button>
                                 <button onclick="resetWaliPassword({{ $user->id }}, '{{ addslashes($user->name) }}')"
                                     class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold shadow-md shadow-amber-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all"
                                     title="Set password baru">
@@ -281,6 +286,31 @@
 
 @push('scripts')
 <script>
+function forceLogoutWali(userId, userName) {
+    Swal.fire({
+        title: 'Logout jarak jauh?',
+        html: 'Semua perangkat akun <b>' + userName + '</b> akan di-logout paksa.<br>Wali harus login ulang dengan password.',
+        icon: 'question',
+        confirmButtonText: '<i class="fa-solid fa-right-from-bracket"></i> Ya, Logout',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#6366f1',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('{{ url('parents') }}/' + userId + '/force-logout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            }).then(r => {
+                if (r.redirected) window.location.href = r.url;
+                else location.reload();
+            });
+        }
+    });
+}
+
 function deleteWali(userId, userName) {
     Swal.fire({
         title: 'Hapus akun ' + userName + '?',

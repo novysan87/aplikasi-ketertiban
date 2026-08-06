@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:parents-verify')->group(function () {
         Route::get('/parents', [\App\Http\Controllers\Admin\WaliMuridController::class, 'index'])->name('parents.index');
         Route::delete('/parents/{user}', [\App\Http\Controllers\Admin\WaliMuridController::class, 'destroy'])->name('parents.destroy');
+        Route::post('/parents/{user}/force-logout', [\App\Http\Controllers\Admin\WaliMuridController::class, 'forceLogout'])->name('parents.force-logout');
         Route::get('/parents/verification', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'index'])->name('parents.verification');
         Route::post('/parents/verification/{link}/approve', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'approve'])->name('parents.verification.approve');
         Route::post('/parents/verification/{link}/reject', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'reject'])->name('parents.verification.reject');

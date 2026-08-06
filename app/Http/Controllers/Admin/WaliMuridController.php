@@ -48,6 +48,20 @@ class WaliMuridController extends Controller
     }
 
     /**
+     * Logout jarak jauh: cabut semua token Sanctum akun wali
+     * → app di semua perangkat langsung 401 → otomatis kembali ke login.
+     */
+    public function forceLogout(int $userId): RedirectResponse
+    {
+        $user = User::where('role', 'parent')->findOrFail($userId);
+
+        $user->tokens()->delete();
+        $user->forceFill(['active_session_token' => null])->save();
+
+        return back()->with('success', 'Semua perangkat akun "' . $user->name . '" telah di-logout dari jarak jauh.');
+    }
+
+    /**
      * Hapus akun wali murid beserta tautan anak & perangkatnya.
      * Hanya akun role=parent yang boleh dihapus lewat sini.
      */
