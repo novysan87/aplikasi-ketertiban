@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ParentStudent;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,14 +17,18 @@ class WaliMuridController extends Controller
     {
         $query = User::query()
             ->where('role', 'parent')
-            ->with(['parentStudents' => fn ($q) => $q->with('student:id,nisn,full_name,class_name')]);
+            ->with([
+                'parentStudents' => fn ($q) => $q->with('student:id,nisn,full_name,class_name'),
+                'parentDevices',
+            ]);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -33,7 +38,7 @@ class WaliMuridController extends Controller
         $totalAktif = User::where('role', 'parent')
             ->whereHas('parentStudents', fn ($q) => $q->where('status', 'active'))
             ->count();
-        $pending = \App\Models\ParentStudent::where('status', 'pending')->count();
+        $pending = ParentStudent::where('status', 'pending')->count();
         $baruMingguIni = User::where('role', 'parent')
             ->where('created_at', '>=', now()->subDays(7))
             ->count();

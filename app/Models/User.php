@@ -147,6 +147,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Perangkat (HP/browser) yang pernah dipakai wali untuk FCM push.
+     */
+    public function parentDevices()
+    {
+        return $this->hasMany(\App\Models\ParentDevice::class, 'user_id')
+            ->orderByDesc('last_active_at');
+    }
+
+    /**
      * Anak-anak (siswa) milik akun wali, hanya yang statusnya aktif.
      */
     public function children()

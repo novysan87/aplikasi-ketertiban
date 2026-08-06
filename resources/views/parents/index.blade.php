@@ -138,8 +138,9 @@
                 <thead class="bg-gradient-to-r from-slate-50 to-blue-50/40">
                     <tr class="text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                         <th class="px-6 py-3.5">Wali</th>
-                        <th class="px-6 py-3.5">Nomor HP</th>
+                        <th class="px-6 py-3.5">Kontak</th>
                         <th class="px-6 py-3.5">Putra/Putri Tertaut</th>
+                        <th class="px-6 py-3.5">Perangkat</th>
                         <th class="px-6 py-3.5">Terdaftar</th>
                         <th class="px-6 py-3.5 text-right">Aksi</th>
                     </tr>
@@ -155,16 +156,36 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-sm text-gray-800">{{ $user->name }}</p>
+                                    <p class="font-semibold text-sm text-gray-800 flex items-center gap-2">
+                                        {{ $user->name }}
+                                        @php $relations = collect($user->parentStudents)->pluck('relation')->filter(); @endphp
+                                        @if($relations->contains('father'))
+                                        <span class="px-1.5 py-0.5 rounded-md bg-sky-50 border border-sky-100 text-sky-600 text-[9px] font-bold">AYAH</span>
+                                        @elseif($relations->contains('mother'))
+                                        <span class="px-1.5 py-0.5 rounded-md bg-pink-50 border border-pink-100 text-pink-600 text-[9px] font-bold">IBU</span>
+                                        @elseif($relations->contains('guardian'))
+                                        <span class="px-1.5 py-0.5 rounded-md bg-violet-50 border border-violet-100 text-violet-600 text-[9px] font-bold">WALI</span>
+                                        @endif
+                                    </p>
                                     <p class="text-[11px] text-slate-400 font-mono">{{ $user->username }}</p>
+                                    <span class="inline-flex items-center gap-1 mt-0.5 text-[10px] {{ $user->is_active ? 'text-emerald-500' : 'text-red-400' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $user->is_active ? 'bg-emerald-500' : 'bg-red-400' }}"></span>
+                                        {{ $user->is_active ? 'Akun aktif' : 'Akun nonaktif' }}
+                                    </span>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center gap-1.5 text-sm text-slate-600">
-                                <i class="fa-solid fa-phone text-[11px] text-slate-300"></i>
-                                {{ $user->phone ?? '-' }}
-                            </span>
+                            <div class="flex flex-col gap-1.5 text-sm text-slate-600">
+                                <span class="inline-flex items-center gap-1.5">
+                                    <i class="fa-solid fa-phone text-[11px] text-slate-300"></i>
+                                    {{ $user->phone ?? '-' }}
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 text-xs {{ $user->email ? 'text-slate-500' : 'text-slate-300' }}">
+                                    <i class="fa-regular fa-envelope text-[11px]"></i>
+                                    {{ $user->email ?? 'tanpa email' }}
+                                </span>
+                            </div>
                         </td>
                         <td class="px-6 py-4">
                             @if($user->parentStudents->isEmpty())
@@ -192,6 +213,35 @@
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Ditolak
                                     </span>
                                     @endif
+                                </span>
+                                @endforeach
+                            </div>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($user->parentDevices->isEmpty())
+                            <span class="text-xs text-slate-400">Belum ada perangkat</span>
+                            @else
+                            <div class="flex flex-col gap-1.5">
+                                @foreach($user->parentDevices as $device)
+                                <span class="inline-flex items-center gap-2 text-xs">
+                                    @if($device->platform === 'android')
+                                    <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-50 to-green-100 text-emerald-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-mobile-screen text-[10px]"></i>
+                                    </span>
+                                    @elseif($device->platform === 'ios')
+                                    <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 flex items-center justify-center">
+                                        <i class="fa-brands fa-apple text-[10px]"></i>
+                                    </span>
+                                    @else
+                                    <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-sky-50 to-blue-100 text-blue-500 flex items-center justify-center">
+                                        <i class="fa-solid fa-globe text-[10px]"></i>
+                                    </span>
+                                    @endif
+                                    <div>
+                                        <p class="font-medium text-slate-600">{{ $device->device_name }}</p>
+                                        <p class="text-[10px] text-slate-400">aktif {{ $device->last_active_at?->diffForHumans() }}</p>
+                                    </div>
                                 </span>
                                 @endforeach
                             </div>
