@@ -57,6 +57,7 @@ class WaliMuridController extends Controller
 
         $user->parentDevices()->delete();
         $user->parentStudents()->delete();
+        $user->tokens()->delete(); // cabut semua token login → app otomatis 401
         $user->delete();
 
         return back()->with('success', 'Akun wali "' . $user->name . '" beserta tautan & perangkatnya telah dihapus.');
