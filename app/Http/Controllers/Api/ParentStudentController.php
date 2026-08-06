@@ -341,6 +341,63 @@ class ParentStudentController extends Controller
     }
 
     /**
+     * Nilai putra/putri (dari teacher_grades e-jurnal, dikelompokkan per mapel).
+     */
+    public function grades(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        try {
+            $db = DB::connection('ejurnal');
+            $ejStudent = $db->table('students')->where('nisn', $student->nisn)->first();
+            if (! $ejStudent) {
+                return response()->json(['subjects' => [], 'overall_average' => null]);
+            }
+
+            $rows = $db->table('teacher_grades as tg')
+                ->join('schedules as s', 's.id', '=', 'tg.schedule_id')
+                ->join('subjects as sub', 'sub.id', '=', 's.subject_id')
+                ->where('tg.student_id', $ejStudent->id)
+                ->orderBy('sub.name')
+                ->orderByDesc('tg.date')
+                ->get(['tg.label', 'tg.score', 'tg.category', 'tg.date', 'sub.name as subject']);
+
+            $bySubject = $rows->groupBy('subject');
+            $subjects = $bySubject->map(function ($items, $subject) {
+                $scores = $items->pluck('score')->map(fn ($s) => (int) $s);
+
+                return [
+                    'subject' => $subject,
+                    'average' => $scores->isNotEmpty() ? round($scores->avg(), 1) : null,
+                    'entries' => $items->map(fn ($r) => [
+                        'label' => $r->label,
+                        'score' => (int) $r->score,
+                        'category' => $r->category,
+                        'date' => $r->date,
+                    ])->values(),
+                ];
+            })->values();
+
+            $allScores = $rows->pluck('score')->map(fn ($s) => (int) $s);
+
+            return response()->json([
+                'subjects' => $subjects,
+                'overall_average' => $allScores->isNotEmpty() ? round($allScores->avg(), 1) : null,
+                'total_entries' => $rows->count(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Nilai gagal dimuat: '.$e->getMessage());
+
+            return response()->json(['message' => 'Nilai belum tersedia.'], 404);
+        }
+    }
+
+    /**
      * Tautkan anak tambahan (kakak/adik) ke akun wali.
      */
     public function link(Request $request): JsonResponse
