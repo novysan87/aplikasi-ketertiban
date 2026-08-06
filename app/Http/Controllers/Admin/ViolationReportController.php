@@ -63,9 +63,9 @@ class ViolationReportController extends Controller
             ->sortByDesc('jumlah')
             ->values();
 
-        $perKelas = $violations->groupBy(fn ($v) => $v->student?->class?->name ?? 'Tanpa Kelas')
+        $perKelas = $violations->groupBy(fn ($v) => $v->student_class ?: ($v->student?->class?->name ?? 'Tanpa Kelas'))
             ->map(fn ($group) => [
-                'kelas' => $group->first()->student?->class?->name ?? 'Tanpa Kelas',
+                'kelas' => $group->first()->student_class ?: ($group->first()->student?->class?->name ?? 'Tanpa Kelas'),
                 'jumlah' => $group->count(),
                 'poin' => $group->sum('points'),
             ])
@@ -161,9 +161,9 @@ class ViolationReportController extends Controller
             ->sortByDesc('jumlah')
             ->values();
 
-        $perKelas = $rows->groupBy(fn ($v) => $v->student?->class?->name ?? 'Tanpa Kelas')
+        $perKelas = $rows->groupBy(fn ($v) => $v->student_class ?: ($v->student?->class?->name ?? 'Tanpa Kelas'))
             ->map(fn ($group) => [
-                'kelas' => $group->first()->student?->class?->name ?? 'Tanpa Kelas',
+                'kelas' => $group->first()->student_class ?: ($group->first()->student?->class?->name ?? 'Tanpa Kelas'),
                 'jumlah' => $group->count(),
                 'poin' => $group->sum('points'),
             ])
