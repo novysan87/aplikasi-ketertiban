@@ -31,12 +31,12 @@
                 </div>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-                <button form="filter-form" formaction="{{ route('reports.violations.pdf') }}" formtarget="_blank"
-                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-blue-800 bg-white rounded-xl hover:bg-blue-50 transition shadow-md">
+                <button type="button" @click="cetakPdf()" @keydown.enter="cetakPdf()"
+                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-blue-800 bg-white rounded-xl hover:bg-blue-50 transition shadow-md cursor-pointer">
                     <i class="fa-solid fa-file-pdf"></i> Cetak Laporan PDF
                 </button>
-                <button form="filter-form" formaction="{{ route('violations.export') }}"
-                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-emerald-500/90 hover:bg-emerald-500 rounded-xl transition shadow-md border border-white/20">
+                <button type="button" @click="exportExcel()" @keydown.enter="exportExcel()"
+                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-emerald-500/90 hover:bg-emerald-500 rounded-xl transition shadow-md border border-white/20 cursor-pointer">
                     <i class="fa-solid fa-file-excel"></i> Export Excel
                 </button>
             </div>
@@ -330,6 +330,22 @@
                 this.dateFrom = from;
                 this.dateTo = to;
                 this.$nextTick(() => document.getElementById('filter-form').submit());
+            },
+            queryString() {
+                const p = new URLSearchParams();
+                if (this.dateFrom) p.set('date_from', this.dateFrom);
+                if (this.dateTo) p.set('date_to', this.dateTo);
+                if (this.classId) p.set('class_id', this.classId);
+                if (this.jenisId) p.set('violation_type_id', this.jenisId);
+                return p.toString();
+            },
+            cetakPdf() {
+                const qs = this.queryString();
+                window.open('{{ route('reports.violations.pdf') }}' + (qs ? '?' + qs : ''), '_blank');
+            },
+            exportExcel() {
+                const qs = this.queryString();
+                window.location.href = '{{ route('violations.export') }}' + (qs ? '?' + qs : '');
             },
             resetFilter() {
                 this.dateFrom = '';
