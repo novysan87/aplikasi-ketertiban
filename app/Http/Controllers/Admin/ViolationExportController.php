@@ -26,6 +26,16 @@ class ViolationExportController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('violation_date', '<=', $request->date_to);
         }
+        if ($request->filled('class_id')) {
+            $query->whereHas('student', fn ($q) => $q->where('class_id', $request->class_id));
+        }
+        if ($request->filled('violation_type_id')) {
+            $query->where('violation_type_id', $request->violation_type_id);
+        }
+        // Wali kelas hanya melihat data kelasnya sendiri
+        if (auth()->user() && auth()->user()->isScopedWaliKelas()) {
+            $query->whereHas('student', fn ($q) => $q->whereIn('class_id', auth()->user()->homeroomClassIds()));
+        }
 
         $violations = $query->orderBy('violation_date', 'desc')->get();
 
