@@ -3,13 +3,15 @@
 namespace App\Services;
 
 use App\Events\ViolationRecorded;
+use App\Models\AppNotification;
+use App\Models\ParentDevice;
+use App\Models\ParentStudent;
 use App\Models\PointAuditLog;
 use App\Models\SpLetter;
 use App\Models\SpThreshold;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\Violation;
-use App\Models\AppNotification;
 use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 
@@ -117,7 +119,110 @@ class ViolationService
             'status' => 'draft',
         ]);
 
+        // Notifikasi + FCM push ke wali murid (SP baru)
+        $this->notifyParentsOfSp($letter);
+
         return $letter;
+    }
+
+    protected function notifyParents(Violation $violation): void
+    {
+        try {
+            $student = $violation->student;
+            $links = ParentStudent::where('student_id', $student->id)
+                ->where('status', 'active')
+                ->get();
+
+            if ($links->isEmpty()) {
+                return;
+            }
+
+            $title = 'Pelanggaran baru: '.$student->full_name;
+            $body = $violation->violationType?->name.' (+'.$violation->points.' poin)';
+            $data = [
+                'violation_id' => (string) $violation->id,
+                'student_name' => $student->full_name,
+                'points' => (string) $violation->points,
+                'type' => 'violation_recorded',
+            ];
+
+            foreach ($links as $link) {
+                // Catat di daftar notifikasi dalam aplikasi wali (channel push)
+                $violation->notifications()->create([
+                    'student_id' => $student->id,
+                    'channel' => 'push',
+                    'recipient' => $link->user?->name ?? 'Wali',
+                    'message' => $title.' — '.$body,
+                    'status' => 'sent',
+                    'user_id' => $link->user_id,
+                    'created_at' => now(),
+                ]);
+
+                // FCM push ke semua perangkat wali
+                $tokens = ParentDevice::where('user_id', $link->user_id)->pluck('fcm_token');
+                foreach ($tokens as $token) {
+                    app(FcmService::class)->sendToToken($token, [
+                        'title' => $title,
+                        'body' => $body,
+                    ], $data);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Notify parents (violation) failed: '.$e->getMessage());
+        }
+    }
+
+    protected function notifyParentsOfSp(SpLetter $letter): void
+    {
+        try {
+            $student = $letter->student;
+            $links = ParentStudent::where('student_id', $student->id)
+                ->where('status', 'active')
+                ->get();
+
+            if ($links->isEmpty()) {
+                return;
+            }
+
+            $title = 'Surat Peringatan untuk '.$student->full_name;
+            $body = $letter->title.' ('.$letter->letter_number.')';
+            $data = [
+                'sp_letter_id' => (string) $letter->id,
+                'student_name' => $student->full_name,
+                'type' => 'sp_generated',
+            ];
+
+            foreach ($links as $link) {
+                // Ambil id pelanggaran pertama dari data JSON violations_included (untuk tautan notifikasi)
+                $included = $letter->violations_included ?? [];
+                $firstViolationId = is_array($included) && ! empty($included)
+                    ? ($included[0]['id'] ?? null)
+                    : null;
+                $notification = new \App\Models\ViolationNotification([
+                    'student_id' => $student->id,
+                    'channel' => 'push',
+                    'recipient' => $link->user?->name ?? 'Wali',
+                    'message' => $title.' — '.$body,
+                    'status' => 'sent',
+                    'user_id' => $link->user_id,
+                    'created_at' => now(),
+                ]);
+                if ($firstViolationId) {
+                    $notification->violation_id = $firstViolationId;
+                }
+                $notification->save();
+
+                $tokens = ParentDevice::where('user_id', $link->user_id)->pluck('fcm_token');
+                foreach ($tokens as $token) {
+                    app(FcmService::class)->sendToToken($token, [
+                        'title' => $title,
+                        'body' => $body,
+                    ], $data);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Notify parents (SP) failed: '.$e->getMessage());
+        }
     }
 
     protected function notifyRealtime(Violation $violation): void
@@ -149,6 +254,9 @@ class ViolationService
 
             // Broadcast via Reverb
             broadcast(new ViolationRecorded($violation));
+
+            // Notifikasi + FCM push ke wali murid
+            $this->notifyParents($violation);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Notify realtime failed: ' . $e->getMessage());
         }

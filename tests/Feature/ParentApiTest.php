@@ -214,5 +214,19 @@ class ParentApiTest extends TestCase
         $this->assertDatabaseHas('parent_devices', [
             'fcm_token' => 'fcm-abc-123',
         ]);
+
+        // Platform web (preview browser) juga harus diterima
+        $this->withToken($token)
+            ->postJson('/api/v1/parent/devices', [
+                'platform' => 'web',
+                'fcm_token' => 'fcm-web-456',
+                'device_name' => 'Chrome preview',
+            ])
+            ->assertStatus(201);
+
+        $this->assertDatabaseHas('parent_devices', [
+            'fcm_token' => 'fcm-web-456',
+            'platform' => 'web',
+        ]);
     }
 }

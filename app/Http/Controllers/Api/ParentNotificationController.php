@@ -60,7 +60,7 @@ class ParentNotificationController extends Controller
     public function registerDevice(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'platform' => ['required', Rule::in(['android', 'ios'])],
+            'platform' => ['required', Rule::in(['android', 'ios', 'web'])],
             'fcm_token' => ['required', 'string', 'max:255'],
             'device_name' => ['nullable', 'string', 'max:100'],
         ]);
