@@ -451,6 +451,48 @@ class ParentStudentController extends Controller
     }
 
     /**
+     * Prestasi putra/putri (dari student_achievements database kesiswaan).
+     */
+    public function achievements(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        try {
+            $rows = DB::connection('kesiswaan')
+                ->table('student_achievements')
+                ->where('student_id', $student->source_id)
+                ->orderByDesc('achievement_date')
+                ->orderByDesc('achievement_year')
+                ->get();
+
+            $items = $rows->map(fn ($r) => [
+                'name' => $r->achievement_name,
+                'category' => $r->category,
+                'level' => $r->level,
+                'organizer' => $r->organizer,
+                'rank' => $r->rank,
+                'date' => $r->achievement_date,
+                'year' => $r->achievement_year,
+                'description' => $r->description,
+            ])->values();
+
+            return response()->json([
+                'achievements' => $items,
+                'total' => $items->count(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Prestasi gagal dimuat: '.$e->getMessage());
+
+            return response()->json(['achievements' => [], 'total' => 0]);
+        }
+    }
+
+    /**
      * Tautkan anak tambahan (kakak/adik) ke akun wali.
      */
     public function link(Request $request): JsonResponse
