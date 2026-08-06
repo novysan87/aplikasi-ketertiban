@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
     Route::post('/students/link', [ParentStudentController::class, 'link'])->middleware('throttle:5,10')->name('api.parent.students.link');
     Route::get('/students/{student}/violations', [ParentStudentController::class, 'violations'])->name('api.parent.students.violations');
     Route::get('/students/{student}/sp-letters', [ParentStudentController::class, 'spLetters'])->name('api.parent.students.sp-letters');
+    Route::get('/students/{student}/schedule', [ParentStudentController::class, 'schedule'])->name('api.parent.students.schedule');
 
     // Notifikasi & perangkat
     Route::get('/notifications', [ParentNotificationController::class, 'index'])->name('api.parent.notifications');

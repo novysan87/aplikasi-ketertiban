@@ -10,6 +10,7 @@ use App\Models\Violation;
 use App\Support\PhoneHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ParentStudentController extends Controller
@@ -22,6 +23,62 @@ class ParentStudentController extends Controller
         $payload = app(ParentAuthController::class)->studentPayloads($request->user());
 
         return response()->json(['students' => $payload]);
+    }
+
+    /**
+     * Jadwal pelajaran mingguan kelas siswa (diambil dari database e-jurnal).
+     */
+    public function schedule(Request $request, Student $student): JsonResponse
+    {
+        // Hanya wali dengan tautan aktif yang boleh melihat
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        try {
+            $db = DB::connection('ejurnal');
+            $yearId = $db->table('academic_years')->where('is_active', 1)->value('id');
+            $semesterId = $db->table('semesters')->where('is_active', 1)->value('id');
+
+            $rows = $db->table('schedules as s')
+                ->join('classes as c', 'c.id', '=', 's.class_id')
+                ->join('subjects as sub', 'sub.id', '=', 's.subject_id')
+                ->where('c.name', $student->class_name)
+                ->where('s.academic_year_id', $yearId)
+                ->where('s.semester_id', $semesterId)
+                ->where('s.is_active', 1)
+                ->orderBy('s.day_of_week')
+                ->orderBy('s.start_time')
+                ->get(['s.day_of_week', 's.start_time', 's.end_time', 'sub.name as subject']);
+
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            $grouped = [];
+            foreach ($days as $day) {
+                $items = $rows->where('day_of_week', $day)->values()->map(fn ($r) => [
+                    'start' => substr($r->start_time, 0, 5),
+                    'end' => substr($r->end_time, 0, 5),
+                    'subject' => $r->subject,
+                ]);
+                if ($items->isNotEmpty()) {
+                    $grouped[] = [
+                        'day' => $day,
+                        'items' => $items,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'class_name' => $student->class_name,
+                'schedule' => $grouped,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Jadwal gagal dimuat: '.$e->getMessage());
+
+            return response()->json(['message' => 'Jadwal belum tersedia untuk kelas ini.'], 404);
+        }
     }
 
     /**
