@@ -33,7 +33,11 @@ class WaliMuridController extends Controller
         $totalAktif = User::where('role', 'parent')
             ->whereHas('parentStudents', fn ($q) => $q->where('status', 'active'))
             ->count();
+        $pending = \App\Models\ParentStudent::where('status', 'pending')->count();
+        $baruMingguIni = User::where('role', 'parent')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
 
-        return view('parents.index', compact('users', 'total', 'totalAktif'));
+        return view('parents.index', compact('users', 'total', 'totalAktif', 'pending', 'baruMingguIni'));
     }
 }
