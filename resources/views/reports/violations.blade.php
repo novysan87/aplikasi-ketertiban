@@ -30,16 +30,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-3 shrink-0">
-                <button type="button" @click="cetakPdf()" @keydown.enter="cetakPdf()"
-                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-blue-800 bg-white rounded-xl hover:bg-blue-50 transition shadow-md cursor-pointer">
-                    <i class="fa-solid fa-file-pdf"></i> Cetak Laporan PDF
-                </button>
-                <button type="button" @click="exportExcel()" @keydown.enter="exportExcel()"
-                    class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-emerald-500/90 hover:bg-emerald-500 rounded-xl transition shadow-md border border-white/20 cursor-pointer">
-                    <i class="fa-solid fa-file-excel"></i> Export Excel
-                </button>
-            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-blue-50 border border-white/15 text-[11px] font-medium">
+                <i class="fa-solid fa-print text-[10px]"></i> Cetak &amp; export di bawah filter
+            </span>
         </div>
     </div>
 
@@ -99,6 +92,14 @@
             <button type="submit"
                 class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
                 <i class="fa-solid fa-filter text-xs"></i> Terapkan Filter
+            </button>
+            <button type="submit" formaction="{{ route('reports.violations.pdf') }}" formtarget="_blank"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i> Cetak Laporan PDF
+            </button>
+            <button type="submit" formaction="{{ route('violations.export') }}"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-emerald-500/90 hover:bg-emerald-500 rounded-xl transition shadow-sm">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
             </button>
             <button type="button" @click="resetFilter()"
                 class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
@@ -330,22 +331,6 @@
                 this.dateFrom = from;
                 this.dateTo = to;
                 this.$nextTick(() => document.getElementById('filter-form').submit());
-            },
-            queryString() {
-                const p = new URLSearchParams();
-                if (this.dateFrom) p.set('date_from', this.dateFrom);
-                if (this.dateTo) p.set('date_to', this.dateTo);
-                if (this.classId) p.set('class_id', this.classId);
-                if (this.jenisId) p.set('violation_type_id', this.jenisId);
-                return p.toString();
-            },
-            cetakPdf() {
-                const qs = this.queryString();
-                window.open('{{ route('reports.violations.pdf') }}' + (qs ? '?' + qs : ''), '_blank');
-            },
-            exportExcel() {
-                const qs = this.queryString();
-                window.location.href = '{{ route('violations.export') }}' + (qs ? '?' + qs : '');
             },
             resetFilter() {
                 this.dateFrom = '';
