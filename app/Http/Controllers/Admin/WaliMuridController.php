@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ParentStudent;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -44,5 +45,20 @@ class WaliMuridController extends Controller
             ->count();
 
         return view('parents.index', compact('users', 'total', 'totalAktif', 'pending', 'baruMingguIni'));
+    }
+
+    /**
+     * Hapus akun wali murid beserta tautan anak & perangkatnya.
+     * Hanya akun role=parent yang boleh dihapus lewat sini.
+     */
+    public function destroy(int $userId): RedirectResponse
+    {
+        $user = User::where('role', 'parent')->findOrFail($userId);
+
+        $user->parentDevices()->delete();
+        $user->parentStudents()->delete();
+        $user->delete();
+
+        return back()->with('success', 'Akun wali "' . $user->name . '" beserta tautan & perangkatnya telah dihapus.');
     }
 }

@@ -254,11 +254,18 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <button onclick="resetWaliPassword({{ $user->id }}, '{{ addslashes($user->name) }}')"
-                                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold shadow-md shadow-amber-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all"
-                                title="Set password baru">
-                                <i class="fa-solid fa-key"></i> Reset Password
-                            </button>
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="resetWaliPassword({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold shadow-md shadow-amber-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all"
+                                    title="Set password baru">
+                                    <i class="fa-solid fa-key"></i> Reset Password
+                                </button>
+                                <button onclick="deleteWali({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold shadow-md shadow-rose-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all"
+                                    title="Hapus akun wali">
+                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -274,6 +281,31 @@
 
 @push('scripts')
 <script>
+function deleteWali(userId, userName) {
+    Swal.fire({
+        title: 'Hapus akun ' + userName + '?',
+        html: 'Akun wali, <b>tautan putra/putri</b>, dan <b>data perangkat</b> akan dihapus permanen dari database.<br><br>Data siswa <b>tidak</b> ikut terhapus.',
+        icon: 'warning',
+        confirmButtonText: '<i class="fa-solid fa-trash-can"></i> Ya, Hapus',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#e11d48',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('{{ url('parents') }}/' + userId, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            }).then(r => {
+                if (r.redirected) window.location.href = r.url;
+                else location.reload();
+            });
+        }
+    });
+}
+
 function resetWaliPassword(userId, userName) {
     Swal.fire({
         title: 'Reset Password — ' + userName,
