@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ParentStudent;
+use App\Models\PointAuditLog;
 use App\Models\SpLetter;
 use App\Models\Student;
 use App\Models\Violation;
@@ -209,6 +210,59 @@ class ParentStudentController extends Controller
             'month' => now()->format('Y-m'),
             'summary' => $summary,
             'records' => $records,
+        ]);
+    }
+
+    /**
+     * Riwayat poin putra/putri (peristiwa + grafik bulanan).
+     */
+    public function pointsHistory(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        $logs = PointAuditLog::where('student_id', $student->id)
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get();
+
+        $events = $logs->map(function (PointAuditLog $l) {
+            $meta = $l->metadata ?? [];
+
+            return [
+                'id' => $l->id,
+                'date' => $l->created_at?->toDateString(),
+                'description' => $l->description,
+                'detail' => $meta['description'] ?? null,
+                'delta' => (int) $l->points_delta,
+                'total_after' => (int) $l->points_after,
+                'action' => $l->action,
+            ];
+        })->values();
+
+        // Grafik 6 bulan terakhir (net poin per bulan)
+        $monthly = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i);
+            $key = $m->format('Y-m');
+            $monthNumber = (int) $m->format('n');
+            $sum = $logs->filter(fn (PointAuditLog $l) => $l->created_at?->format('Y-m') === $key)
+                ->sum('points_delta');
+            $monthly[] = [
+                'month' => $key,
+                'month_number' => $monthNumber,
+                'points' => (int) $sum,
+            ];
+        }
+
+        return response()->json([
+            'total_points' => (int) $student->total_points,
+            'events' => $events,
+            'monthly' => $monthly,
         ]);
     }
 
