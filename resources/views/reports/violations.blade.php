@@ -46,7 +46,7 @@
     {{-- ===== Filter Bar ===== --}}
     <form method="GET" action="{{ route('reports.violations') }}" id="filter-form"
           class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
                 <div class="relative">
@@ -72,6 +72,21 @@
                         <option value="">— Semua Kelas —</option>
                         @foreach ($classes as $class)
                             <option value="{{ $class->id }}" @selected($filters['class_id'] == $class->id)>{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Pelanggaran</label>
+                <div class="relative">
+                    <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                    <select name="violation_type_id" x-model="jenisId"
+                        class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
+                        <option value="">— Semua Jenis —</option>
+                        @foreach ($violationTypes as $type)
+                            <option value="{{ $type->id }}" @selected($filters['violation_type_id'] == $type->id)>
+                                {{ $type->category?->name ? '['.$type->category->name.'] ' : '' }}{{ $type->name }} ({{ $type->points }} poin)
+                            </option>
                         @endforeach
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
@@ -251,7 +266,7 @@
                 <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-list-check text-sm"></i></span>
                 Rincian Pelanggaran Terbaru
             </h3>
-            <a href="{{ route('violations.index', request()->only(['date_from', 'date_to'])) }}"
+            <a href="{{ route('violations.index', request()->only(['date_from', 'date_to', 'violation_type_id'])) }}"
                class="text-xs font-semibold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1.5">
                 Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </a>
@@ -311,6 +326,7 @@
             dateFrom: {{ json_encode($filters['date_from'] ?? '') }},
             dateTo: {{ json_encode($filters['date_to'] ?? '') }},
             classId: {{ json_encode($filters['class_id'] ?? '') }},
+            jenisId: {{ json_encode($filters['violation_type_id'] ?? '') }},
             applyPreset(from, to) {
                 this.dateFrom = from;
                 this.dateTo = to;
@@ -320,6 +336,7 @@
                 this.dateFrom = '';
                 this.dateTo = '';
                 this.classId = '';
+                this.jenisId = '';
                 this.$nextTick(() => document.getElementById('filter-form').submit());
             },
         };

@@ -68,7 +68,7 @@
     {{-- Judul --}}
     <div class="judul">
         <h2>Rekap Laporan Pelanggaran Siswa</h2>
-        <p>Periode: {{ $periode }} &nbsp;•&nbsp; Kelas: {{ $filterKelas }}</p>
+        <p>Periode: {{ $periode }} &nbsp;•&nbsp; Kelas: {{ $filterKelas }} &nbsp;•&nbsp; Jenis: {{ $filterJenis }}</p>
     </div>
 
     {{-- Ringkasan --}}

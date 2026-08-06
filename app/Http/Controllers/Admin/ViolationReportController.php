@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Classes;
 use App\Models\Setting;
+use App\Models\ViolationType;
 use App\Models\Violation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,10 @@ class ViolationReportController extends Controller
     public function index(Request $request): View
     {
         $classes = Classes::orderBy('name')->get();
+        $violationTypes = ViolationType::with('category')
+            ->orderBy('category_id')
+            ->orderBy('name')
+            ->get();
         $filters = $this->filters($request);
 
         $query = $this->baseQuery($filters);
@@ -30,7 +35,7 @@ class ViolationReportController extends Controller
             ->limit(20)
             ->get();
 
-        return view('reports.violations', compact('classes', 'filters', 'stats', 'recent'));
+        return view('reports.violations', compact('classes', 'violationTypes', 'filters', 'stats', 'recent'));
     }
 
     public function pdf(Request $request)
@@ -85,9 +90,12 @@ class ViolationReportController extends Controller
 
         $periode = ($filters['date_from'] ?? 'Awal').' s/d '.($filters['date_to'] ?? 'Sekarang');
         $filterKelas = $filters['class_id'] ? (Classes::find($filters['class_id'])?->name ?? '-') : 'Semua Kelas';
+        $filterJenis = $filters['violation_type_id']
+            ? (ViolationType::find($filters['violation_type_id'])?->name ?? '-')
+            : 'Semua Jenis Pelanggaran';
 
         $pdf = Pdf::loadView('reports.violation-report-pdf', compact(
-            'violations', 'summary', 'perJenis', 'perKelas', 'school', 'periode', 'filterKelas'
+            'violations', 'summary', 'perJenis', 'perKelas', 'school', 'periode', 'filterKelas', 'filterJenis'
         ))->setPaper('a4', 'landscape');
 
         return $pdf->download('rekap-pelanggaran-'.now()->format('Ymd-His').'.pdf');
@@ -104,6 +112,7 @@ class ViolationReportController extends Controller
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
             'class_id' => ['nullable', 'integer', 'exists:classes,id'],
+            'violation_type_id' => ['nullable', 'integer', 'exists:violation_types,id'],
         ];
 
         $data = $validate ? $request->validate($rules) : $request->validate($rules);
@@ -112,6 +121,7 @@ class ViolationReportController extends Controller
             'date_from' => $data['date_from'] ?? null,
             'date_to' => $data['date_to'] ?? null,
             'class_id' => isset($data['class_id']) ? (int) $data['class_id'] : null,
+            'violation_type_id' => isset($data['violation_type_id']) ? (int) $data['violation_type_id'] : null,
         ];
     }
 
@@ -124,6 +134,7 @@ class ViolationReportController extends Controller
             ->when($filters['date_from'], fn ($q) => $q->whereDate('violation_date', '>=', $filters['date_from']))
             ->when($filters['date_to'], fn ($q) => $q->whereDate('violation_date', '<=', $filters['date_to']))
             ->when($filters['class_id'], fn ($q) => $q->whereHas('student', fn ($qq) => $qq->where('class_id', $filters['class_id'])))
+            ->when($filters['violation_type_id'], fn ($q) => $q->where('violation_type_id', $filters['violation_type_id']))
             ->when(auth()->user()->isScopedWaliKelas(), fn ($q) => $q->whereHas('student', fn ($qq) => $qq->whereIn('class_id', auth()->user()->homeroomClassIds())));
     }
 
