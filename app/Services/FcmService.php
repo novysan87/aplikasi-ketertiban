@@ -81,14 +81,14 @@ class FcmService
                 ->post("https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send", $message);
 
             if (! $response->successful()) {
-                Log::warning('FCM send failed: '.$response->status().' '.$response->body());
+                Log::error('FCM send failed: '.$response->status().' '.$response->body());
 
                 return false;
             }
 
             return true;
         } catch (\Throwable $e) {
-            Log::warning('FCM send error: '.$e->getMessage());
+            Log::error('FCM send error: '.$e->getMessage());
 
             return false;
         }
