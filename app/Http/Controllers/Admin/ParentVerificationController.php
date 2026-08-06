@@ -20,12 +20,18 @@ class ParentVerificationController extends Controller
 
         $recent = ParentStudent::query()
             ->where('status', '!=', 'pending')
-            ->with(['user:id,name,username', 'student:id,nisn,full_name,class_name'])
+            ->with(['user:id,name,username,phone', 'student:id,nisn,full_name,class_name'])
             ->orderByDesc('updated_at')
             ->limit(20)
             ->get();
 
-        return view('parents.verification', compact('pending', 'recent'));
+        $totalWali = \App\Models\User::where('role', 'parent')->count();
+        $approvedToday = ParentStudent::where('status', 'active')
+            ->whereDate('verified_at', today())
+            ->count();
+        $rejectedTotal = ParentStudent::where('status', 'rejected')->count();
+
+        return view('parents.verification', compact('pending', 'recent', 'totalWali', 'approvedToday', 'rejectedTotal'));
     }
 
     public function approve(Request $request, int $linkId): RedirectResponse
