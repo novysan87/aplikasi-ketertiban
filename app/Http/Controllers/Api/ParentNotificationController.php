@@ -29,7 +29,13 @@ class ParentNotificationController extends Controller
         }
 
         $notifications = ViolationNotification::query()
-            ->whereIn('student_id', $studentIds)
+            ->where(function ($q) use ($studentIds) {
+                $q->whereIn('student_id', $studentIds)
+                    ->orWhere(function ($q2) use ($studentIds) {
+                        // Info sekolah (broadcast): student_id null, per user
+                        $q2->whereNull('student_id')->where('user_id', auth()->id());
+                    });
+            })
             ->with('student:id,full_name,class_name')
             ->orderByDesc('created_at')
             ->limit(50)
@@ -69,8 +75,13 @@ class ParentNotificationController extends Controller
             return response()->json(['count' => 0]);
         }
 
-        $count = ViolationNotification::whereIn('student_id', $studentIds)
-            ->where('channel', 'push') // pelanggaran & SP (bukan kehadiran)
+        $count = ViolationNotification::where(function ($q) use ($studentIds) {
+                $q->whereIn('student_id', $studentIds)
+                    ->orWhere(function ($q2) {
+                        $q2->whereNull('student_id')->where('user_id', auth()->id());
+                    });
+            })
+            ->whereIn('channel', ['push', 'info']) // pelanggaran, SP, info sekolah
             ->where('is_read', false)
             ->count();
 
@@ -89,7 +100,12 @@ class ParentNotificationController extends Controller
 
         $updated = 0;
         if (! empty($studentIds)) {
-            $updated = ViolationNotification::whereIn('student_id', $studentIds)
+            $updated = ViolationNotification::where(function ($q) use ($studentIds) {
+                    $q->whereIn('student_id', $studentIds)
+                        ->orWhere(function ($q2) {
+                            $q2->whereNull('student_id')->where('user_id', auth()->id());
+                        });
+                })
                 ->where('is_read', false)
                 ->update(['is_read' => true, 'read_at' => now()]);
         }

@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ParentDevice;
+use App\Models\ParentStudent;
 use App\Models\SchoolInformation;
+use App\Models\ViolationNotification;
+use App\Services\FcmService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class SchoolInformationController extends Controller
@@ -27,7 +32,11 @@ class SchoolInformationController extends Controller
 
         SchoolInformation::create($validated + ['created_by' => $request->user()->id]);
 
-        return back()->with('success', 'Informasi "' . $validated['title'] . '" berhasil dipublikasikan.');
+        if ($validated['is_published'] ?? false) {
+            $this->notifyParents($validated['title']);
+        }
+
+        return back()->with('success', 'Informasi "'.$validated['title'].'" berhasil dipublikasikan.');
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -36,6 +45,10 @@ class SchoolInformationController extends Controller
         $validated = $this->validateData($request);
 
         $info->update($validated);
+
+        if ($validated['is_published'] ?? false) {
+            $this->notifyParents($validated['title']);
+        }
 
         return back()->with('success', 'Informasi berhasil diperbarui.');
     }
@@ -57,5 +70,50 @@ class SchoolInformationController extends Controller
             'event_date' => ['nullable', 'date'],
             'is_published' => ['nullable', 'boolean'],
         ]) + ['is_published' => $request->boolean('is_published')];
+    }
+
+    /**
+     * Kirim notifikasi + push informasi sekolah ke semua wali (broadcast).
+     * Dedupe: satu notifikasi per judul per hari.
+     */
+    protected function notifyParents(string $title): void
+    {
+        try {
+            $message = 'Informasi Sekolah: '.$title;
+
+            $already = ViolationNotification::where('channel', 'info')
+                ->where('message', $message)
+                ->whereDate('created_at', today())
+                ->exists();
+            if ($already) {
+                return;
+            }
+
+            $parentIds = ParentStudent::where('status', 'active')
+                ->distinct()
+                ->pluck('user_id');
+
+            foreach ($parentIds as $userId) {
+                ViolationNotification::create([
+                    'student_id' => null,
+                    'channel' => 'info',
+                    'recipient' => 'Semua Wali',
+                    'message' => $message,
+                    'status' => 'sent',
+                    'user_id' => $userId,
+                    'created_at' => now(),
+                ]);
+
+                $tokens = ParentDevice::where('user_id', $userId)->pluck('fcm_token');
+                foreach ($tokens as $token) {
+                    app(FcmService::class)->sendToToken($token, [
+                        'title' => '📢 Informasi Sekolah',
+                        'body' => $title,
+                    ], ['type' => 'school_info', 'title' => $title]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error('Notif info sekolah gagal: '.$e->getMessage());
+        }
     }
 }
