@@ -85,6 +85,70 @@ class ParentStudentController extends Controller
     }
 
     /**
+     * Rekap kehadiran putra/putri (bulan berjalan + ringkasan).
+     */
+    public function attendance(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        $today = now()->toDateString();
+        $monthStart = now()->startOfMonth()->toDateString();
+        $first = $student->attendances()->orderBy('date')->value('date');
+        $from = $first && $first > $monthStart ? $first : $monthStart;
+
+        $rows = $student->attendances()
+            ->whereBetween('date', [$from, $today])
+            ->orderBy('date')
+            ->orderBy('lesson_hour')
+            ->get(['date', 'status']);
+
+        $statuses = ['hadir', 'izin', 'sakit', 'alpha'];
+
+        $byDate = $rows->groupBy('date');
+        $records = $byDate
+            ->map(function ($items, $date) use ($statuses) {
+                $counts = [];
+                foreach ($statuses as $s) {
+                    $counts[$s] = $items->where('status', $s)->count();
+                }
+                $primary = null;
+                foreach ($statuses as $s) {
+                    if ($counts[$s] > 0) {
+                        $primary = $s;
+                        break;
+                    }
+                }
+
+                return [
+                    'date' => \Illuminate\Support\Str::substr((string) $date, 0, 10),
+                    'primary' => $primary,
+                    'statuses' => $counts,
+                ];
+            })
+            ->values()
+            ->sortByDesc('date')
+            ->values();
+
+        $summary = [];
+        foreach ($statuses as $s) {
+            $summary[$s] = $rows->where('status', $s)->count();
+        }
+        $summary['days'] = $byDate->count();
+
+        return response()->json([
+            'from' => $from,
+            'month' => now()->format('Y-m'),
+            'summary' => $summary,
+            'records' => $records,
+        ]);
+    }
+
+    /**
      * Tautkan anak tambahan (kakak/adik) ke akun wali.
      */
     public function link(Request $request): JsonResponse
