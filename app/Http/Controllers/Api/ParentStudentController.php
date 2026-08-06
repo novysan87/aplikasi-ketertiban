@@ -46,13 +46,15 @@ class ParentStudentController extends Controller
             $rows = $db->table('schedules as s')
                 ->join('classes as c', 'c.id', '=', 's.class_id')
                 ->join('subjects as sub', 'sub.id', '=', 's.subject_id')
+                ->leftJoin('teachers as t', 't.id', '=', 's.teacher_id')
+                ->leftJoin('users as u', 'u.id', '=', 't.user_id')
                 ->where('c.name', $student->class_name)
                 ->where('s.academic_year_id', $yearId)
                 ->where('s.semester_id', $semesterId)
                 ->where('s.is_active', 1)
                 ->orderBy('s.day_of_week')
                 ->orderBy('s.start_time')
-                ->get(['s.day_of_week', 's.start_time', 's.end_time', 'sub.name as subject']);
+                ->get(['s.day_of_week', 's.start_time', 's.end_time', 'sub.name as subject', 'u.name as teacher']);
 
             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             $grouped = [];
@@ -61,6 +63,7 @@ class ParentStudentController extends Controller
                     'start' => substr($r->start_time, 0, 5),
                     'end' => substr($r->end_time, 0, 5),
                     'subject' => $r->subject,
+                    'teacher' => $r->teacher,
                 ]);
                 if ($items->isNotEmpty()) {
                     $grouped[] = [
