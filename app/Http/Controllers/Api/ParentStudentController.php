@@ -199,11 +199,19 @@ class ParentStudentController extends Controller
             ->sortByDesc('date')
             ->values();
 
-        $summary = [];
-        foreach ($statuses as $s) {
-            $summary[$s] = $rows->where('status', $s)->count();
+        // Ringkasan berbasis HARI (bukan jam pelajaran):
+        // 1 hari = 1 status utama (urutan prioritas hadir > izin > sakit > alpha).
+        $summary = ['hadir' => 0, 'izin' => 0, 'sakit' => 0, 'alpha' => 0];
+        foreach ($byDate as $items) {
+            foreach ($statuses as $s) {
+                if ($items->where('status', $s)->count() > 0) {
+                    $summary[$s]++;
+                    break;
+                }
+            }
         }
         $summary['days'] = $byDate->count();
+        $summary['based_on'] = 'days';
 
         return response()->json([
             'from' => $from,
