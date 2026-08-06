@@ -4,7 +4,7 @@
 
 @section('content')
 @php $selectedClass = $classes->firstWhere('id', $filters['class_id']); @endphp
-<div x-data="reportPage()" class="space-y-6">
+<div class="space-y-6">
 
     {{-- ===== Hero ===== --}}
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 shadow-lg">
@@ -44,7 +44,7 @@
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
                 <div class="relative">
                     <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                    <input type="date" name="date_from" value="{{ $filters['date_from'] }}" x-model="dateFrom"
+                    <input type="date" id="f-date-from" name="date_from" value="{{ $filters['date_from'] }}"
                         class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
             </div>
@@ -52,7 +52,7 @@
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Sampai Tanggal</label>
                 <div class="relative">
                     <i class="fa-solid fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                    <input type="date" name="date_to" value="{{ $filters['date_to'] }}" x-model="dateTo"
+                    <input type="date" id="f-date-to" name="date_to" value="{{ $filters['date_to'] }}"
                         class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelas</label>
                 <div class="relative">
                     <i class="fa-solid fa-users absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                    <select name="class_id" x-model="classId"
+                    <select name="class_id"
                         class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
                         <option value="">— Semua Kelas —</option>
                         @foreach ($classes as $class)
@@ -74,7 +74,7 @@
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Pelanggaran</label>
                 <div class="relative">
                     <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                    <select name="violation_type_id" x-model="jenisId"
+                    <select name="violation_type_id"
                         class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition appearance-none">
                         <option value="">— Semua Jenis —</option>
                         @foreach ($violationTypes as $type)
@@ -101,8 +101,8 @@
                 class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-emerald-500/90 hover:bg-emerald-500 rounded-xl transition shadow-sm">
                 <i class="fa-solid fa-file-excel"></i> Export Excel
             </button>
-            <button type="button" @click="resetFilter()"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+            <button type="button" onclick="resetFilterForm()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition cursor-pointer">
                 <i class="fa-solid fa-rotate-left text-xs"></i> Reset
             </button>
             <span class="text-xs text-gray-300 mx-1 hidden sm:inline">|</span>
@@ -114,8 +114,8 @@
                 'Semester Genap' => [now()->month >= 7 ? (now()->year + 1).'-01-01' : now()->year.'-01-01', now()->month >= 7 ? (now()->year + 1).'-06-30' : now()->year.'-06-30'],
                 'Tahun Ini' => [now()->year.'-01-01', now()->year.'-12-31'],
             ] as $label => [$from, $to])
-                <button type="button" @click="applyPreset('{{ $from }}', '{{ $to }}')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition">
+                <button type="button" onclick="setPreset('{{ $from }}', '{{ $to }}')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition cursor-pointer">
                     {{ $label }}
                 </button>
             @endforeach
@@ -321,25 +321,18 @@
 </div>
 
 <script>
-    function reportPage() {
-        return {
-            dateFrom: {{ json_encode($filters['date_from'] ?? '') }},
-            dateTo: {{ json_encode($filters['date_to'] ?? '') }},
-            classId: {{ json_encode($filters['class_id'] ?? '') }},
-            jenisId: {{ json_encode($filters['violation_type_id'] ?? '') }},
-            applyPreset(from, to) {
-                this.dateFrom = from;
-                this.dateTo = to;
-                this.$nextTick(() => document.getElementById('filter-form').submit());
-            },
-            resetFilter() {
-                this.dateFrom = '';
-                this.dateTo = '';
-                this.classId = '';
-                this.jenisId = '';
-                this.$nextTick(() => document.getElementById('filter-form').submit());
-            },
-        };
+    function setPreset(from, to) {
+        const f = document.getElementById('f-date-from');
+        const t = document.getElementById('f-date-to');
+        if (f) f.value = from;
+        if (t) t.value = to;
+        document.getElementById('filter-form').submit();
+    }
+
+    function resetFilterForm() {
+        const form = document.getElementById('filter-form');
+        form.reset();
+        form.submit();
     }
 </script>
 @endsection
