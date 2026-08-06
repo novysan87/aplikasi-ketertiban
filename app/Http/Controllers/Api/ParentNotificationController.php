@@ -55,6 +55,30 @@ class ParentNotificationController extends Controller
     }
 
     /**
+     * Jumlah notifikasi penting (pelanggaran/SP) 7 hari terakhir — untuk badge.
+     */
+    public function unreadCount(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $studentIds = ParentStudent::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->pluck('student_id')
+            ->all();
+
+        if (empty($studentIds)) {
+            return response()->json(['count' => 0]);
+        }
+
+        $count = ViolationNotification::whereIn('student_id', $studentIds)
+            ->where('channel', 'push') // pelanggaran & SP (bukan kehadiran)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    /**
      * Daftarkan perangkat (token FCM) untuk push notification.
      */
     public function registerDevice(Request $request): JsonResponse
