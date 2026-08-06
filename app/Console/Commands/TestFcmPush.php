@@ -31,7 +31,7 @@ class TestFcmPush extends Command
         }
 
         $ok = $fcm->sendToToken($token, [
-            'title' => '🔔 Uji Coba S1WON DIGI',
+            'title' => '🔔 Uji Coba SiMURID',
             'body' => 'Push notification berhasil! Ini notifikasi dari server.',
         ], ['type' => 'test']);
 

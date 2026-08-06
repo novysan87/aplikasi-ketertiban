@@ -52,7 +52,7 @@ class FcmService
             return false;
         }
 
-        $title = $notification['title'] ?? 'S1WON DIGI';
+        $title = $notification['title'] ?? 'SiMURID';
         $body = $notification['body'] ?? '';
 
         $message = [
