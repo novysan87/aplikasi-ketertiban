@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\SchoolInformation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ParentSchoolInformationController extends Controller
 {
@@ -30,5 +31,28 @@ class ParentSchoolInformationController extends Controller
             ]);
 
         return response()->json(['informations' => $items]);
+    }
+
+    /**
+     * Kalender akademik (dari tabel academic_calendar_events).
+     */
+    public function calendar(): JsonResponse
+    {
+        $events = DB::table('academic_calendar_events')
+            ->orderBy('date')
+            ->get()
+            ->map(fn ($e) => [
+                'id' => $e->id,
+                'date' => $e->date,
+                'date_end' => $e->date_end,
+                'title' => $e->title,
+                'category' => $e->category,
+                'semester' => $e->semester,
+            ]);
+
+        return response()->json([
+            'academic_year' => '2026/2027',
+            'events' => $events,
+        ]);
     }
 }

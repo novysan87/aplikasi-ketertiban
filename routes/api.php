@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
     // Notifikasi & perangkat
     Route::get('/notifications', [ParentNotificationController::class, 'index'])->name('api.parent.notifications');
     Route::get('/school-informations', [ParentSchoolInformationController::class, 'index'])->name('api.parent.school-informations');
+    Route::get('/academic-calendar', [ParentSchoolInformationController::class, 'calendar'])->name('api.parent.academic-calendar');
     Route::post('/devices', [ParentNotificationController::class, 'registerDevice'])->name('api.parent.devices');
     Route::post('/push-debug', [ParentNotificationController::class, 'pushDebug'])->name('api.parent.push-debug');
 });
