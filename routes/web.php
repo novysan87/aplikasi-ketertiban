@@ -141,6 +141,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('permission:parents-verify')->group(function () {
+        Route::get('/parents', [\App\Http\Controllers\Admin\WaliMuridController::class, 'index'])->name('parents.index');
         Route::get('/parents/verification', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'index'])->name('parents.verification');
         Route::post('/parents/verification/{link}/approve', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'approve'])->name('parents.verification.approve');
         Route::post('/parents/verification/{link}/reject', [\App\Http\Controllers\Admin\ParentVerificationController::class, 'reject'])->name('parents.verification.reject');

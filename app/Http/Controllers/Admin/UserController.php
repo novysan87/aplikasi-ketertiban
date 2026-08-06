@@ -16,7 +16,7 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = User::query();
+        $query = User::query()->where('role', '!=', 'parent'); // wali murid punya halaman sendiri
 
         if ($request->filled('search')) {
             $search = $request->search;

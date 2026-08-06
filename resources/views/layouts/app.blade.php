@@ -198,6 +198,7 @@
                 <x-nav-item href="{{ route('point-audit.index') }}" icon="clock-rotate-left" :active="request()->routeIs('point-audit.*')">Riwayat Poin</x-nav-item>
                 @endcanPermission
                 @canPermission('parents-verify')
+                <x-nav-item href="{{ route('parents.index') }}" icon="people-roof" :active="request()->routeIs('parents.index')">Data Wali Murid</x-nav-item>
                 <x-nav-item href="{{ route('parents.verification') }}" icon="user-check" :active="request()->routeIs('parents.verification')">Verifikasi Wali</x-nav-item>
                 @endcanPermission
                 @canPermission('manage-school-info')
