@@ -28,6 +28,9 @@ $faIcons = [
     'lock' => 'fa-solid fa-lock',
     'hand-holding-heart' => 'fa-solid fa-hand-holding-heart',
     'chalkboard-user' => 'fa-solid fa-chalkboard-user',
+    'house-user' => 'fa-solid fa-house-user',
+    'clipboard-user' => 'fa-solid fa-clipboard-user',
+    'megaphone' => 'fa-solid fa-megaphone',
 ];
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 
@@ -52,6 +55,9 @@ $iconColors = [
     'lock' => ['active' => 'text-yellow-600', 'inactive' => 'text-yellow-400/60 group-hover:text-yellow-500'],
     'hand-holding-heart' => ['active' => 'text-amber-600', 'inactive' => 'text-amber-400/60 group-hover:text-amber-500'],
     'chalkboard-user' => ['active' => 'text-emerald-600', 'inactive' => 'text-emerald-400/60 group-hover:text-emerald-500'],
+    'house-user' => ['active' => 'text-teal-600', 'inactive' => 'text-teal-400/60 group-hover:text-teal-500'],
+    'clipboard-user' => ['active' => 'text-sky-600', 'inactive' => 'text-sky-400/60 group-hover:text-sky-500'],
+    'megaphone' => ['active' => 'text-rose-600', 'inactive' => 'text-rose-400/60 group-hover:text-rose-500'],
 ];
 $ic = $iconColors[$icon] ?? ['active' => 'text-blue-600', 'inactive' => 'text-gray-400 group-hover:text-gray-600'];
 $iconClass = $isActive ? 'text-white' : $ic['inactive'];
