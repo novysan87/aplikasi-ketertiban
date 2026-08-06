@@ -105,13 +105,61 @@ class ParentStudentController extends Controller
             ->whereBetween('date', [$from, $today])
             ->orderBy('date')
             ->orderBy('lesson_hour')
-            ->get(['date', 'status']);
+            ->get(['date', 'status', 'lesson_hour']);
 
         $statuses = ['hadir', 'izin', 'sakit', 'alpha'];
 
+        // ---- Detail per jam: waktu (dari time_slots e-jurnal) + mapel (dari schedule) ----
+        $jamTimes = [];
+        try {
+            $db = DB::connection('ejurnal');
+            $slots = $db->table('time_slots')
+                ->where('is_break', 0)
+                ->orderBy('period')
+                ->get(['period', 'start_time', 'end_time']);
+            $map = [];
+            $idx = 1;
+            foreach ($slots as $s) {
+                $map[$s->period] = $idx++;
+            }
+            foreach ($slots as $s) {
+                $jamTimes[$map[$s->period]] = [
+                    substr($s->start_time, 0, 5),
+                    substr($s->end_time, 0, 5),
+                ];
+            }
+        } catch (\Throwable $e) {
+            Log::error('Detail jam tidak tersedia: '.$e->getMessage());
+        }
+
+        $subjectByDay = [];
+        try {
+            $db = DB::connection('ejurnal');
+            $yearId = $db->table('academic_years')->where('is_active', 1)->value('id');
+            $semesterId = $db->table('semesters')->where('is_active', 1)->value('id');
+            foreach ($db->table('schedules as s')
+                ->join('classes as c', 'c.id', '=', 's.class_id')
+                ->join('subjects as sub', 'sub.id', '=', 's.subject_id')
+                ->where('c.name', $student->class_name)
+                ->where('s.academic_year_id', $yearId)
+                ->where('s.semester_id', $semesterId)
+                ->where('s.is_active', 1)
+                ->get(['s.day_of_week', 'sub.name as subject']) as $row) {
+                $subjectByDay[$row->day_of_week] = $row->subject;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Mapel detail tidak tersedia: '.$e->getMessage());
+        }
+
+        $dayEnglish = [
+            'Sunday' => 'sunday', 'Monday' => 'monday', 'Tuesday' => 'tuesday',
+            'Wednesday' => 'wednesday', 'Thursday' => 'thursday', 'Friday' => 'friday',
+            'Saturday' => 'saturday',
+        ];
+
         $byDate = $rows->groupBy('date');
         $records = $byDate
-            ->map(function ($items, $date) use ($statuses) {
+            ->map(function ($items, $date) use ($statuses, $jamTimes, $subjectByDay, $dayEnglish) {
                 $counts = [];
                 foreach ($statuses as $s) {
                     $counts[$s] = $items->where('status', $s)->count();
@@ -124,10 +172,26 @@ class ParentStudentController extends Controller
                     }
                 }
 
+                $dayKey = $dayEnglish[date('l', strtotime((string) $date))] ?? null;
+                $subject = $dayKey ? ($subjectByDay[$dayKey] ?? null) : null;
+
+                $details = $items->sortBy('lesson_hour')->map(function ($item) use ($jamTimes, $subject) {
+                    $t = $jamTimes[$item->lesson_hour] ?? [null, null];
+
+                    return [
+                        'hour' => (int) $item->lesson_hour,
+                        'start' => $t[0],
+                        'end' => $t[1],
+                        'subject' => $subject,
+                        'status' => $item->status,
+                    ];
+                })->values();
+
                 return [
                     'date' => \Illuminate\Support\Str::substr((string) $date, 0, 10),
                     'primary' => $primary,
                     'statuses' => $counts,
+                    'details' => $details,
                 ];
             })
             ->values()
