@@ -41,6 +41,7 @@ class ViolationReportController extends Controller
     public function pdf(Request $request)
     {
         $filters = $this->filters($request, validate: true);
+        \Illuminate\Support\Facades\Log::error('PDF-FILTER-DEBUG', ['query' => $request->query(), 'filters' => $filters]);
 
         $violations = $this->baseQuery($filters)
             ->with(['student.class', 'violationType.category', 'handlings'])
