@@ -84,4 +84,14 @@ class ParentNotificationController extends Controller
             'device_id' => $device->id,
         ], 201);
     }
+
+    /**
+     * Endpoint debug: catat error sisi klien (FCM web) ke log server.
+     */
+    public function pushDebug(Request $request): JsonResponse
+    {
+        \Illuminate\Support\Facades\Log::error('PUSH_DEBUG: '.json_encode($request->only(['step', 'error', 'detail', 'ua'])));
+
+        return response()->json(['ok' => true]);
+    }
 }
