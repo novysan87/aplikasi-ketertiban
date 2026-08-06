@@ -44,6 +44,7 @@ class ParentNotificationController extends Controller
                 'recipient' => $n->recipient,
                 'message' => $n->message,
                 'status' => $n->status,
+                'is_read' => (bool) $n->is_read,
                 'created_at' => $n->created_at?->toISOString(),
             ];
         });
@@ -55,13 +56,11 @@ class ParentNotificationController extends Controller
     }
 
     /**
-     * Jumlah notifikasi penting (pelanggaran/SP) 7 hari terakhir — untuk badge.
+     * Jumlah notifikasi penting (pelanggaran/SP) yang BELUM dibaca — untuk badge.
      */
     public function unreadCount(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        $studentIds = ParentStudent::where('user_id', $user->id)
+        $studentIds = ParentStudent::where('user_id', $request->user()->id)
             ->where('status', 'active')
             ->pluck('student_id')
             ->all();
@@ -72,10 +71,30 @@ class ParentNotificationController extends Controller
 
         $count = ViolationNotification::whereIn('student_id', $studentIds)
             ->where('channel', 'push') // pelanggaran & SP (bukan kehadiran)
-            ->where('created_at', '>=', now()->subDays(7))
+            ->where('is_read', false)
             ->count();
 
         return response()->json(['count' => $count]);
+    }
+
+    /**
+     * Tandai semua notifikasi putra/putri sebagai sudah dibaca.
+     */
+    public function markAllRead(Request $request): JsonResponse
+    {
+        $studentIds = ParentStudent::where('user_id', $request->user()->id)
+            ->where('status', 'active')
+            ->pluck('student_id')
+            ->all();
+
+        $updated = 0;
+        if (! empty($studentIds)) {
+            $updated = ViolationNotification::whereIn('student_id', $studentIds)
+                ->where('is_read', false)
+                ->update(['is_read' => true, 'read_at' => now()]);
+        }
+
+        return response()->json(['updated' => $updated, 'count' => 0]);
     }
 
     /**
