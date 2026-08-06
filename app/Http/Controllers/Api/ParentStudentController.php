@@ -531,6 +531,11 @@ class ParentStudentController extends Controller
 
         $autoVerified = PhoneHelper::matches(trim($validated['parent_phone']), $student->parent_phone);
 
+        // Simpan nomor HP wali bila akun belum punya.
+        if (empty($user->phone)) {
+            $user->update(['phone' => trim($validated['parent_phone'])]);
+        }
+
         $link = ParentStudent::create([
             'user_id' => $user->id,
             'student_id' => $student->id,

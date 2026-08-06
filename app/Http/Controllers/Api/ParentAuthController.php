@@ -77,7 +77,14 @@ class ParentAuthController extends Controller
                 'role' => 'parent',
                 'roles' => ['parent'],
                 'is_active' => true,
+                'phone' => $phone,
             ]);
+        }
+
+        // Simpan nomor HP wali ke akun bila masih kosong (dipakai juga
+        // untuk mengisi data kontak siswa saat verifikasi oleh admin).
+        if (empty($user->phone)) {
+            $user->update(['phone' => $phone]);
         }
 
         // Verifikasi otomatis jika HP cocok dengan data orang tua di database

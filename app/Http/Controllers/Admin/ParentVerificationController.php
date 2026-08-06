@@ -43,10 +43,11 @@ class ParentVerificationController extends Controller
         ]);
 
         // Isi data kontak wali ke siswa bila masih kosong
-        if ($link->student && empty($link->student->parent_phone)) {
+        // (user->phone kini terisi sejak registrasi — register & link-child menyimpannya)
+        if ($link->student && empty($link->student->parent_phone) && ! empty($link->user->phone)) {
             $link->student->update([
                 'parent_name' => $link->user->name,
-                'parent_phone' => $link->user->phone ?: ($link->student->parent_phone),
+                'parent_phone' => $link->user->phone,
             ]);
         }
 
