@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
     Route::get('/students/{student}/points-history', [ParentStudentController::class, 'pointsHistory'])->name('api.parent.students.points-history');
     Route::get('/students/{student}/violations-stats', [ParentStudentController::class, 'violationsStats'])->name('api.parent.students.violations-stats');
     Route::get('/students/{student}/grades', [ParentStudentController::class, 'grades'])->name('api.parent.students.grades');
+    Route::get('/students/{student}/classmates', [ParentStudentController::class, 'classmates'])->name('api.parent.students.classmates');
 
     // Notifikasi & perangkat
     Route::get('/notifications', [ParentNotificationController::class, 'index'])->name('api.parent.notifications');

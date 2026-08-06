@@ -406,6 +406,51 @@ class ParentStudentController extends Controller
     }
 
     /**
+     * Daftar teman sekelas + wali kelas putra/putri.
+     */
+    public function classmates(Request $request, Student $student): JsonResponse
+    {
+        $hasLink = ParentStudent::where('user_id', $request->user()->id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->exists();
+
+        abort_unless($hasLink, 403, 'Putra/putri belum tertaut aktif.');
+
+        // Wali kelas dari database kesiswaan
+        $homeroom = null;
+        try {
+            $homeroom = DB::connection('kesiswaan')
+                ->table('classes')
+                ->where('name', $student->class_name)
+                ->where('is_active', 1)
+                ->orderByDesc('id')
+                ->value('homeroom_teacher');
+        } catch (\Throwable $e) {
+            Log::error('Wali kelas tidak tersedia: '.$e->getMessage());
+        }
+
+        // Teman sekelas dari tabel students (aktif)
+        $students = Student::where('class_name', $student->class_name)
+            ->where('is_active', true)
+            ->orderBy('full_name')
+            ->get(['id', 'full_name', 'gender'])
+            ->map(fn (Student $s) => [
+                'id' => $s->id,
+                'name' => $s->full_name,
+                'gender' => $s->gender, // L | P
+            ])
+            ->values();
+
+        return response()->json([
+            'class_name' => $student->class_name,
+            'homeroom_teacher' => $homeroom,
+            'students' => $students,
+            'total' => $students->count(),
+        ]);
+    }
+
+    /**
      * Tautkan anak tambahan (kakak/adik) ke akun wali.
      */
     public function link(Request $request): JsonResponse

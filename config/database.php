@@ -78,6 +78,20 @@ return [
             'engine' => null,
         ],
 
+        'kesiswaan' => [
+            'driver' => 'mysql',
+            'host' => env('DB_KESISWAAN_HOST', '127.0.0.1'),
+            'port' => env('DB_KESISWAAN_PORT', '3306'),
+            'database' => env('DB_KESISWAAN_DATABASE', 'database_kesiswaan'),
+            'username' => env('DB_KESISWAAN_USERNAME', 'kesiswaan'),
+            'password' => env('DB_KESISWAAN_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
