@@ -46,7 +46,7 @@
     {{-- ===== Filter Bar ===== --}}
     <form method="GET" action="{{ route('reports.violations') }}" id="filter-form"
           class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
                 <div class="relative">
@@ -75,6 +75,7 @@
                         @endforeach
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                </div>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Pelanggaran</label>
@@ -92,16 +93,18 @@
                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                 </div>
             </div>
-            <div class="flex items-end">
-                <button type="submit"
-                    class="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
-                    <i class="fa-solid fa-filter text-xs"></i> Terapkan Filter
-                </button>
-            </div>
         </div>
 
-        {{-- Quick presets --}}
         <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition shadow-sm">
+                <i class="fa-solid fa-filter text-xs"></i> Terapkan Filter
+            </button>
+            <button type="button" @click="resetFilter()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                <i class="fa-solid fa-rotate-left text-xs"></i> Reset
+            </button>
+            <span class="text-xs text-gray-300 mx-1 hidden sm:inline">|</span>
             <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cepat:</span>
             @foreach ([
                 '7 Hari Terakhir' => [now()->subDays(6)->format('Y-m-d'), now()->format('Y-m-d')],
@@ -115,10 +118,6 @@
                     {{ $label }}
                 </button>
             @endforeach
-            <button type="button" @click="resetFilter()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
-                <i class="fa-solid fa-rotate-left"></i> Reset
-            </button>
         </div>
     </form>
 
