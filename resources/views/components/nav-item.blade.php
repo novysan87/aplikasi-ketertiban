@@ -29,8 +29,8 @@ $faIcons = [
     'hand-holding-heart' => 'fa-solid fa-hand-holding-heart',
     'chalkboard-user' => 'fa-solid fa-chalkboard-user',
     'house-user' => 'fa-solid fa-house-user',
-    'clipboard-user' => 'fa-solid fa-clipboard-user',
-    'megaphone' => 'fa-solid fa-megaphone',
+    'clipboard-user' => 'fa-solid fa-user-clock',
+    'megaphone' => 'fa-solid fa-tower-broadcast',
 ];
 $faClass = $faIcons[$icon] ?? 'fa-solid fa-circle';
 
