@@ -27,10 +27,10 @@
         .violation-table th { font-weight: bold; }
         .violation-table .total-row td { font-weight: bold; }
         .signature { margin-top: 50px; }
-        .signature .date { text-align: center; margin-bottom: 5px; }
-        .signature .title { text-align: center; margin-bottom: 60px; }
-        .signature .name { text-align: center; font-weight: bold; }
-        .signature .nip { text-align: center; font-size: 11pt; }
+        .signature .date { text-align: left; margin-bottom: 5px; }
+        .signature .title { text-align: left; margin-bottom: 60px; }
+        .signature .name { text-align: left; font-weight: bold; }
+        .signature .nip { text-align: left; font-size: 11pt; }
     </style>
 </head>
 <body>
