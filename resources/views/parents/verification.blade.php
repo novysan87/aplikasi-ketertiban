@@ -3,7 +3,7 @@
 @section('title', 'Verifikasi Wali Murid')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="rejectModal()">
 
     {{-- Header premium --}}
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#065f46] via-[#0d9488] to-[#134e4a] shadow-xl shadow-emerald-500/20">
@@ -188,7 +188,7 @@
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold shadow-md shadow-emerald-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all">
                         <i class="fa-solid fa-check"></i> Setujui
                     </button>
-                    <button onclick="rejectWali({{ $link->id }}, '{{ addslashes($link->user->name) }}')"
+                    <button @click="openReject({{ $link->id }}, '{{ addslashes($link->user->name) }}')"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-rose-200 text-rose-600 text-sm font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:bg-rose-50 transition-all">
                         <i class="fa-solid fa-xmark"></i> Tolak
                     </button>
@@ -259,6 +259,73 @@
     </div>
     @endif
 
+    {{-- Modal Tolak (premium) --}}
+    <div x-show="show"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[70] overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="show = false"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md mx-4">
+                {{-- Header --}}
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-lg shadow-rose-500/25">
+                            <i class="fa-solid fa-user-slash text-white text-base"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-gray-900">Tolak Akun Wali</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">Wali tidak akan bisa memantau putra/putri</p>
+                        </div>
+                    </div>
+                    <button @click="show = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                {{-- Body --}}
+                <div class="p-6">
+                    <div class="rounded-2xl bg-rose-50/70 border border-rose-100 px-4 py-3.5 mb-4 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white border border-rose-100 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-500 text-xs"></i>
+                        </div>
+                        <div class="text-xs text-rose-700 leading-relaxed">
+                            Anda akan menolak akun <span class="font-bold" x-text="name"></span>.
+                            Wali tetap bisa login, namun tautan putra/putri ditolak dan ia dapat mengajukan ulang.
+                        </div>
+                    </div>
+
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Alasan Penolakan <span class="font-normal text-slate-400">(opsional, tampil ke wali)</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-comment-dots absolute left-3.5 top-3.5 text-slate-300 text-sm pointer-events-none"></i>
+                        <textarea x-model="reason" rows="4" maxlength="255"
+                                  class="w-full pl-9 pr-12 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-rose-400 focus:ring-rose-500/20 transition resize-none"
+                                  placeholder="cth: No. HP tidak cocok dengan data sekolah"></textarea>
+                        <span class="absolute right-3 bottom-3 text-[10px] font-semibold text-slate-300" x-text="reason.length + '/255'">0/255</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1.5"><i class="fa-solid fa-circle-info mr-1"></i>Alasan ini langsung tampil di banner aplikasi wali.</p>
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-6 py-4 bg-slate-50/60 border-t border-gray-100 rounded-b-3xl flex items-center justify-end gap-3">
+                    <button type="button" @click="show = false"
+                            class="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
+                        Batal
+                    </button>
+                    <button type="button" @click="confirmReject()" :disabled="loading"
+                            class="px-5 py-2.5 text-sm font-black text-white bg-gradient-to-r from-rose-500 to-red-600 rounded-xl hover:brightness-105 transition shadow-md shadow-rose-200 inline-flex items-center gap-2 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <i class="fa-solid" :class="loading ? 'fa-circle-notch fa-spin' : 'fa-ban'"></i>
+                        <span x-text="loading ? 'Menolak...' : 'Ya, Tolak'">Ya, Tolak</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @push('scripts')
@@ -288,32 +355,41 @@ function approveWali(linkId, userName, studentName) {
     });
 }
 
-function rejectWali(linkId, userName) {
-    Swal.fire({
-        title: 'Tolak akun ' + userName + '?',
-        html: '<textarea id="reject-reason" class="swal2-textarea" placeholder="Alasan penolakan (opsional)"></textarea>',
-        icon: 'warning',
-        confirmButtonText: '<i class="fa-solid fa-xmark"></i> Ya, Tolak',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#e11d48',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const reason = document.getElementById('reject-reason') ? document.getElementById('reject-reason').value : '';
-            fetch('{{ url('parents/verification') }}/' + linkId + '/reject', {
+function rejectModal() {
+    return {
+        show: false,
+        loading: false,
+        id: null,
+        name: '',
+        reason: '',
+        openReject(linkId, userName) {
+            this.id = linkId;
+            this.name = userName;
+            this.reason = '';
+            this.show = true;
+        },
+        confirmReject() {
+            if (this.loading) return;
+            this.loading = true;
+            fetch('{{ url('parents/verification') }}/' + this.id + '/reject', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ reason: reason }),
-            }).then(r => {
+                body: JSON.stringify({ reason: this.reason }),
+            })
+            .then(r => {
                 if (r.redirected) window.location.href = r.url;
                 else location.reload();
+            })
+            .catch(() => {
+                this.loading = false;
+                this.show = false;
             });
-        }
-    });
+        },
+    };
 }
 </script>
 @endpush
