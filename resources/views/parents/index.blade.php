@@ -308,7 +308,7 @@
          class="fixed inset-0 z-[70] overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-6">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="show = false"></div>
-            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-xl mx-4">
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-xl mx-4 overflow-hidden">
                 {{-- Header gradien (pola modal premium lain) --}}
                 <div class="px-6 py-5 bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-between">
                     <div class="flex items-center gap-3">
