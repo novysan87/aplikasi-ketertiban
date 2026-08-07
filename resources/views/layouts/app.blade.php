@@ -49,6 +49,7 @@
         }
         .animate-fade-in { animation: fadeInUp 0.3s ease-out; }
         .stat-card-glow:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        [x-cloak] { display: none !important; }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
