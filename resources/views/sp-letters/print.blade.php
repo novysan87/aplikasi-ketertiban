@@ -65,7 +65,7 @@
     </div>
 
     <div class="to-title">
-        <p style="margin-bottom: 0;">Kepada Yth. Bapak/Ibu/Wali</p>
+        <p style="margin-bottom: 0;">Kepada Yth. Bapak/Ibu/Wali Murid</p>
         <p style="margin-top: 0; margin-bottom: 0;"><strong>{{ strtoupper($spLetter->student->full_name) }}</strong></p>
         <p style="margin-top: 0; margin-bottom: 0;">Kelas: {{ $spLetter->student->class_name ?? '-' }}</p>
         <p style="margin-top: 0; margin-bottom: 0;">NISN: {{ $spLetter->student->nisn }}</p>
