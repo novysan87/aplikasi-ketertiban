@@ -60,7 +60,7 @@
     </div>
 
     <div class="letter-number">
-        <p style="margin-bottom: 0;">SURAT PERINGATAN</p>
+        <p style="margin-bottom: 0;"><u>SURAT PERINGATAN</u></p>
         <p style="margin-top: 0;">Nomor: {{ $spLetter->letter_number }}</p>
     </div>
 
