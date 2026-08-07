@@ -112,7 +112,7 @@
     </div>
 
     <div class="body-text">
-        <p>Dengan adanya Surat Peringatan ini, Saudara/i diharapkan dapat memperbaiki sikap dan perilaku serta tidak mengulangi pelanggaran yang telah dilakukan. Apabila Saudara/i kembali melakukan pelanggaran, maka pihak sekolah akan memberikan sanksi yang lebih tegas.</p>
+        <p>Dengan adanya Surat Peringatan ini, <strong>{{ strtoupper($spLetter->student->full_name) }}</strong> diharapkan dapat memperbaiki sikap dan perilaku serta tidak mengulangi pelanggaran yang telah dilakukan. Apabila <strong>{{ strtoupper($spLetter->student->full_name) }}</strong> kembali melakukan pelanggaran, maka pihak sekolah akan memberikan sanksi yang lebih tegas.</p>
     </div>
 
     <div class="signature">
