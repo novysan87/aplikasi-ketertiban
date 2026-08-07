@@ -56,8 +56,8 @@
     </div>
 
     <div class="letter-number">
-        <p>SURAT PERINGATAN</p>
-        <p>Nomor: {{ $spLetter->letter_number }}</p>
+        <p style="margin-bottom: 0;">SURAT PERINGATAN</p>
+        <p style="margin-top: 0;">Nomor: {{ $spLetter->letter_number }}</p>
     </div>
 
     <div class="to-title">
