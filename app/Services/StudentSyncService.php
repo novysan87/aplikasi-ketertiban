@@ -105,7 +105,7 @@ class StudentSyncService
                             'department_name' => $item['department_name'] ?? '',
                             'academic_year_name' => $item['academic_year_name'] ?? '',
                             'status' => 'active',
-                            'photo_path' => $item['photo_path'],
+                            'photo_path' => $item['photo_url'] ?? $item['photo_path'],
                             'class_id' => $class->id,
                             'is_active' => true,
                             'synced_at' => now(),

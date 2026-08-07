@@ -221,7 +221,9 @@ class ParentAuthController extends Controller
                         'class_name' => $student->class_name,
                         'class_level' => $student->class_level,
                         'department_name' => $student->department_name,
-                        'photo_url' => $student->photo_path ? url($student->photo_path) : null,
+                        'photo_url' => $student->photo_path
+                            ? (str_starts_with($student->photo_path, 'http') ? $student->photo_path : url($student->photo_path))
+                            : null,
                     ],
                 ];
 
