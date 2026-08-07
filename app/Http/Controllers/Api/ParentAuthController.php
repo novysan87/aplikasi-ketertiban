@@ -212,6 +212,7 @@ class ParentAuthController extends Controller
                     'link_id' => $link->id,
                     'link_status' => $link->status,
                     'relation' => $link->relation,
+                    'rejection_reason' => $link->rejection_reason,
                     'student' => [
                         'id' => $student->id,
                         'nisn' => $student->nisn,

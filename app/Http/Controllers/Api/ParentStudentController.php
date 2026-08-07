@@ -518,11 +518,11 @@ class ParentStudentController extends Controller
             ], 422);
         }
 
-        $exists = ParentStudent::where('user_id', $user->id)
+        $existing = ParentStudent::where('user_id', $user->id)
             ->where('student_id', $student->id)
-            ->exists();
+            ->first();
 
-        if ($exists) {
+        if ($existing && $existing->status !== 'rejected') {
             return response()->json([
                 'message' => 'Siswa ini sudah tertaut ke akun Anda.',
                 'errors' => ['nisn' => ['Sudah tertaut.']],
@@ -536,13 +536,25 @@ class ParentStudentController extends Controller
             $user->update(['phone' => trim($validated['parent_phone'])]);
         }
 
-        $link = ParentStudent::create([
-            'user_id' => $user->id,
-            'student_id' => $student->id,
-            'relation' => $validated['relation'] ?? null,
-            'status' => $autoVerified ? 'active' : 'pending',
-            'verified_at' => $autoVerified ? now() : null,
-        ]);
+        if ($existing) {
+            // Tautan sebelumnya ditolak → wali memperbaiki data → dibuka lagi.
+            $existing->update([
+                'relation' => $validated['relation'] ?? $existing->relation,
+                'status' => $autoVerified ? 'active' : 'pending',
+                'rejection_reason' => null,
+                'verified_at' => $autoVerified ? now() : null,
+                'verified_by' => $autoVerified ? $user->id : null,
+            ]);
+            $link = $existing;
+        } else {
+            $link = ParentStudent::create([
+                'user_id' => $user->id,
+                'student_id' => $student->id,
+                'relation' => $validated['relation'] ?? null,
+                'status' => $autoVerified ? 'active' : 'pending',
+                'verified_at' => $autoVerified ? now() : null,
+            ]);
+        }
 
         return response()->json([
             'message' => $autoVerified
