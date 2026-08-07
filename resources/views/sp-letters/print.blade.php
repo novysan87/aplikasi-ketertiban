@@ -92,7 +92,7 @@
                 <tbody>
                     @foreach($violations as $v)
                         <tr>
-                            <td>{{ \Carbon\Carbon::parse($v['violation_date'] ?? now())->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($v['violation_date'] ?? now())->locale('id')->isoFormat('dddd, DD MMMM Y') }}</td>
                             <td>{{ $v['description'] ?? '-' }}</td>
                             <td style="text-align: center;">{{ $v['points'] ?? 0 }}</td>
                         </tr>
