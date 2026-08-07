@@ -22,6 +22,10 @@
         .body-text { text-align: justify; margin-bottom: 20px; }
         .violation-list { margin: 15px 0 15px 20px; }
         .violation-list li { margin-bottom: 3px; }
+        .violation-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .violation-table th, .violation-table td { border: 1px solid #000; padding: 6px 10px; text-align: left; font-size: 11pt; }
+        .violation-table th { font-weight: bold; }
+        .violation-table .total-row td { font-weight: bold; }
         .signature { margin-top: 50px; }
         .signature .date { text-align: center; margin-bottom: 5px; }
         .signature .title { text-align: center; margin-bottom: 60px; }
@@ -74,15 +78,32 @@
 
     <div class="body-text">
         <p>Total akumulasi poin pelanggaran: <strong>{{ $spLetter->total_points_at_time }} poin</strong></p>
-        <p>Daftar pelanggaran:</p>
-        <ul class="violation-list">
-            @php $violations = is_array($spLetter->violations_included) ? $spLetter->violations_included : json_decode($spLetter->violations_included, true); @endphp
-            @if($violations)
-                @foreach($violations as $v)
-                    <li>{{ $v['violation_date'] ?? '-' }} - {{ $v['description'] ?? '-' }} ({{ $v['points'] ?? 0 }} poin)</li>
-                @endforeach
-            @endif
-        </ul>
+        <p>Berikut daftar pelanggaran :</p>
+        @php $violations = is_array($spLetter->violations_included) ? $spLetter->violations_included : json_decode($spLetter->violations_included, true); @endphp
+        @if($violations)
+            <table class="violation-table">
+                <thead>
+                    <tr>
+                        <th style="width: 22%;">Tanggal Pelanggaran</th>
+                        <th>Jenis Pelanggaran</th>
+                        <th style="width: 12%; text-align: center;">Point</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($violations as $v)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($v['violation_date'] ?? now())->format('d/m/Y') }}</td>
+                            <td>{{ $v['description'] ?? '-' }}</td>
+                            <td style="text-align: center;">{{ $v['points'] ?? 0 }}</td>
+                        </tr>
+                    @endforeach
+                    <tr class="total-row">
+                        <td colspan="2" style="text-align: right;">Total</td>
+                        <td style="text-align: center;">{{ array_sum(array_column($violations, 'points')) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @endif
     </div>
 
     <div class="body-text">
