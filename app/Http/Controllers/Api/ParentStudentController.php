@@ -608,7 +608,7 @@ class ParentStudentController extends Controller
                 ] : null,
                 'evidences' => $v->evidences->map(fn ($e) => [
                     'id' => $e->id,
-                    'url' => url($e->file_path),
+                    'url' => url('storage/' . $e->file_path),
                     'mime_type' => $e->mime_type,
                 ])->all(),
             ];
@@ -653,7 +653,7 @@ class ParentStudentController extends Controller
                 'status' => $sp->status,
                 'total_points_at_time' => $sp->total_points_at_time,
                 'violations_included' => $sp->violations_included,
-                'file_url' => $sp->file_path ? url($sp->file_path) : null,
+                'file_url' => $sp->file_path ? url('storage/' . $sp->file_path) : null,
                 'created_at' => $sp->created_at?->toISOString(),
                 'delivered_at' => $sp->delivered_at?->toISOString(),
             ];
