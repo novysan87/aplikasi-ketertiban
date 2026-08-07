@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Cetak SP - {{ $spLetter->student->full_name }}</title>
     <style>
-        @page { margin: 2cm; size: A4; }
+        @page { margin: 2cm 1cm; size: 210mm 330mm; } /* F4 — kiri/kanan 1cm */
         body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; color: #000; }
         .kop-surat { margin-bottom: 24px; }
         .kop-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
