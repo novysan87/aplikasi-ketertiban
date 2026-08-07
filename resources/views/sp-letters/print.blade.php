@@ -117,16 +117,16 @@
 
     <div class="signature">
         <div class="date">
-            <p>{{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</p>
+            <p style="margin-bottom: 0;">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</p>
         </div>
         <div class="title">
-            <p>Kepala {{ $school['name'] }},</p>
+            <p style="margin-top: 0; margin-bottom: 0;">Kepala {{ $school['name'] }},</p>
         </div>
         <div class="name">
-            <p><u><strong>{{ $school['kepala_sekolah'] }}</strong></u></p>
+            <p style="margin-top: 0; margin-bottom: 0;"><u><strong>{{ $school['kepala_sekolah'] }}</strong></u></p>
         </div>
         <div class="nip">
-            <p>NIP. {{ $school['kepala_sekolah_nip'] }}</p>
+            <p style="margin-top: 0;">NIP. {{ $school['kepala_sekolah_nip'] }}</p>
         </div>
     </div>
 
