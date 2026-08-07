@@ -36,9 +36,9 @@
             <tr>
                 <td class="kop-logo">
                     @if (! empty($school['kop_logo']) && file_exists(public_path('storage/'.$school['kop_logo'])))
-                        <img src="{{ public_path('storage/'.$school['kop_logo']) }}" alt="logo">
+                        <img src="{{ asset('storage/'.$school['kop_logo']) }}" alt="logo">
                     @elseif (! empty($school['logo']) && file_exists(public_path('storage/'.$school['logo'])))
-                        <img src="{{ public_path('storage/'.$school['logo']) }}" alt="logo">
+                        <img src="{{ asset('storage/'.$school['logo']) }}" alt="logo">
                     @endif
                 </td>
                 <td class="kop-text">
