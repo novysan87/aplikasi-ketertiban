@@ -26,7 +26,7 @@
         .violation-table th, .violation-table td { border: 1px solid #000; padding: 6px 10px; text-align: left; font-size: 11pt; }
         .violation-table th { font-weight: bold; }
         .violation-table .total-row td { font-weight: bold; }
-        .signature { margin-top: 50px; padding-left: 12em; }
+        .signature { margin-top: 50px; padding-left: 18em; }
         .signature .date { text-align: left; margin-bottom: 5px; }
         .signature .title { text-align: left; margin-bottom: 60px; }
         .signature .name { text-align: left; font-weight: bold; }
