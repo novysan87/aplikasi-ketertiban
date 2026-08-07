@@ -69,7 +69,7 @@
     </div>
 
     <div class="body-text">
-        <p>Berdasarkan pencatatan pelanggaran yang telah dilakukan, dengan ini kami menyampaikan Surat Peringatan {{ $spLetter->spThreshold->name }} kepada Saudara/i dengan rincian sebagai berikut:</p>
+        <p>Berdasarkan pencatatan pelanggaran yang telah dilakukan, dengan ini kami menyampaikan Surat Peringatan {{ $spLetter->spThreshold->name }} kepada ananda <strong>{{ strtoupper($spLetter->student->full_name) }}</strong> dengan rincian sebagai berikut:</p>
     </div>
 
     <div class="body-text">
