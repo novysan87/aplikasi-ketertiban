@@ -3,7 +3,7 @@
 @section('title', 'Data Wali Murid')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="resetPasswordModal()">
 
     {{-- Header premium --}}
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#0ea5e9] shadow-xl shadow-blue-500/20">
@@ -275,7 +275,7 @@
                                     title="Logout akun di semua perangkat">
                                     <i class="fa-solid fa-right-from-bracket"></i> Logout
                                 </button>
-                                <button onclick="resetWaliPassword({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                <button @click="openReset({{ $user->id }}, '{{ addslashes($user->name) }}')"
                                     class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold shadow-md shadow-amber-500/30 hover:shadow-lg hover:-translate-y-0.5 hover:brightness-105 transition-all"
                                     title="Set password baru">
                                     <i class="fa-solid fa-key"></i> Reset Password
@@ -297,6 +297,90 @@
         </div>
         @endif
     </div>
+    {{-- Modal Reset Password (premium) --}}
+    <div x-show="show"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[70] overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="show = false"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md mx-4">
+                {{-- Header --}}
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
+                            <i class="fa-solid fa-key text-white text-base"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-gray-900">Reset Password Wali</h3>
+                            <p class="text-xs text-gray-400 mt-0.5" x-text="name"></p>
+                        </div>
+                    </div>
+                    <button @click="show = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                {{-- Body --}}
+                <div class="p-6 space-y-4">
+                    <div class="rounded-2xl bg-amber-50/70 border border-amber-100 px-4 py-3.5 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white border border-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-circle-info text-amber-500 text-xs"></i>
+                        </div>
+                        <div class="text-xs text-amber-800 leading-relaxed">
+                            Password baru <span class="font-bold">langsung berlaku</span>. Wali harus login ulang dengan password baru ini.
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Password Baru <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
+                            <input :type="showPwd ? 'text' : 'password'" x-model="password" maxlength="100" placeholder="Minimal 6 karakter"
+                                   class="w-full pl-9 pr-11 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-amber-400 focus:ring-amber-500/20 transition">
+                            <button type="button" @click="showPwd = !showPwd"
+                                    class="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                                <i class="fa-solid text-xs" :class="showPwd ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Konfirmasi Password <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
+                            <input :type="showPwd ? 'text' : 'password'" x-model="confirm" maxlength="100" placeholder="Ulangi password baru"
+                                   class="w-full pl-9 pr-11 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-amber-400 focus:ring-amber-500/20 transition">
+                        </div>
+                    </div>
+
+                    <div x-show="error" x-cloak
+                         class="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-xs font-semibold text-rose-600 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span x-text="error"></span>
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-6 py-4 bg-slate-50/60 border-t border-gray-100 rounded-b-3xl flex items-center justify-end gap-3">
+                    <button type="button" @click="show = false"
+                            class="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-gray-50 transition">
+                        Batal
+                    </button>
+                    <button type="button" @click="confirmReset()" :disabled="loading"
+                            class="px-5 py-2.5 text-sm font-black text-white bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl hover:brightness-105 transition shadow-md shadow-amber-200 inline-flex items-center gap-2 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <i class="fa-solid" :class="loading ? 'fa-circle-notch fa-spin' : 'fa-floppy-disk'"></i>
+                        <span x-text="loading ? 'Menyimpan...' : 'Simpan Password'">Simpan Password</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @push('scripts')
@@ -351,43 +435,56 @@ function deleteWali(userId, userName) {
     });
 }
 
-function resetWaliPassword(userId, userName) {
-    Swal.fire({
-        title: 'Reset Password — ' + userName,
-        html: '<input type="password" id="new-password" class="swal2-input" placeholder="Password baru (min. 6 karakter)" minlength="6">' +
-              '<input type="password" id="confirm-password" class="swal2-input" placeholder="Konfirmasi password">',
-        confirmButtonText: '<i class="fa-solid fa-floppy-disk"></i> Simpan',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        preConfirm: () => {
-            const pwd = document.getElementById('new-password').value;
-            const confirm = document.getElementById('confirm-password').value;
-            if (!pwd || pwd.length < 6) {
-                Swal.showValidationMessage('Password minimal 6 karakter');
-                return false;
+function resetPasswordModal() {
+    return {
+        show: false,
+        loading: false,
+        id: null,
+        name: '',
+        password: '',
+        confirm: '',
+        showPwd: false,
+        error: '',
+        openReset(userId, userName) {
+            this.id = userId;
+            this.name = userName;
+            this.password = '';
+            this.confirm = '';
+            this.showPwd = false;
+            this.error = '';
+            this.show = true;
+        },
+        confirmReset() {
+            this.error = '';
+            if (!this.password || this.password.length < 6) {
+                this.error = 'Password minimal 6 karakter.';
+                return;
             }
-            if (pwd !== confirm) {
-                Swal.showValidationMessage('Password tidak cocok');
-                return false;
+            if (this.password !== this.confirm) {
+                this.error = 'Konfirmasi password tidak cocok.';
+                return;
             }
-            return pwd;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('{{ url('users') }}/' + userId + '/reset-password', {
+            if (this.loading) return;
+            this.loading = true;
+            fetch('{{ url('users') }}/' + this.id + '/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ new_password: result.value }),
-            }).then(r => {
+                body: JSON.stringify({ new_password: this.password }),
+            })
+            .then(r => {
                 if (r.redirected) window.location.href = r.url;
                 else location.reload();
+            })
+            .catch(() => {
+                this.loading = false;
+                this.error = 'Gagal menyimpan. Coba lagi.';
             });
-        }
-    });
+        },
+    };
 }
 </script>
 @endpush
