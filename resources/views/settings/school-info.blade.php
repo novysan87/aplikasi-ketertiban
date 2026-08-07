@@ -25,7 +25,7 @@
         : '—';
 @endphp
 
-<div class="space-y-6" x-data="schoolInfoForm(@json($itemsData))">
+<div class="space-y-6" x-data="schoolInfoForm(@js($itemsData))">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-1.5 text-xs text-slate-500">
@@ -168,7 +168,7 @@
                 <form class="p-5 space-y-4" method="POST"
                       :action="id ? '{{ route('settings.school-info.update', 0) }}'.replace('/0', '/' + id) : '{{ route('settings.school-info.store') }}'">
                     @csrf
-                    <input type="hidden" name="_method" value="PUT" x-show="id">
+                    <input type="hidden" name="_method" :value="id ? 'PUT' : 'POST'">
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Judul Informasi <span class="text-rose-500">*</span></label>
