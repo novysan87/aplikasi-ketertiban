@@ -93,7 +93,12 @@
                     @foreach($violations as $v)
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($v['violation_date'] ?? now())->setTimezone('Asia/Jakarta')->locale('id')->isoFormat('dddd, DD MMMM Y') }}</td>
-                            <td>{{ \App\Models\Violation::with('violationType')->find($v['id'] ?? null)?->violationType?->name ?? $v['description'] ?? '-' }}</td>
+                            <td>
+                                {{ \App\Models\Violation::with('violationType')->find($v['id'] ?? null)?->violationType?->name ?? '-' }}
+                                @if (! empty($v['description']))
+                                    <div style="font-style: italic; font-size: 9pt; font-weight: normal; margin-top: 2px;">{{ $v['description'] }}</div>
+                                @endif
+                            </td>
                             <td style="text-align: center;">{{ $v['points'] ?? 0 }}</td>
                         </tr>
                     @endforeach
