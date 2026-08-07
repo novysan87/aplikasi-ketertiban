@@ -119,6 +119,12 @@ class ViolationService
             'status' => 'draft',
         ]);
 
+        // Generate PDF resmi (kop surat) agar wali bisa melihat/unduh di SiMURID
+        $pdfPath = \App\Support\SpLetterPdf::generate($letter);
+        if ($pdfPath) {
+            $letter->update(['file_path' => $pdfPath]);
+        }
+
         // Notifikasi + FCM push ke wali murid (SP baru)
         $this->notifyParentsOfSp($letter);
 

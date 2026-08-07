@@ -40,9 +40,9 @@
             <tr>
                 <td class="kop-logo">
                     @if (! empty($school['kop_logo']) && file_exists(public_path('storage/'.$school['kop_logo'])))
-                        <img src="{{ asset('storage/'.$school['kop_logo']) }}" alt="logo">
+                        <img src="{{ isset($forPdf) && $forPdf ? public_path('storage/'.$school['kop_logo']) : asset('storage/'.$school['kop_logo']) }}" alt="logo">
                     @elseif (! empty($school['logo']) && file_exists(public_path('storage/'.$school['logo'])))
-                        <img src="{{ asset('storage/'.$school['logo']) }}" alt="logo">
+                        <img src="{{ isset($forPdf) && $forPdf ? public_path('storage/'.$school['logo']) : asset('storage/'.$school['logo']) }}" alt="logo">
                     @endif
                 </td>
                 <td class="kop-text">
@@ -130,8 +130,10 @@
         </div>
     </div>
 
-    <script>
-        window.onload = function() { window.print(); };
-    </script>
+    @if (! isset($forPdf) || ! $forPdf)
+        <script>
+            window.onload = function() { window.print(); };
+        </script>
+    @endif
 </body>
 </html>
