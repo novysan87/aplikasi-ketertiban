@@ -308,19 +308,19 @@
          class="fixed inset-0 z-[70] overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 py-6">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="show = false"></div>
-            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md mx-4">
-                {{-- Header --}}
-                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
-                            <i class="fa-solid fa-key text-white text-base"></i>
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-xl mx-4">
+                {{-- Header gradien (pola modal premium lain) --}}
+                <div class="px-6 py-5 bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shadow-sm backdrop-blur-sm">
+                            <i class="fa-solid fa-key text-white text-sm"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-black text-gray-900">Reset Password Wali</h3>
-                            <p class="text-xs text-gray-400 mt-0.5" x-text="name"></p>
+                            <h3 class="text-sm font-bold text-white">Reset Password Wali</h3>
+                            <p class="text-xs text-amber-50/90" x-text="name"></p>
                         </div>
                     </div>
-                    <button @click="show = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                    <button @click="show = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-50 hover:text-white hover:bg-white/10 transition">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -341,7 +341,7 @@
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
                             <input :type="showPwd ? 'text' : 'password'" x-model="password" maxlength="100" placeholder="Minimal 6 karakter"
-                                   class="w-full pl-9 pr-11 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-amber-400 focus:ring-amber-500/20 transition">
+                                   class="input !pl-9 !pr-11">
                             <button type="button" @click="showPwd = !showPwd"
                                     class="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
                                 <i class="fa-solid text-xs" :class="showPwd ? 'fa-eye-slash' : 'fa-eye'"></i>
@@ -354,7 +354,7 @@
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
                             <input :type="showPwd ? 'text' : 'password'" x-model="confirm" maxlength="100" placeholder="Ulangi password baru"
-                                   class="w-full pl-9 pr-11 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-amber-400 focus:ring-amber-500/20 transition">
+                                   class="input !pl-9 !pr-11">
                         </div>
                     </div>
 
