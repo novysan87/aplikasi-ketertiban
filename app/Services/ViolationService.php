@@ -105,7 +105,7 @@ class ViolationService
             'sp_threshold_id' => $threshold->id,
             'generated_by' => $userId,
             'letter_number' => sprintf('%s/%s/%s/%s',
-                $threshold->slug,
+                strtoupper($threshold->slug),
                 str_pad((string) $letterCount, 3, '0', STR_PAD_LEFT),
                 date('m'),
                 date('Y')
