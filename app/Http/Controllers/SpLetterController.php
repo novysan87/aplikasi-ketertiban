@@ -61,6 +61,7 @@ class SpLetterController extends Controller
             'website_email' => Setting::getValue('school_website_email', ''),
             'postal' => Setting::getValue('school_postal', ''),
             'kepala_sekolah' => Setting::getValue('kepala_sekolah_name', ''),
+            'place' => Setting::getValue('school_place', 'Wonorejo'),
             'kepala_sekolah_nip' => Setting::getValue('kepala_sekolah_nip', ''),
         ];
     }

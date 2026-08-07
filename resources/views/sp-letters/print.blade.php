@@ -117,7 +117,7 @@
 
     <div class="signature">
         <div class="date">
-            <p style="margin-bottom: 0;">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</p>
+            <p style="margin-bottom: 0;">{{ $school['place'] }}, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</p>
         </div>
         <div class="title">
             <p style="margin-top: 0; margin-bottom: 0;">Kepala {{ $school['name'] }},</p>
