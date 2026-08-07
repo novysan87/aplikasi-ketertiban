@@ -149,83 +149,124 @@
         </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-5 gap-6">
 
         {{-- ===== Form ===== --}}
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden lg:sticky lg:top-4">
-                <div class="relative overflow-hidden px-5 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-between">
-                    <div class="absolute -right-4 -top-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
-                    <h2 class="relative font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid" :class="id ? 'fa-pen-to-square' : 'fa-circle-plus'"></i>
-                        <span x-text="id ? 'Edit Informasi' : 'Tambah Informasi'">Tambah Informasi</span>
-                    </h2>
-                    <button type="button" x-show="id" @click="reset()" x-cloak
-                        class="relative text-xs font-medium text-blue-100 hover:text-white hover:underline transition">
-                        <i class="fa-solid fa-xmark mr-0.5"></i>Batal
-                    </button>
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden lg:sticky lg:top-4">
+                {{-- Header form --}}
+                <div class="relative overflow-hidden px-6 py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600">
+                    <i class="fa-solid fa-bullhorn absolute -right-3 -bottom-5 text-7xl text-white/10 rotate-12"></i>
+                    <div class="absolute -left-8 -top-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur border border-white/20 flex items-center justify-center">
+                                <i class="fa-solid text-white" :class="id ? 'fa-pen-to-square' : 'fa-circle-plus'"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-white leading-tight">
+                                    <span x-text="id ? 'Edit Informasi' : 'Tambah Informasi'">Tambah Informasi</span>
+                                </h2>
+                                <p class="text-[11px] text-blue-100/80" x-text="id ? 'Perbarui detail pengumuman' : 'Buat pengumuman baru untuk wali murid'">Buat pengumuman baru untuk wali murid</p>
+                            </div>
+                        </div>
+                        <button type="button" x-show="id" @click="reset()" x-cloak
+                            class="inline-flex items-center gap-1 rounded-xl bg-white/15 backdrop-blur border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-white/25 transition">
+                            <i class="fa-solid fa-xmark"></i>Batal edit
+                        </button>
+                    </div>
                 </div>
-                <form class="p-5 space-y-4" method="POST"
+
+                <form class="p-6 space-y-5" method="POST"
                       :action="id ? '{{ route('settings.school-info.update', 0) }}'.replace('/0', '/' + id) : '{{ route('settings.school-info.store') }}'">
                     @csrf
                     <input type="hidden" name="_method" :value="id ? 'PUT' : 'POST'">
 
+                    {{-- Judul --}}
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Judul Informasi <span class="text-rose-500">*</span></label>
-                        <input type="text" name="title" x-model="title" required maxlength="200"
-                               class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 transition"
-                               placeholder="cth: Jadwal UTS Semester Ganjil 2026/2027">
-                        <p class="text-[11px] text-slate-400 mt-1">Judul singkat yang tampil di beranda wali murid.</p>
+                        <div class="relative">
+                            <i class="fa-solid fa-heading absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
+                            <input type="text" name="title" x-model="title" required maxlength="200"
+                                   class="w-full pl-9 pr-14 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition"
+                                   placeholder="cth: Jadwal UTS Semester Ganjil 2026/2027">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-300"
+                                  x-text="title.length + '/200'">0/200</span>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori</label>
-                            <select name="category" x-model="category" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 transition cursor-pointer">
-                                <option value="umum">Umum</option>
-                                <option value="akademik">Akademik</option>
-                                <option value="kegiatan">Kegiatan</option>
-                                <option value="uts">UTS</option>
-                                <option value="uas">UAS</option>
-                                <option value="lainnya">Lainnya</option>
-                            </select>
+                    {{-- Kategori pill + tanggal --}}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori</label>
+                        <select name="category" x-model="category" class="hidden" aria-hidden="true" tabindex="-1">
+                            <option value="umum">Umum</option>
+                            <option value="akademik">Akademik</option>
+                            <option value="kegiatan">Kegiatan</option>
+                            <option value="uts">UTS</option>
+                            <option value="uas">UAS</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                        <div class="grid grid-cols-3 gap-2">
+                            <template x-for="c in categories" :key="c.value">
+                                <button type="button" @click="category = c.value"
+                                        class="flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-[11px] font-semibold transition active:scale-95"
+                                        :class="category === c.value ? c.active : c.idle">
+                                    <i class="fa-solid text-sm" :class="c.icon"></i>
+                                    <span x-text="c.label"></span>
+                                </button>
+                            </template>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Kegiatan</label>
+                    </div>
+
+                    {{-- Tanggal --}}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Kegiatan <span class="font-normal text-slate-400">(opsional)</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-calendar-day absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 text-sm pointer-events-none"></i>
                             <input type="date" name="event_date" x-model="event_date"
-                                   class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 transition">
+                                   class="w-full pl-9 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition">
                         </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Kegiatan hari ini otomatis dapat badge <span class="font-semibold text-emerald-600">✨ Hari ini</span> di daftar.</p>
                     </div>
 
+                    {{-- Isi --}}
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Isi Informasi</label>
-                        <textarea name="content" x-model="content" rows="4"
-                                  class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 transition resize-none"
-                                  placeholder="Detail pengumuman..."></textarea>
+                        <div class="relative">
+                            <i class="fa-solid fa-align-left absolute left-3.5 top-3.5 text-slate-300 text-sm pointer-events-none"></i>
+                            <textarea name="content" x-model="content" rows="4"
+                                      class="w-full pl-9 rounded-xl border-slate-200 text-sm bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition resize-none"
+                                      placeholder="Detail pengumuman..."></textarea>
+                        </div>
                     </div>
 
-                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 cursor-pointer hover:border-blue-200 hover:bg-blue-50/40 transition">
-                        <span class="flex items-center gap-2.5 text-sm text-slate-700">
-                            <i class="fa-solid fa-bullhorn text-blue-500"></i>
+                    {{-- Publikasi --}}
+                    <label class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50/40 px-4 py-3.5 cursor-pointer hover:border-blue-300 hover:shadow-sm transition">
+                        <span class="flex items-center gap-3 text-sm text-slate-700">
+                            <span class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-bullhorn"></i>
+                            </span>
                             <span>
-                                <span class="font-semibold">Publikasikan langsung</span>
-                                <span class="block text-[11px] text-slate-400 font-normal">Wali murid langsung dapat notifikasi</span>
+                                <span class="font-bold">Publikasikan langsung</span>
+                                <span class="block text-[11px] text-slate-400 font-normal">Wali murid langsung dapat notifikasi push</span>
                             </span>
                         </span>
                         <input type="checkbox" name="is_published" x-model="is_published" value="1"
-                               class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
+                               class="w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer">
                     </label>
 
-                    <button class="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition hover:shadow-blue-600/30 active:scale-[0.99]">
-                        <i class="fa-solid fa-paper-plane mr-1.5"></i>
-                        <span x-text="id ? 'Simpan Perubahan' : 'Publikasikan'">Publikasikan</span>
+                    {{-- Submit --}}
+                    <button type="submit"
+                            class="w-full px-4 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:via-indigo-700 hover:to-violet-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/30 transition hover:shadow-indigo-600/40 active:scale-[0.99] inline-flex items-center justify-center gap-2">
+                        <i class="fa-solid" :class="id ? 'fa-floppy-disk' : 'fa-paper-plane'"></i>
+                        <span x-text="id ? 'Simpan Perubahan' : 'Publikasikan Sekarang'">Publikasikan Sekarang</span>
                     </button>
                 </form>
             </div>
         </div>
 
         {{-- ===== Daftar ===== --}}
-        <div class="lg:col-span-2 space-y-3">
+        <div class="lg:col-span-3 space-y-3">
             <template x-for="item in filtered" :key="item.id">
                 <div class="group bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:shadow-lg hover:shadow-blue-900/5 hover:border-blue-200 transition-all duration-200">
                     <div class="flex items-start gap-4">
@@ -313,6 +354,27 @@ function schoolInfoForm(items) {
         event_date: '',
         content: '',
         is_published: true,
+
+        categories: [
+            { value: 'umum',     label: 'Umum',     icon: 'fa-bullhorn',
+              active: 'bg-gradient-to-br from-slate-500 to-slate-700 text-white border-transparent shadow-md shadow-slate-500/25',
+              idle: 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-100' },
+            { value: 'akademik', label: 'Akademik', icon: 'fa-graduation-cap',
+              active: 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-transparent shadow-md shadow-blue-500/25',
+              idle: 'bg-blue-50/60 text-blue-700 border-blue-100 hover:border-blue-300 hover:bg-blue-50' },
+            { value: 'kegiatan', label: 'Kegiatan', icon: 'fa-flag',
+              active: 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-transparent shadow-md shadow-emerald-500/25',
+              idle: 'bg-emerald-50/60 text-emerald-700 border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50' },
+            { value: 'uts',      label: 'UTS',      icon: 'fa-file-pen',
+              active: 'bg-gradient-to-br from-orange-400 to-amber-600 text-white border-transparent shadow-md shadow-orange-500/25',
+              idle: 'bg-orange-50/60 text-orange-700 border-orange-100 hover:border-orange-300 hover:bg-orange-50' },
+            { value: 'uas',      label: 'UAS',      icon: 'fa-file-lines',
+              active: 'bg-gradient-to-br from-rose-500 to-red-600 text-white border-transparent shadow-md shadow-rose-500/25',
+              idle: 'bg-rose-50/60 text-rose-700 border-rose-100 hover:border-rose-300 hover:bg-rose-50' },
+            { value: 'lainnya',  label: 'Lainnya',  icon: 'fa-ellipsis',
+              active: 'bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white border-transparent shadow-md shadow-violet-500/25',
+              idle: 'bg-violet-50/60 text-violet-700 border-violet-100 hover:border-violet-300 hover:bg-violet-50' },
+        ],
 
         catMeta: {
             umum:      { icon: 'fa-bullhorn',     tile: 'bg-gradient-to-br from-slate-500 to-slate-700',       badge: 'bg-slate-100 text-slate-700' },
