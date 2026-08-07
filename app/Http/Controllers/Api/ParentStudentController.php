@@ -547,6 +547,12 @@ class ParentStudentController extends Controller
             ]);
             $link = $existing;
         } else {
+            // Bersihkan tautan REJECTED lain milik wali (percobaan NISN salah) —
+            // kalau dibiarkan, siswa yang salah NISN tetap muncul dobel di aplikasi.
+            ParentStudent::where('user_id', $user->id)
+                ->where('status', 'rejected')
+                ->delete();
+
             $link = ParentStudent::create([
                 'user_id' => $user->id,
                 'student_id' => $student->id,
